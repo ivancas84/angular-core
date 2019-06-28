@@ -1,0 +1,21 @@
+<div class="input-group" [formGroup]="fieldset">
+
+  <ng-template #rt let-r="result" let-t="term">
+    {{ r | label:entityName }}
+  </ng-template>
+
+  <input [readonly]="readonly" class="form-control" [formControlName]="fieldName" [ngbTypeahead]="search" placeholder="Seleccionar" [inputFormatter]="formatter" [resultTemplate]="rt">
+  <div class="input-group-append">
+    <span *ngIf="searching" class="input-group-text"><span class="oi oi-clock"></span></span>
+    <span *ngIf="isSelected" class="input-group-text"><span class="oi oi-check"></span></span>
+    <span class="input-group-text"><a  class="btn btn-outline-secondary" role="button" [routerLink]="'/'+linkAdd" [queryParams]="{ id : isSelected }" class="oi oi-pencil"></a></span>
+  </div>
+</div>
+<!--
+  Los chequeos se realizan directamente en el componente superior
+  Cada campo puede definir chequeos particulares que no pueden ser definidos en forma general
+-->
+<!--div class="text-danger" *ngIf="(field.touched || field.dirty) && field.invalid">
+  <div *ngIf="field.errors.required">Debe completar valor</div>
+  <div *ngIf="(field.touched && field.errors.unselected)">Valor no seleccionado</div>
+</div-->
