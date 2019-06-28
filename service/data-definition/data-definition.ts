@@ -10,7 +10,7 @@ import 'rxjs/add/operator/mergeMap';
 import 'rxjs/add/observable/timer';
 
 import { DataDefinitionService } from '../../../service/data-definition/data-definition.service';
-import { Display } from '../../../main/class/display';
+import { Display } from '../../../core/class/display';
 
 /*
 DataDefinitionService para algunas entidades se debe aplicar un comportamiento habitual.
