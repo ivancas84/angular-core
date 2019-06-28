@@ -31,6 +31,7 @@ export abstract class AdminComponent {
   readonly sync: any = null; //sync: { [index: string]: boolean } = {}; datos de sincronizacion, dependiendo de los datos que se manipulen en el formulario variara su tipo entre objeto y array
   data$ = new ReplaySubject(); //datos del formulario
   params$ = new ReplaySubject(); //parametros
+  deleteDisabled: boolean =  true; //flag para habilitar/deshabilitar boton eliminar
   protected subscriptions = new Subscription(); //las subscripciones son almacenadas para desuscribirse (solucion temporal al bug de Angular)
   /**
    * @todo En versiones posteriores de angular, eliminar el atributo subscriptions y su uso
@@ -91,16 +92,10 @@ export abstract class AdminComponent {
   }
 
 
-  storageChanges(): void { //asignar valores al storage
-    if(this.sc) return; //controlamos que no haya una subscripcion previa
-    this.sc = this.adminForm.valueChanges.subscribe(
-      formValues => { this.dd.storage.setItem(this.router.url, formValues); }
-    );
-    this.subscriptions.add(this.sc);
-  }
-
   back() { this.location.back(); }
+
   delete() { console.log("No implementado"); }
+
   clear(): void { //limpia la url y declara los datos vacios
     /**
      * si la ruta es diferente, se reasignaran los parametros de la url y se repetira el proceso de inicializacion
@@ -114,6 +109,7 @@ export abstract class AdminComponent {
       this.params$.next(null);
     }
   }
+
   reset(): void{
     this.removeStorage();
     var s = this.params$.subscribe(
@@ -124,96 +120,36 @@ export abstract class AdminComponent {
   }
   
 
-  
-  
-
-
-
-
-
-
-
-
-  
-  deleteDisabled: boolean =  true;
-
- 
-  
-
-  disabled: boolean = true; //deshabilitar formulario
-  /**
-   * Se habilita luego de definir los datos
-   */
-
-  params: any; //parametros
-  options: {}; //opciones para el formulario
-
-  
-
-  sc: any//almacena la subscripcion al storageChanges para evitar invocarlo multiples veces
-
-
-
-
-  
-  
-
-  
-
-
-
-  
-
   onSubmit(): void { //envio de formulario
     if (!this.adminForm.valid) {
       //this.logValidationErrors(this.adminForm);
       this.markAllAsTouched(this.adminForm); //Marcar todos los elementos como touched para visualizar errores
       this.message.add("Complete correctamente los campos del formulario");
     } else {
-      this.preProcess();
-      this.dd.storage.removeItem(this.router.url);
-    }
+      var data = this.getDataFromForm();    
+      this.adminForm.disable();
+
+      var s = this.dd.process(data).subscribe(
+        processResult => {
+          this.params$.next({id:this.getIdProcessed(processResult)})        
+        },
+        error => { this.message.add(JSON.stringify(error)); }
+      );
+      this.subscriptions.add(s);
+      }
   }
 
-  preProcess(): void { //definir datos para ser enviados al servidor
+  getDataFromForm(){ //definir datos que seran enviados para su procesamiento
     let serverData: any[] = [];
     serverData.push({entity:this.entity, row:this.adminForm.value[this.entity]});
-    this.process(serverData);
-    /**
-     * conviene invocar process dentro de preProcess por si se necesita que serverData sea asincronico
-     */
+    return serverData;
   }
 
-
-  process(serverData: any) { //procesamiento
-    this.adminForm.disable();
-
-    /**
-     * Debe resetearse el formulario al procesar para actualizar la cache y los ids
-     */
-    var s = this.dd.process(serverData).subscribe(
-      response => { this.postProcess(response); },
-      error => { this.message.add(JSON.stringify(error)); }
-    );
-    this.subscriptions.add(s);
-  }
-
-  getIdFromResponse(response: any){ return response[0].id; } //obtener id de la respuesta
+  getIdProcessed(processResult: any){ return processResult[0].id; } //obtener id de la respuesta
   /**
-   * Este metodo se mantiene independiente para facilitar la reimplementacion
    * Los formularios complejos pueden obtener el id de diferentes formas
    */
 
-  postProcess(response: any){ //post procesamiento
-    /**
-     * Reasignar params.
-     * De esta forma se adapta el formulario para que se pueda modificar el valor recientemente cargado
-     */
-    this.deleteDisabled = false;
-    this.params = {id:this.getIdFromResponse(response)};
-  }
-
-  
   markAllAsTouched(control: AbstractControl) { //marcar todos los elementos del formulario como touched para visualizar errores
     if(control.hasOwnProperty('controls')) {
         control.markAsTouched({ onlySelf: true }) // mark group
@@ -250,14 +186,6 @@ export abstract class AdminComponent {
       }
     });
   }
-
-  toggleFieldset(entityName:string){ 
-    //this.data[entityName] = (this.data[entityName]) ? null : this.dd.loader.entity(entityName); 
-  }//habilitar / deshabilitar fieldset
-    /**
-     * La habilitacion se realiza a partir de los datos definidos
-     * Si los datos son iguales a null se considera el fieldset deshabilitado
-     */
 
   ngOnDestroy () { this.subscriptions.unsubscribe() } //eliminar subscripciones
 }
