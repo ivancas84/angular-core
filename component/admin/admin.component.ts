@@ -121,14 +121,14 @@ export abstract class AdminComponent {
   
 
   onSubmit(): void { //envio de formulario
-    this.adminForm.disable();
 
     if (!this.adminForm.valid) {
       //this.logValidationErrors(this.adminForm);
       this.markAllAsTouched(this.adminForm); //Marcar todos los elementos como touched para visualizar errores
       this.message.add("Complete correctamente los campos del formulario");
-      this.adminForm.enable();
     } else {
+      this.adminForm.disable();
+
       var data = this.getDataFromForm();    
 
       var s = this.dd.process(data).subscribe(
