@@ -17,7 +17,6 @@ export class ShowComponent implements OnInit {
    * data: Recarga solo datos (ej, cuando se pasa a una nueva página)
    */
 
-
   constructor(protected route: ActivatedRoute) {}
 
   defineCountAndData(){
@@ -39,7 +38,7 @@ export class ShowComponent implements OnInit {
     this.route.queryParams.subscribe(
       params => {
         if(this.mode == "reload") this.defineCountAndData(); else this.defineData();
-    this.mode = "reload"; //reiniciamos el modo en el caso de que se ejecute una redireccion por mover pantallas
+        this.mode = "reload"; //reiniciar ej, se mueve entre pantallas
       }
     );
   }
