@@ -1,13 +1,17 @@
 import { OnInit } from '@angular/core';
 import { Display } from 'core/class/display';
 import { ActivatedRoute } from '@angular/router';
+import { ReplaySubject, Observable } from 'rxjs';
 
 export class ShowComponent implements OnInit {
   entity: string;
-  rows: any = [];
+  data$: Observable<any> = new ReplaySubject();
+  collectionSize$: Observable<number> = new ReplaySubject();
+
   display: Display = new Display();
   sync: { [index: string]: boolean } = {};
-  collectionSize: number = null;
+
+
   /**
    * Se hace coincidir el nombre con el paginador de ng-bootstrap
    */
@@ -18,6 +22,9 @@ export class ShowComponent implements OnInit {
    */
 
   constructor(protected route: ActivatedRoute) {}
+
+  getCount(){ return this.dd.count(this.entity, this.display); } //cantidad
+  getData(){ return this.dd.all(this.entity, this.display); } //datos
 
   defineCountAndData(){
     this.getCount().subscribe(
