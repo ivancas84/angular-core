@@ -1,12 +1,12 @@
 import { OnInit } from '@angular/core';
 import { Display } from 'core/class/display';
 import { ActivatedRoute } from '@angular/router';
-import { ReplaySubject, Observable } from 'rxjs';
+import { ReplaySubject } from 'rxjs';
 
 export class ShowComponent implements OnInit {
   entity: string;
-  data$: Observable<any> = new ReplaySubject();
-  collectionSize$: Observable<number> = new ReplaySubject();
+  data$: ReplaySubject<any> = new ReplaySubject();
+  collectionSize$: ReplaySubject<number> = new ReplaySubject();
 
   display: Display = new Display();
   sync: { [index: string]: boolean } = {};
@@ -29,7 +29,7 @@ export class ShowComponent implements OnInit {
   defineCountAndData(){
     this.getCount().subscribe(
       count => {
-        this.collectionSize = count;
+        this.collectionSize$.next(count);
         this.defineData();
       }
     );
