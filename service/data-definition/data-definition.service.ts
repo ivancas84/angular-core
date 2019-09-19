@@ -1,10 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { SessionStorageService } from '../storage/session-storage.service';
+import { Observable } from 'rxjs';
+import { DataDefinitionLoaderService } from 'src/app/service/data-definition-loader.service';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class DataDefinitionService {
 
-  constructor(public http: HttpClient, public storage: SessionStorageService, public loader: LoaderService) { }
+  constructor(public http: HttpClient, public storage: SessionStorageService, public loader: DataDefinitionLoaderService) { }
 
   all (entity: string, display: Display = null): Observable<any> {
     let key = "_" + entity + "_all" + JSON.stringify(display);
@@ -16,7 +21,7 @@ export class DataDefinitionService {
         this.storage.setItem(key, rows);
 
         for(let i = 0; i < rows.length; i++){
-          let ddi: DataDefinition = this.loader.dataDefinition(entity, this);
+          let ddi: DataDefinition = this.loader.get(entity);
           ddi.storage(rows[i]);
         }
 
