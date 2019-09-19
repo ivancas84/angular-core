@@ -3,6 +3,9 @@ import { Display } from 'core/class/display';
 import { ActivatedRoute } from '@angular/router';
 import { ReplaySubject } from 'rxjs';
 
+import { DataDefinitionService } from '../../service/data-definition/data-definition.service';
+
+
 export class ShowComponent implements OnInit {
   entity: string;
   data$: ReplaySubject<any> = new ReplaySubject();
