@@ -1,10 +1,9 @@
 import { OnInit } from '@angular/core';
-import { Display } from 'core/class/display';
+import { Display } from 'src/app/core/class/display';
 import { ActivatedRoute } from '@angular/router';
 import { ReplaySubject } from 'rxjs';
 
 import { DataDefinitionService } from '../../service/data-definition/data-definition.service';
-
 
 export class ShowComponent implements OnInit {
   entity: string;
@@ -24,7 +23,7 @@ export class ShowComponent implements OnInit {
    * data: Recarga solo datos (ej, cuando se pasa a una nueva página)
    */
 
-  constructor(protected route: ActivatedRoute) {}
+  constructor(protected dd: DataDefinitionService, protected route: ActivatedRoute) {}
 
   getCount(){ return this.dd.count(this.entity, this.display); } //cantidad
   getData(){ return this.dd.all(this.entity, this.display); } //datos
@@ -40,7 +39,7 @@ export class ShowComponent implements OnInit {
 
   defineData() {
     var s = this.getData().subscribe(
-      rows => { this.rows = rows; }
+      rows => { this.data$.next(rows); }
     );
   }
   
