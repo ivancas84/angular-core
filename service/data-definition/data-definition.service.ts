@@ -35,13 +35,14 @@ export class DataDefinitionService {
     );
   }
 
-  count (entity: string, data: any = null): Observable<any> {
-    let key = "_" + entity + "_count" + JSON.stringify(data);
-    if(this.storage.keyExists(key)) return of(this.storage.getItem(key));
+  count (entity: string, display: Display = null): Observable<any> {
+    // let key = "_" + entity + "_count" + JSON.stringify(data);
+    // if(this.storage.keyExists(key)) return of(this.storage.getItem(key));
 
     let url = API_ROOT + entity + '/count'
-    return this.http.post<any>(url, "display="+JSON.stringify(data), HTTP_OPTIONS).pipe(
-      tap( res => this.storage.setItem(key, res) )
+
+    return this.http.post<any>(url, display, HTTP_OPTIONS).pipe(
+      //tap( res => this.storage.setItem(key, res) )
     );
   }
 
