@@ -39,9 +39,9 @@ export class DataDefinitionService {
     // let key = "_" + entity + "_count" + JSON.stringify(data);
     // if(this.storage.keyExists(key)) return of(this.storage.getItem(key));
 
-    let url = API_ROOT + entity + '/count'
+    let url = API_ROOT + entity + '/count?test=1'
 
-    return this.http.post<any>(url, display, HTTP_OPTIONS).pipe(
+    return this.http.post<any>(url, "display="+JSON.stringify(display), HTTP_OPTIONS).pipe(
       //tap( res => this.storage.setItem(key, res) )
     );
   }
