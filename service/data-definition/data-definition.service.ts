@@ -17,11 +17,11 @@ export class DataDefinitionService {
   constructor(public http: HttpClient, public storage: SessionStorageService, public loader: DataDefinitionLoaderService) { }
 
   all (entity: string, display: Display = null): Observable<any> {
-    let key = "_" + entity + "_all" + JSON.stringify(display);
+    let key = "_" + entity + "_all" + JSON.stringify(display.describe());
     if(this.storage.keyExists(key)) return of(this.storage.getItem(key));
 
     let url = API_ROOT + entity + '/all'
-    return this.http.post<any>(url, "display="+JSON.stringify(display), HTTP_OPTIONS).pipe(
+    return this.http.post<any>(url, display.describe(), HTTP_OPTIONS).pipe(
       tap(
         rows => {
           this.storage.setItem(key, rows);
@@ -36,13 +36,13 @@ export class DataDefinitionService {
   }
 
   count (entity: string, display: Display = null): Observable<any> {
-    // let key = "_" + entity + "_count" + JSON.stringify(data);
-    // if(this.storage.keyExists(key)) return of(this.storage.getItem(key));
+    let key = "_" + entity + "_count" + JSON.stringify(display.describe());
+    if(this.storage.keyExists(key)) return of(this.storage.getItem(key));
 
-    let url = API_ROOT + entity + '/count?test=1'
+    let url = API_ROOT + entity + '/count'
 
-    return this.http.post<any>(url, "display="+JSON.stringify(display), HTTP_OPTIONS).pipe(
-      //tap( res => this.storage.setItem(key, res) )
+    return this.http.post<any>(url, display.describe(), HTTP_OPTIONS).pipe(
+      tap( res => this.storage.setItem(key, res) )
     );
   }
 

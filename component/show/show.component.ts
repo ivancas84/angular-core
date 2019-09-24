@@ -1,53 +1,41 @@
 import { OnInit } from '@angular/core';
-import { Display } from 'src/app/core/class/display';
 import { ActivatedRoute } from '@angular/router';
-import { ReplaySubject } from 'rxjs';
-
+import { ReplaySubject, BehaviorSubject } from 'rxjs';
+import { first } from 'rxjs/operators';
+import { Display } from '../../class/display';
 import { DataDefinitionService } from '../../service/data-definition/data-definition.service';
 
 export class ShowComponent implements OnInit {
   entity: string;
   data$: ReplaySubject<any> = new ReplaySubject();
-  collectionSize$: ReplaySubject<number> = new ReplaySubject();
-
-  display: Display = new Display();
-  sync: { [index: string]: boolean } = {};
-
-
+  collectionSize$: BehaviorSubject<number> = new BehaviorSubject(0);
   /**
    * Se hace coincidir el nombre con el paginador de ng-bootstrap
    */
-  mode="reload";
-  /**
-   * reload: Recarga cantidad y datos
-   * data: Recarga solo datos (ej, cuando se pasa a una nueva página)
-   */
+
+  display: Display;
+  sync: { [index: string]: boolean } = {};
 
   constructor(protected dd: DataDefinitionService, protected route: ActivatedRoute) {}
 
   getCount(){ return this.dd.count(this.entity, this.display); } //cantidad
   getData(){ return this.dd.all(this.entity, this.display); } //datos
 
-  defineCountAndData(){
-    this.getCount().subscribe(
-      count => {
-        this.collectionSize$.next(count);
-        this.defineData();
-      }
-    );
-  }
-
-  defineData() {
-    var s = this.getData().subscribe(
-      rows => { this.data$.next(rows); }
-    );
-  }
-  
-  ngOnInit(): void {
+   ngOnInit(): void {
     this.route.queryParams.subscribe(
-      params => {
-        if(this.mode == "reload") this.defineCountAndData(); else this.defineData();
-        this.mode = "reload"; //reiniciar ej, se mueve entre pantallas
+      params => { 
+        this.display = new Display();
+        this.display.setParams(params);
+
+        this.getCount().pipe(first()).subscribe(
+          count => { 
+            if(this.collectionSize$.value != count) this.collectionSize$.next(count); 
+          }
+        );
+
+        this.getData().pipe(first()).subscribe(
+          rows => { this.data$.next(rows); }
+        );
       }
     );
   }

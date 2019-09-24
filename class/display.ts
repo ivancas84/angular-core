@@ -23,4 +23,29 @@ export class Display {
     if(!isEmptyObject(this.aux)) ret["aux"] = this.aux;
     return ret;
   }
+
+  public setParams(params: any){
+    for(let i in params) {
+      if(params.hasOwnProperty(i)) {
+        if(!(i in this)) this.condition.push([i, "=", params[i]]); //asignar filtro
+        else this[i] = JSON.parse(decodeURI(params[i])); //asignar parametro
+      }
+    }
+  }
+
+  public setOrder(params: any){
+    /**
+     * argumentos dinamicos: nombres de campos
+     */
+    var keys = Object.keys(this.order);
+
+    if((keys.length) && (params[0] == keys[0])){
+      var type: string = (this.order[keys[0]].toLowerCase() == "asc") ? "desc" : "asc";
+      this.order[keys[0]] = type;
+    } else {
+      var obj = {}
+      for(var i = 0; i < params.length; i++) obj[params[i]] = "asc";
+      this.order = Object.assign(obj, this.order);
+    }
+  }
 }
