@@ -12,7 +12,7 @@ export class Display {
 
   aux?: Object = {} //parametros adicionales
 
-  describe(){
+  public describe(){
     let ret = {};
     if(this.size) ret["size"] = this.size;
     if(this.page) ret["page"] = this.page;
