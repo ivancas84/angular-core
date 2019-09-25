@@ -1,9 +1,10 @@
 import { OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ReplaySubject, BehaviorSubject } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { Display } from '../../class/display';
 import { DataDefinitionService } from '../../service/data-definition/data-definition.service';
+import { emptyUrl } from '@function/empty-url.function';
 
 export class ShowComponent implements OnInit {
   entity: string;
@@ -16,12 +17,16 @@ export class ShowComponent implements OnInit {
   display: Display;
   sync: { [index: string]: boolean } = {};
 
-  constructor(protected dd: DataDefinitionService, protected route: ActivatedRoute) {}
+  constructor(
+    protected dd: DataDefinitionService, 
+    protected route: ActivatedRoute, 
+    protected router: Router
+  ) {}
 
   getCount(){ return this.dd.count(this.entity, this.display); } //cantidad
   getData(){ return this.dd.all(this.entity, this.display); } //datos
 
-   ngOnInit(): void {
+  ngOnInit(): void {
     this.route.queryParams.subscribe(
       params => { 
         this.display = new Display();
@@ -39,4 +44,23 @@ export class ShowComponent implements OnInit {
       }
     );
   }
+
+  orderChange(event){
+    this.display.setOrder(event);
+    this.router.navigateByUrl('/' + emptyUrl(this.router.url) + '?' + this.display.encodeURI().join("&"));
+  }
+
+  pageChange(event){
+    this.router.navigateByUrl('/' + emptyUrl(this.router.url) + '?' + this.display.encodeURI().join("&"));
+  }
+
+  conditionChange(event){
+    this.router.navigateByUrl('/' + emptyUrl(this.router.url) + '?' + this.display.encodeURI().join("&"));
+  }
+
+  deleteChange(event){
+    this.router.navigateByUrl('/' + emptyUrl(this.router.url) + '?' + this.display.encodeURI().join("&"));
+  }
+
+
 }

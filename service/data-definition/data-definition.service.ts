@@ -5,9 +5,9 @@ import { tap } from 'rxjs/operators';
 
 import { API_ROOT, HTTP_OPTIONS } from 'src/app/app.config';
 import { SessionStorageService } from 'src/app/core/service/storage/session-storage.service';
-import { DataDefinitionLoaderService } from 'src/app/service/data-definition-loader.service';
-import { DataDefinition } from 'src/app/core/class/data-definition';
-import { Display } from 'src/app/core/class/display';
+import { Display } from '@class/display';
+import { DataDefinition } from '@class/data-definition';
+import { DataDefinitionLoaderService } from '@service/data-definition-loader.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +15,8 @@ import { Display } from 'src/app/core/class/display';
 export class DataDefinitionService {
 
   constructor(public http: HttpClient, public storage: SessionStorageService, public loader: DataDefinitionLoaderService) { }
+
+  isSync(key, sync): boolean { return (!sync || !(key in sync) || sync[key]) ? true : false; }
 
   all (entity: string, display: Display = null): Observable<any> {
     let key = "_" + entity + "_all" + JSON.stringify(display.describe());

@@ -48,4 +48,16 @@ export class Display {
       this.order = Object.assign(obj, this.order);
     }
   }
+
+  public encodeURI(){
+    let d = [];
+    for(var key in this.describe()){ //Se accede al metodo display.describe() para ignorar los filtros no definidos
+      if(this.hasOwnProperty(key)){
+        if(this[key]){
+          d.push(key + "=" + encodeURI(JSON.stringify(this[key])));
+        }
+      }
+    }
+    return d
+  }
 }
