@@ -17,6 +17,12 @@ export class ShowComponent implements OnInit {
   display: Display;
   sync: { [index: string]: boolean } = {};
 
+  mode="reload";
+  /**
+   * reload: Recarga cantidad y datos
+   * data: Recarga solo datos
+   */
+
   constructor(
     protected dd: DataDefinitionService, 
     protected route: ActivatedRoute, 
@@ -32,33 +38,41 @@ export class ShowComponent implements OnInit {
         this.display = new Display();
         this.display.setParams(params);
 
-        this.getCount().pipe(first()).subscribe(
-          count => { 
-            if(this.collectionSize$.value != count) this.collectionSize$.next(count); 
-          }
-        );
-
+        if(this.mode == "reload")
+          this.getCount().pipe(first()).subscribe(
+            count => { 
+              if(this.collectionSize$.value != count) this.collectionSize$.next(count); 
+            }
+          );
+      
         this.getData().pipe(first()).subscribe(
           rows => { this.data$.next(rows); }
         );
+
+        this.mode = "reload"
       }
     );
   }
 
   orderChange(event){
+    this.mode = "data";
     this.display.setOrder(event);
     this.router.navigateByUrl('/' + emptyUrl(this.router.url) + '?' + this.display.encodeURI().join("&"));
   }
 
   pageChange(event){
+    this.mode = "data";
+    this.display.page = event;
     this.router.navigateByUrl('/' + emptyUrl(this.router.url) + '?' + this.display.encodeURI().join("&"));
   }
 
   conditionChange(event){
+    this.mode = "reload";
     this.router.navigateByUrl('/' + emptyUrl(this.router.url) + '?' + this.display.encodeURI().join("&"));
   }
 
   deleteChange(event){
+    this.collectionSize$.next(this.collectionSize$.value-1)  
     this.router.navigateByUrl('/' + emptyUrl(this.router.url) + '?' + this.display.encodeURI().join("&"));
   }
 
