@@ -1,26 +1,17 @@
-import { Input, OnChanges, OnInit, Output, EventEmitter, ViewChild } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Input, OnChanges, Output, EventEmitter } from '@angular/core';
+import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
-import { NgbAccordion } from '@ng-bootstrap/ng-bootstrap';
+
 import { Filter } from '@class/filter';
 import { DataDefinitionService } from '@service/data-definition/data-definition.service';
 
-
 export abstract class SearchComponent implements OnChanges {
-  /**
-   * @todo Verificar implementacion de typeahead de formulario de administracion y copiar
-   * @todo Verificar implementacion de date de formulario de administracion y copiar
-   * @todo Implementar correctamente las fk en base a la pk
-   */
-  @Input() conditions: Array<any>;
-  @Output() conditionsChange: EventEmitter <any> = new EventEmitter <any>();
-  activeIds: string[] = [];
-
-  //@ViewChild('acc') accordionComponent: NgbAccordion;
+  @Input() condition: Array<any>;
+  @Output() conditionChange: EventEmitter <any> = new EventEmitter <any>();
 
   searchForm: FormGroup;
-  entity: string; //entidad principal del componente
-  options: {} = null; //opciones para el formulario
+  entity: string;
+  options: {} = null;
   sync: Array<any> = null;
 
   constructor(protected fb: FormBuilder, protected dd: DataDefinitionService, protected router: Router)  {
@@ -43,8 +34,8 @@ export abstract class SearchComponent implements OnChanges {
 
   ngOnChanges() {
     let filtersFGs: Array<FormGroup> = [];
-      for(let i = 0; i < this.conditions.length; i++){
-      let filter = {field:this.conditions[i][0], option:this.conditions[i][1], value:this.conditions[i][2]};
+    for(let i = 0; i < this.condition.length; i++){
+      let filter = {field:this.condition[i][0], option:this.condition[i][1], value:this.condition[i][2]};
       filtersFGs.push(this.fb.group(filter));
     }
     const filtersFormArray = this.fb.array(filtersFGs);
@@ -52,11 +43,11 @@ export abstract class SearchComponent implements OnChanges {
   }
 
   onSubmit(): void {
-    this.conditions = [];
+    this.condition = [];
     for(let i = 0; i < this.filters.controls.length; i++){
-      if(this.v(i) !== undefined) this.conditions.push([this.f(i), this.o(i), this.v(i)]);
+      if(this.v(i) !== undefined) this.condition.push([this.f(i), this.o(i), this.v(i)]);
     }
-    this.conditionsChange.emit();
-    this.accordionComponent.collapseAll();
+
+    this.conditionChange.emit(this.condition); 
   }
 }

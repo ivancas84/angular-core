@@ -3,8 +3,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ReplaySubject, BehaviorSubject } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { Display } from '../../class/display';
-import { DataDefinitionService } from '../../service/data-definition/data-definition.service';
 import { emptyUrl } from '@function/empty-url.function';
+import { DataDefinitionService } from '@service/data-definition/data-definition.service';
 
 export class ShowComponent implements OnInit {
   entity: string;
@@ -68,11 +68,14 @@ export class ShowComponent implements OnInit {
 
   conditionChange(event){
     this.mode = "reload";
+    this.display.condition = event;
     this.router.navigateByUrl('/' + emptyUrl(this.router.url) + '?' + this.display.encodeURI().join("&"));
   }
 
   deleteChange(event){
-    this.collectionSize$.next(this.collectionSize$.value-1)  
+    this.mode = "data";
+    this.collectionSize$.next(this.collectionSize$.value-1); 
+    //@todo eliminar de la base de datos
     this.router.navigateByUrl('/' + emptyUrl(this.router.url) + '?' + this.display.encodeURI().join("&"));
   }
 
