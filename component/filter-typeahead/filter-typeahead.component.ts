@@ -16,7 +16,7 @@ export class FilterTypeaheadComponent implements OnInit {
 
   searching = false;
   searchFailed = false;
-  load$;
+  load$: Observable<any>;
   /**
    * Se necesita un Observable para inicializar valores, por ejemplo para el caso de que se comparta la url y no haya datos inicializados
    */
@@ -29,8 +29,6 @@ export class FilterTypeaheadComponent implements OnInit {
     var display = new Display();
     display.condition = ["_search","=~",term];
     return this.dd.all(this.entity, display).pipe(
-      tap(rows => console.log(rows)),
-
       map(rows => rows.map(row => row["id"]))
     );
   }
@@ -42,8 +40,6 @@ export class FilterTypeaheadComponent implements OnInit {
       tap(() => this.searching = true),
       switchMap(term =>
         this.searchTerm(term).pipe(
-          tap(rows => console.log(rows)),
-
           tap(() => this.searchFailed = false),
           catchError(() => {
             this.searchFailed = true;
@@ -54,16 +50,13 @@ export class FilterTypeaheadComponent implements OnInit {
       tap(() => this.searching = false)
     )
 
-    formatter = (id: string) => { return this.dd.labelGet(this.entity, id); }
+    formatter = (id: string) => { return this.dd.label(this.entity, id); }
     
     ngOnInit(): void {
-      console.log(this.filter.get("value"));
       var id = this.filter.get("value").value;
+      console.log(id)
       if(!id) this.load$ = of(true);
-      else this.load$ = this.dd.get(this.entity,id);
-      /**
-       * Inicializar valor para almacenarlo en el storage
-       */
+      else this.load$ = this.dd.labelGet(this.entity,id);
     }
 
     get isSelected() {

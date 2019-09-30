@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { tap, map, first, mergeMap } from 'rxjs/operators';
 
 import { API_ROOT, HTTP_OPTIONS } from 'src/app/app.config';
 import { SessionStorageService } from 'src/app/core/service/storage/session-storage.service';
@@ -48,7 +48,64 @@ export class DataDefinitionService {
     );
   }
 
-  labelGet (entity: string, id: string | number): string {
+   _getAll = (entity, searchIds) => {
+    if(!searchIds.length) return of([]);
+
+    let url: string = API_ROOT + entity + '/getAll';
+    return this.http.post<any>(url, searchIds, HTTP_OPTIONS);
+  }
+
+  getAll (entity: string, ids: any): Observable<any> { 
+    /**
+     * Recibe una lista de ids, y retorna sus datos en el mismo orden que se reciben los ids
+     * Procedimiento:
+     *   Se define un array del tamanio del array de ids recibido
+     *   Se define un nuevo array "rows" con los valores a retornar
+     *   Se busca la coincidencia del id en el storage, y se asigna en la posicion correspondiente de rows
+     *   Si no existe coincidencia se define un nuevo array "searchIds" con los ids a buscar en el servidor
+     *   Se realiza una consulta al servidor con searchIds y se obtiene un "rows_" auxiliar
+     *   Se recorre el resultado de la consulta comparando el id de "rows_" con el id de ids para obtener la posicion corresopndiente
+     *   Se carga el resultado de rows_ en la posicion correspondiente
+     */
+    let rows: Array<{ [index: string]: boolean|string|number }> = new Array(ids.length);
+
+    let searchIds: Array<string | number> = new Array();
+
+    for(let i = 0; i < ids.length; i++) {
+      let data: { [index: string]: boolean|string|number }  = this.storage.getItem(entity + ids[i]);
+
+      rows[i] = data;
+      if(!data) searchIds.push(ids[i]);
+    }
+
+    return this._getAll(entity, searchIds).pipe(
+      map(rows_ => {
+        rows_.forEach(element => {
+          let ddi: DataDefinition = this.loader.get(entity);
+          ddi.storage(element);
+          let i_string: string = String(element.id);
+          let i_int: number = parseInt(i_string);
+          let j: string | number = ids.indexOf(i_string);
+          if(j == -1){ j = ids.indexOf(i_int); } //BUG: chequear por ambos tipos
+          rows[j] = element;
+        })
+        return rows;
+      }
+    ))
+  }
+  
+  get (entity: string, id: string|number): Observable<any> {
+    if(!id) throw("id es nulo");
+    return this.getAll(entity, [id]).pipe(
+      map(rows => {
+        if(rows.length > 1) throw("La consulta retorno mas de un registro");
+        if(rows.length == 0) throw("La consulta no retorno registro");
+        return rows[0];
+      })
+    )
+  }
+
+  label (entity: string, id: string | number): string {
     /**
      * etiqueta de identificacion
      * los datos a utilizar deben estar en el storage
@@ -58,4 +115,17 @@ export class DataDefinitionService {
     return this.loader.get(entity).label(row, this);
   }
 
+  labelGet (entity: string, id: string | number): Observable<string> {
+    /**
+     * etiqueta de identificacion
+     * los datos a utilizar deben estar en el storage
+     */
+    return this.get(entity, id).pipe(
+      map( row => {
+        console.log(row);
+        return this.label(entity, id)} 
+      )
+    )
+    
+  }
 }

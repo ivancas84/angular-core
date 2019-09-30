@@ -5,5 +5,5 @@ import { DataDefinitionService } from '@service/data-definition/data-definition.
 export class LabelPipe implements PipeTransform {
 
   constructor(protected dd: DataDefinitionService) {}
-  transform(value: string, entity: string): string { return this.dd.labelGet(entity, value); }
+  transform(value: string, entity: string): string { return this.dd.label(entity, value); }
 }
