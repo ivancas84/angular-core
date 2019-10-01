@@ -51,10 +51,9 @@ export class FilterTypeaheadComponent implements OnInit {
     )
 
     formatter = (id: string) => { return this.dd.label(this.entity, id); }
-    
+
     ngOnInit(): void {
       var id = this.filter.get("value").value;
-      console.log(id)
       if(!id) this.load$ = of(true);
       else this.load$ = this.dd.labelGet(this.entity,id);
     }

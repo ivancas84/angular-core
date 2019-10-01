@@ -1,10 +1,6 @@
 <div *ngIf="load$ | async" class="input-group" [formGroup]="filter">
 
-  <ng-template #rt let-r="result" let-t="term">
-    {{r | label:entity}}
-  </ng-template>
-
-  <input class="form-control form-control-sm" formControlName="value" [ngbTypeahead]="search" placeholder="Seleccionar" [inputFormatter]="formatter"  [resultTemplate]="rt">
+  <input class="form-control form-control-sm" formControlName="value" [ngbTypeahead]="search" placeholder="Seleccionar" [resultFormatter]="formatter" [inputFormatter]="formatter" >
   <div class="input-group-append">
     <span *ngIf="searching" class="input-group-text"><span class="oi oi-clock"></span></span>
     <span *ngIf="isSelected" class="input-group-text"><span class="oi oi-check"></span></span>

@@ -48,14 +48,14 @@ export class DataDefinitionService {
     );
   }
 
-   _getAll = (entity, searchIds) => {
+  _getAll(entity: string, searchIds: Array<string | number>) {
     if(!searchIds.length) return of([]);
 
     let url: string = API_ROOT + entity + '/getAll';
     return this.http.post<any>(url, searchIds, HTTP_OPTIONS);
   }
 
-  getAll (entity: string, ids: any): Observable<any> { 
+  getAll (entity: string, ids: Array<string | number>): Observable<any> { 
     /**
      * Recibe una lista de ids, y retorna sus datos en el mismo orden que se reciben los ids
      * Procedimiento:
@@ -118,14 +118,9 @@ export class DataDefinitionService {
   labelGet (entity: string, id: string | number): Observable<string> {
     /**
      * etiqueta de identificacion
-     * los datos a utilizar deben estar en el storage
      */
     return this.get(entity, id).pipe(
-      map( row => {
-        console.log(row);
-        return this.label(entity, id)} 
-      )
+      map( row => { return this.label(entity, id)} )
     )
-    
   }
 }

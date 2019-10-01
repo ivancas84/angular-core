@@ -7,7 +7,7 @@ import { emptyUrl } from '@function/empty-url.function';
 import { DataDefinitionService } from '@service/data-definition/data-definition.service';
 
 export class ShowComponent implements OnInit {
-  entity: string;
+  readonly entity: string;
   data$: ReplaySubject<any> = new ReplaySubject();
   collectionSize$: BehaviorSubject<number> = new BehaviorSubject(0);
   /**
@@ -15,7 +15,7 @@ export class ShowComponent implements OnInit {
    */
 
   display: Display;
-  sync: { [index: string]: boolean } = {};
+  readonly sync: { [index: string]: boolean } = {};
 
   mode="reload";
   /**
