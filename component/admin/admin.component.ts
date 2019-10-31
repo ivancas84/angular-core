@@ -1,7 +1,9 @@
-import { FormGroup } from '@angular/forms';
+import { FormGroup, FormBuilder } from '@angular/forms';
 import { ReplaySubject, Subscription } from 'rxjs';
-
-
+import { ActivatedRoute, Router } from '@angular/router';
+import { DataDefinitionService } from '@service/data-definition/data-definition.service';
+import { MessageService } from '@service/message/message.service';
+import { ValidatorsService } from '@service/validators/validators.service';
 
 export abstract class AdminComponent {
 /**
@@ -20,9 +22,9 @@ export abstract class AdminComponent {
    * entidad principal
    */
 
-  readonly sync: any = null;
+  readonly sync: { [index: string]: boolean } = null;
   /**
-   * sync: { [index: string]: boolean } = {}; datos de sincronizacion, dependiendo de los datos que se manipulen en el formulario variara su tipo entre objeto y array
+   * datos de sincronizacion
    */
   
   data$ = new ReplaySubject();
@@ -47,7 +49,15 @@ export abstract class AdminComponent {
    */
    
 
-  constructor(protected fb: FormBuilder, protected route: ActivatedRoute, protected router: Router, protected location: Location, protected dd: DataDefinitionService, protected message: MessageService, protected validators: ValidatorsService) {}
+  constructor(
+    protected fb: FormBuilder, 
+    protected route: ActivatedRoute, 
+    protected router: Router, 
+    protected location: Location, 
+    protected dd: DataDefinitionService, 
+    protected message: MessageService, 
+    protected validators: ValidatorsService
+  ) {}
   
   ngOnInit() {
     var s = this.adminForm.valueChanges.subscribe(
