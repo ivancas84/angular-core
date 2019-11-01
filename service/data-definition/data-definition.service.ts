@@ -48,11 +48,14 @@ export class DataDefinitionService {
     );
   }
 
-  _getAll(entity: string, searchIds: Array<string | number>) {
-    if(!searchIds.length) return of([]);
+  _getAll(entity: string, ids: Array<string | number>) {
+    /**
+     * Metodo complementario para buscar a traves de un array de ids
+     */
+    if(!ids.length) return of([]);
 
     let url: string = API_ROOT + entity + '/getAll';
-    return this.http.post<any>(url, searchIds, HTTP_OPTIONS);
+    return this.http.post<any>(url, ids, HTTP_OPTIONS);
   }
 
   getAll (entity: string, ids: Array<string | number>): Observable<any> { 
@@ -104,6 +107,34 @@ export class DataDefinitionService {
       })
     )
   }
+
+
+  ids (entity: string, display: Display = null): Observable<any> {
+    let key = "_" + entity + "_ids" + JSON.stringify(display);
+    if(this.storage.keyExists(key)) return of(this.storage.getItem(key));
+
+    let url = API_ROOT + entity + '/ids'
+    return this.http.post<any>(url, display, HTTP_OPTIONS).pipe(
+      map(
+        ids => {
+          this.storage.setItem(key, ids);
+          return ids;
+        }
+      )
+    );
+  }
+
+
+  idOrNull (entity: string,  display: Display): Observable<any> {
+    return this.ids(entity, display).pipe(
+      map(rows => {
+        if(rows.length > 1) throw("La consulta retorno mas de un registro");
+        if(rows.length == 0) return null;
+        return rows[0];
+      })
+    )
+  }
+
 
   label (entity: string, id: string | number): string {
     /**

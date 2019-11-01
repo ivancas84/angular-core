@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { SessionStorageService } from '../storage/session-storage.service';
+import { SessionStorageService } from '@service/storage/session-storage.service';
 import { FormControl, ValidatorFn, AsyncValidatorFn, ValidationErrors } from '@angular/forms';
 import { timer, of, Observable } from 'rxjs';
 import { Display } from '@class/display';
 import { DataDefinitionService } from '@service/data-definition/data-definition.service';
-import { mergeMap } from 'rxjs/operators';
+import { mergeMap, map } from 'rxjs/operators';
 
 
 @Injectable()
@@ -38,16 +38,18 @@ export class ValidatorsService {
 
       return timer(1000).pipe(
         mergeMap(()=> {
-        return this.dd.idOrNull(entityName, display).map(
-          id => {
-            return (id && (id != control.parent.get("id").value)) ? { notUnique: true } : null
-          }
+        return this.dd.idOrNull(entityName, display).pipe(
+          map(
+            id => {
+              return (id && (id != control.parent.get("id").value)) ? { notUnique: true } : null
+            }
+          )
         );
       }))
     };
   }
 
-  unique_(entity: string, fields:Array<string>): AsyncValidatorFn {
+  uniqueMultiple(entity: string, fields:Array<string>): AsyncValidatorFn {
     /**
      * Validar unicidad a traves de varios campos
      */
@@ -77,10 +79,12 @@ export class ValidatorsService {
         let display: Display = new Display;
         display.condition = filters;
 
-        return this.dd.idOrNull(entity, display).map(
-          id => {
-            return (id && (id != control.parent.get("id").value)) ? { notUnique: id } : null
-          }
+        return this.dd.idOrNull(entity, display).pipe(
+          map(
+            id => {
+              return (id && (id != control.parent.get("id").value)) ? { notUnique: id } : null
+            }
+          )
         );
       }))  
     }
