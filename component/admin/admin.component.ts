@@ -71,7 +71,7 @@ export abstract class AdminComponent {
         let formValues = this.dd.storage.getItem(this.router.url);
         this.removeStorage();
         if(formValues) this.setDataFromStorage(formValues);
-        else this.setDataFromParams(params);
+        else if(params) this.setDataFromParams(params);
       },
       error => { this.message.add(JSON.stringify(error)); }
     )
@@ -90,11 +90,11 @@ export abstract class AdminComponent {
      
   }
 
-  setDataFromParams(params): void {
+  setDataFromParams(params: any): void {
     this.dd.uniqueOrNull(this.entity, params).pipe(first()).subscribe(
       response => {
-        if (!response) response = this.dd.loader.entity(this.entity,params);
-        this.data$.next(response);
+        if (response) this.data$.next(response);
+        else this.data$.next(params);
       }
     ); 
   }
