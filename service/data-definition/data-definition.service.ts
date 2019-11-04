@@ -8,13 +8,19 @@ import { SessionStorageService } from 'src/app/core/service/storage/session-stor
 import { Display } from '@class/display';
 import { DataDefinition } from '@class/data-definition';
 import { DataDefinitionLoaderService } from '@service/data-definition-loader.service';
+import { MessageService } from '@service/message/message.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataDefinitionService {
 
-  constructor(public http: HttpClient, public storage: SessionStorageService, public loader: DataDefinitionLoaderService) { }
+  constructor(
+    protected http: HttpClient, 
+    protected storage: SessionStorageService, 
+    protected loader: DataDefinitionLoaderService,
+    protected message: MessageService
+  ) { }
 
   isSync(key, sync): boolean { return (!sync || !(key in sync) || sync[key]) ? true : false; }
 
@@ -154,4 +160,38 @@ export class DataDefinitionService {
       map( row => { return this.label(entity, id)} )
     )
   }
+
+  uniqueOrNull(entity: string, params): Observable<any> {
+    if(!params) return of(null);
+    let key = "_" + entity + "_unique" + JSON.stringify(params);
+    if(this.storage.keyExists(key)) return of(this.storage.getItem(key));
+
+    let url = API_ROOT + entity + '/unique'
+    return this.http.post<any>(url, params, HTTP_OPTIONS).pipe(
+      map(
+        row => {
+          this.storage.setItem(key, row);
+          return row;
+        }
+      )
+    );
+  }
+
+  process(entity: string, data: any[]){ //datos a ser procesados
+    /**
+     * retorna array con los ids persistidos
+     */
+    let url = API_ROOT + entity + '/process'
+
+    return this.http.post<any>(url, data, HTTP_OPTIONS).pipe(
+      map(
+        response => {
+          console.log(response);
+          this.message.add("Se efectuado un registro de datos");
+          return response;
+        }
+      )
+    )
+  }
+
 }

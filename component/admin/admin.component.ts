@@ -1,9 +1,14 @@
-import { FormGroup, FormBuilder } from '@angular/forms';
+import { FormGroup, FormBuilder, AbstractControl, FormControl, FormArray, ValidationErrors } from '@angular/forms';
 import { ReplaySubject, Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DataDefinitionService } from '@service/data-definition/data-definition.service';
 import { MessageService } from '@service/message/message.service';
 import { ValidatorsService } from '@service/validators/validators.service';
+import { first } from 'rxjs/operators';
+import { Location } from '@angular/common';
+import { emptyUrl } from '@function/empty-url.function';
+import { SessionStorageService } from '@service/storage/session-storage.service';
+
 
 export abstract class AdminComponent {
 /**
@@ -56,19 +61,20 @@ export abstract class AdminComponent {
     protected location: Location, 
     protected dd: DataDefinitionService, 
     protected message: MessageService, 
-    protected validators: ValidatorsService
+    protected validators: ValidatorsService,
+    protected storage: SessionStorageService, 
   ) {}
   
   ngOnInit() {
     var s = this.adminForm.valueChanges.subscribe(
-      formValues => { this.dd.storage.setItem(this.router.url, formValues); },
+      formValues => { this.storage.setItem(this.router.url, formValues); },
       error => { this.message.add(JSON.stringify(error)); }
     );
     this.subscriptions.add(s); 
 
     var s = this.params$.subscribe(
       params => {
-        let formValues = this.dd.storage.getItem(this.router.url);
+        let formValues = this.storage.getItem(this.router.url);
         this.removeStorage();
         if(formValues) this.setDataFromStorage(formValues);
         else if(params) this.setDataFromParams(params);
@@ -107,7 +113,7 @@ export abstract class AdminComponent {
     var route = this.router.url;
     var index = this.router.url.indexOf('?');
     if (index != -1) route = this.router.url.substring(0, index);
-    this.dd.storage.removeItemsPrefix(route);
+    this.storage.removeItemsPrefix(route);
   }
 
 
@@ -150,7 +156,7 @@ export abstract class AdminComponent {
 
       var data = this.getDataFromForm();    
 
-      var s = this.dd.process(data).subscribe(
+      var s = this.dd.process(this.entity, data).subscribe(
         processResult => {
           this.adminForm.enable();
           this.params$.next({id:this.getIdProcessed(processResult)})        

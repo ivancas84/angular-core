@@ -5,6 +5,7 @@ import { DataDefinitionService } from '@service/data-definition/data-definition.
 import { Observable, of, ReplaySubject } from 'rxjs';
 import { Display } from '@class/display';
 import { debounceTime, distinctUntilChanged, tap, switchMap, map, catchError } from 'rxjs/operators';
+import { SessionStorageService } from '@service/storage/session-storage.service';
 
 @Component({
   selector: 'app-filter-typeahead',
@@ -21,7 +22,10 @@ export class FilterTypeaheadComponent implements OnInit {
    * Se necesita un Observable para inicializar valores, por ejemplo para el caso de que se comparta la url y no haya datos inicializados
    */
 
-  constructor(public dd: DataDefinitionService) { }
+  constructor(
+    public dd: DataDefinitionService,
+    protected storage: SessionStorageService
+  ) { }
 
   searchTerm(term: string): Observable<any> {
     if(term === "") return of([]);
@@ -60,6 +64,6 @@ export class FilterTypeaheadComponent implements OnInit {
 
     get isSelected() {
       var id = this.filter.get("value").value;
-      return (this.dd.storage.getItem(this.entity+id)) ? id : null;
+      return (this.storage.getItem(this.entity+id)) ? id : null;
     }
 }
