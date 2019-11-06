@@ -114,6 +114,18 @@ export class DataDefinitionService {
     )
   }
 
+  getOrNull (entity: string, id: string|number): Observable<any>  {
+    if(!id) return of(null);
+
+    return this.getAll(entity, [id]).pipe(
+      mergeMap(
+        rows => {
+          if(rows.length > 1) throw("La consulta retorno mas de un registro");
+          return (rows.length != 1) ? of(null) : of(rows[0]);
+        }
+      )
+    );
+  }
 
   ids (entity: string, display: Display = null): Observable<any> {
     let key = "_" + entity + "_ids" + JSON.stringify(display);
@@ -130,7 +142,6 @@ export class DataDefinitionService {
     );
   }
 
-
   idOrNull (entity: string,  display: Display): Observable<any> {
     return this.ids(entity, display).pipe(
       map(rows => {
@@ -144,8 +155,8 @@ export class DataDefinitionService {
 
   label (entity: string, id: string | number): string {
     /**
-     * etiqueta de identificacion
-     * los datos a utilizar deben estar en el storage
+     * Etiqueta de identificacion
+     * Los datos a utilizar deben estar en el storage
      */
     let row = this.storage.getItem(entity + id);
     if(!row) return null;
@@ -154,7 +165,7 @@ export class DataDefinitionService {
 
   labelGet (entity: string, id: string | number): Observable<string> {
     /**
-     * etiqueta de identificacion
+     * Etiqueta de identificacion
      */
     return this.get(entity, id).pipe(
       map( row => { return this.label(entity, id)} )
@@ -177,9 +188,10 @@ export class DataDefinitionService {
     );
   }
 
-  process(entity: string, data: any[]){ //datos a ser procesados
+  process(entity: string, data: any[]){
     /**
-     * retorna array con los ids persistidos
+     * Datos a ser procesados.
+     * Retorna array con los ids persistidos.
      */
     let url = API_ROOT + entity + '/process'
 
