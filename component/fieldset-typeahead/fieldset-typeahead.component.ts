@@ -1,13 +1,9 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-
-import 'rxjs/add/operator/catch';
-import 'rxjs/add/operator/debounceTime';
-import 'rxjs/add/operator/do';
-import 'rxjs/add/operator/switchMap';
-
-import { Display } from "../../class/display";
+import { Observable } from 'rxjs';
 import { DataDefinitionService } from '@service/data-definition/data-definition.service';
+import { SessionStorageService } from '@service/storage/session-storage.service';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-fieldset-typeahead',
@@ -19,22 +15,30 @@ export class FieldsetTypeaheadComponent implements OnInit  {
   @Input() fieldset: FormGroup;
   @Input() fieldName: string;
   @Input() readonly?: boolean = false;
-  load$: any;
-
+  
   searching = false;
+  searchFailed = false;
+  load$: Observable<any>;
+  /**
+   * Se necesita un Observable para inicializar valores, por ejemplo para el caso de que se comparta la url y no haya datos inicializados
+   */
 
-  constructor(public dd: DataDefinitionService) {  }
+  constructor(
+    public dd: DataDefinitionService,
+    protected storage: SessionStorageService
+  ) {  }
 
-  ngOnInit(): void {
-    /*console.log("test")
+  ngOnInit(): void {   
     var id = this.fieldset.get(this.fieldName).value;
-    this.load$ = this.dd.getOrNull(this.entityName,id).map(
-      response => {
-        console.log(response);
-        if(!response) return true;
-        else return id;
-      }
-    )*/
+    this.load$ = this.dd.getOrNull(this.entityName,id).pipe(
+      map(
+        response => {
+          console.log(response);
+          if(!response) return true;
+          else return id;
+        }
+      )
+    );
   }
 
   get linkAdd() {
@@ -43,7 +47,7 @@ export class FieldsetTypeaheadComponent implements OnInit  {
 
   get isSelected() {
     var id = this.fieldset.get(this.fieldName).value;
-    return (this.dd.storage.getItem(this.entityName+id)) ? id : null;
+    return (this.storage.getItem(this.entityName+id)) ? id : null;
   }
 
   searchTerm(term): Observable<any> {

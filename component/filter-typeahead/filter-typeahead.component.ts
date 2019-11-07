@@ -27,6 +27,12 @@ export class FilterTypeaheadComponent implements OnInit {
     protected storage: SessionStorageService
   ) { }
 
+  ngOnInit(): void {
+    var id = this.filter.get("value").value;
+    if(!id) this.load$ = of(true);
+    else this.load$ = this.dd.labelGet(this.entity,id);
+  }
+
   searchTerm(term: string): Observable<any> {
     if(term === "") return of([]);
 
@@ -55,12 +61,6 @@ export class FilterTypeaheadComponent implements OnInit {
     )
 
     formatter = (id: string) => { return this.dd.label(this.entity, id); }
-
-    ngOnInit(): void {
-      var id = this.filter.get("value").value;
-      if(!id) this.load$ = of(true);
-      else this.load$ = this.dd.labelGet(this.entity,id);
-    }
 
     get isSelected() {
       var id = this.filter.get("value").value;
