@@ -90,7 +90,7 @@ export abstract class AdminComponent {
     this.subscriptions.add(s);
   }
 
-  setDataFromStorage(formValues: any): void{
+  setDataFromStorage(formValues: any): void {
     var d = formValues.hasOwnProperty(this.entity)? formValues[this.entity] : null;
     this.data$.next(d);   
   }
@@ -148,40 +148,49 @@ export abstract class AdminComponent {
   }
   
 
-  onSubmit(): void { //envio de formulario
-
+  onSubmit(): void {
+    /**
+     * envio de formulario
+     */
     if (!this.adminForm.valid) {
       //this.logValidationErrors(this.adminForm);
       this.markAllAsTouched(this.adminForm); //Marcar todos los elementos como touched para visualizar errores
       this.message.add("Complete correctamente los campos del formulario");
     } else {
       this.adminForm.disable();
+   
+      console.log(this.serverData());
 
-      var data = this.getDataFromForm();    
-
-      var s = this.dd.process(this.entity, data).subscribe(
+      /*var s = this.dd.process(this.entity, this.serverData()).subscribe(
         processResult => {
           this.adminForm.enable();
           this.params$.next({id:this.getIdProcessed(processResult)})        
         },
         error => { this.message.add(JSON.stringify(error)); }
       );
-      this.subscriptions.add(s);
-      }
+      this.subscriptions.add(s);*/
+    }
   }
 
-  getDataFromForm(){ //definir datos que seran enviados para su procesamiento
-    let serverData: any[] = [];
+  serverData(){ 
+    /**
+     * Definir datos que seran enviados para su procesamiento
+     */
+    var serverData: any[] = [];
     serverData.push({entity:this.entity, row:this.adminForm.value[this.entity]});
     return serverData;
   }
 
-  getIdProcessed(processResult: any){ return processResult[0].id; } //obtener id de la respuesta
+  getIdProcessed(processResult: any){ return processResult[0].id; } 
   /**
+   * Obtener id de la respuesta
    * Los formularios complejos pueden obtener el id de diferentes formas
    */
 
-  markAllAsTouched(control: AbstractControl) { //marcar todos los elementos del formulario como touched para visualizar errores
+  markAllAsTouched(control: AbstractControl) { 
+  /**
+   * Marcar todos los elementos del formulario como touched para visualizar errores
+   */
     if(control.hasOwnProperty('controls')) {
         control.markAsTouched({ onlySelf: true }) // mark group
         let ctrl = <any>control;
@@ -190,8 +199,9 @@ export abstract class AdminComponent {
     else (<FormControl>(control)).markAsTouched({ onlySelf: true });
   }
 
-  logValidationErrors(formGroup) { //log de errores del formulario
+  logValidationErrors(formGroup) {
     /**
+     * log de errores del formulario
      * Utilizado opcionalmente para propositos de Debug
      */
     Object.keys(formGroup.controls).forEach(key => {
