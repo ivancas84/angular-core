@@ -77,7 +77,7 @@ export abstract class AdminComponent {
         let formValues = this.storage.getItem(this.router.url);
         this.removeStorage();
         if(formValues) this.setDataFromStorage(formValues);
-        else if(params) this.setDataFromParams(params);
+        else this.setDataFromParams(params);
       },
       error => { this.message.add(JSON.stringify(error)); }
     )
