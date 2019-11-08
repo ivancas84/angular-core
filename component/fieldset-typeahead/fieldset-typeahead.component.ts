@@ -1,9 +1,10 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { DataDefinitionService } from '@service/data-definition/data-definition.service';
 import { SessionStorageService } from '@service/storage/session-storage.service';
-import { map } from 'rxjs/operators';
+import { map, debounceTime, distinctUntilChanged, tap, switchMap, catchError } from 'rxjs/operators';
+import { Display } from '@class/display';
 
 @Component({
   selector: 'app-fieldset-typeahead',
@@ -41,41 +42,41 @@ export class FieldsetTypeaheadComponent implements OnInit  {
     );
   }
 
-  get linkAdd() {
-    return this.entityName.replace("_", "-")+"-admin"
+  searchTerm(term): Observable<any> {
+    if(term === "") return of([]);
+
+    var display = new Display();
+    display.condition = ["_search","=~",term];
+    return this.dd.all(this.entityName, display).pipe(
+      map(rows => rows.map(row => row["id"] )),
+    );
   }
+
+  search = (text$: Observable<string>) =>
+  text$.pipe(
+    debounceTime(300),
+    distinctUntilChanged(),
+    tap(() => this.searching = true),
+    switchMap(term =>
+      this.searchTerm(term).pipe(
+        tap(() => this.searchFailed = false),
+        catchError(() => {
+          this.searchFailed = true;
+          return of([]);
+        })
+      )
+    ),
+    tap(() => this.searching = false)
+  )
+
+  formatter = (id: string) => { return this.dd.label(this.entityName, id); }
 
   get isSelected() {
     var id = this.fieldset.get(this.fieldName).value;
     return (this.storage.getItem(this.entityName+id)) ? id : null;
   }
 
-  searchTerm(term): Observable<any> {
-    var display = new Display();
-    display.search = term;
-    return this.dd.all(this.entityName, display).map(
-      rows => { return rows.map(row => { return row["id"]; }) }
-    );
-  }
-
   get field() { return this.fieldset.get(this.fieldName)}
 
-
-  search = (text$: Observable<string>) =>
-    text$
-    .debounceTime(500)
-    //.distinctUntilChanged()
-    .do(() => this.searching = true)
-    .switchMap(term =>
-      term.length < 2 ?
-        of([]) : this.searchTerm(term)
-        .catch(error => {
-          return of([]);
-        }))
-    .do(() => this.searching = false)
-
-    formatter = (id: string) => this.dd.labelGet(this.entityName, id);
-
-
-
+  get linkAdd() { return this.entityName.replace("_", "-")+"-admin" }
 }

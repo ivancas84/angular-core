@@ -7,7 +7,9 @@ import { DataDefinitionService } from '@service/data-definition/data-definition.
 import { mergeMap, map } from 'rxjs/operators';
 
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class ValidatorsService {
   /**
    * Inicialmente se iban a crear funciones independientes para validación

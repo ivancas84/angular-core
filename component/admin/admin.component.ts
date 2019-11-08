@@ -93,10 +93,13 @@ export abstract class AdminComponent {
   setDataFromStorage(formValues: any): void{
     var d = formValues.hasOwnProperty(this.entity)? formValues[this.entity] : null;
     this.data$.next(d);   
-     
   }
 
   setDataFromParams(params: any): void {
+    if(!params) {
+      this.data$.next(null);
+      return;
+    } 
     this.dd.uniqueOrNull(this.entity, params).pipe(first()).subscribe(
       response => {
         if (response) this.data$.next(response);

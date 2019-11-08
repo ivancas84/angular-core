@@ -14,6 +14,9 @@ import { SessionStorageService } from '@service/storage/session-storage.service'
 export class FilterTypeaheadComponent implements OnInit {
   @Input() entity: string;
   @Input() filter: FormGroup;
+  /**
+   * Un filtro esta formado por name, option y value
+   */
 
   searching = false;
   searchFailed = false;
