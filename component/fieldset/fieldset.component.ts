@@ -2,6 +2,8 @@ import { Input, OnInit} from '@angular/core';
 import { FormGroup, AbstractControl, FormBuilder } from '@angular/forms';
 import { DataDefinitionService } from '@service/data-definition/data-definition.service';
 import { ValidatorsService } from '@service/validators/validators.service';
+import { isEmptyObject } from '@function/is-empty-object.function';
+import { Observable, forkJoin } from 'rxjs';
 
 export abstract class FieldsetComponent implements  OnInit {
   /**
@@ -34,7 +36,7 @@ export abstract class FieldsetComponent implements  OnInit {
    * nombre del fieldset
    */
   
-  options: {}; 
+  options: Observable<any>; 
   /**
    * opciones para el formulario
    */
@@ -68,9 +70,9 @@ export abstract class FieldsetComponent implements  OnInit {
      */
   }
 
-  initData(){
+  initData(){    
     this.data$.subscribe(
-      response => { this.fieldset.reset(response); }
+      response => this.fieldset.reset(response)
     );
   }
 

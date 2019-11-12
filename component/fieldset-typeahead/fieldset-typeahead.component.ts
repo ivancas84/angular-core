@@ -10,7 +10,7 @@ import { Display } from '@class/display';
   selector: 'app-fieldset-typeahead',
   templateUrl: './fieldset-typeahead.component.html',
 })
-export class FieldsetTypeaheadComponent implements OnInit  {
+export class FieldsetTypeaheadComponent {
   
   @Input() entityName: string;
   @Input() fieldset: FormGroup;
@@ -28,19 +28,6 @@ export class FieldsetTypeaheadComponent implements OnInit  {
     public dd: DataDefinitionService,
     protected storage: SessionStorageService
   ) {  }
-
-  ngOnInit(): void {   
-    var id = this.fieldset.get(this.fieldName).value;
-    this.load$ = this.dd.getOrNull(this.entityName,id).pipe(
-      map(
-        response => {
-          console.log(response);
-          if(!response) return true;
-          else return id;
-        }
-      )
-    );
-  }
 
   searchTerm(term): Observable<any> {
     if(term === "") return of([]);

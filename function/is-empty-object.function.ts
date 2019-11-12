@@ -1,5 +1,9 @@
 
-export function isEmptyObject(obj:any) { //check if object is empty
+export function isEmptyObject(obj:any) { 
+  /**
+   * check if object is empty
+   */
+  if(!obj) return true;
   for(var key in obj) {
       if(obj.hasOwnProperty(key)) return false;
   }

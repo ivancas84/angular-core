@@ -188,18 +188,18 @@ export class DataDefinitionService {
     );
   }
 
-  process(entity: string, data: any[]){
+  persist(entity: string, data: any[]){
     /**
      * Datos a ser procesados.
      * Retorna array con los ids persistidos.
      */
-    let url = API_ROOT + entity + '/process'
+    let url = API_ROOT + entity + '/persist'
 
     return this.http.post<any>(url, data, HTTP_OPTIONS).pipe(
       map(
         response => {
           console.log(response);
-          this.message.add("Se efectuado un registro de datos");
+          //this.message.add("Se efectuado un registro de datos");
           return response;
         }
       )

@@ -1,4 +1,4 @@
-<div *ngIf="load$ | async" class="input-group" [formGroup]="fieldset">
+<div class="input-group" [formGroup]="fieldset">
 
   <input [readonly]="readonly" class="form-control" [formControlName]="fieldName" [ngbTypeahead]="search" placeholder="Seleccionar" [resultFormatter]="formatter" [inputFormatter]="formatter" [resultTemplate]="rt">
   <div class="input-group-append">

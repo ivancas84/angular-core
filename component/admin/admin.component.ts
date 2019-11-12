@@ -8,6 +8,7 @@ import { first } from 'rxjs/operators';
 import { Location } from '@angular/common';
 import { emptyUrl } from '@function/empty-url.function';
 import { SessionStorageService } from '@service/storage/session-storage.service';
+import { isEmptyObject } from '@function/is-empty-object.function';
 
 
 export abstract class AdminComponent {
@@ -96,10 +97,11 @@ export abstract class AdminComponent {
   }
 
   setDataFromParams(params: any): void {
-    if(!params) {
+    if(isEmptyObject(params)) {
       this.data$.next(null);
       return;
     } 
+
     this.dd.uniqueOrNull(this.entity, params).pipe(first()).subscribe(
       response => {
         if (response) this.data$.next(response);
@@ -159,16 +161,14 @@ export abstract class AdminComponent {
     } else {
       this.adminForm.disable();
    
-      console.log(this.serverData());
-
-      /*var s = this.dd.process(this.entity, this.serverData()).subscribe(
+      var s = this.dd.persist(this.entity, this.serverData()).subscribe(
         processResult => {
           this.adminForm.enable();
           this.params$.next({id:this.getIdProcessed(processResult)})        
         },
         error => { this.message.add(JSON.stringify(error)); }
       );
-      this.subscriptions.add(s);*/
+      this.subscriptions.add(s);
     }
   }
 
@@ -177,7 +177,7 @@ export abstract class AdminComponent {
      * Definir datos que seran enviados para su procesamiento
      */
     var serverData: any[] = [];
-    serverData.push({entity:this.entity, row:this.adminForm.value[this.entity]});
+    serverData.push({action:"persist", entity:this.entity, row:this.adminForm.value[this.entity]});
     return serverData;
   }
 
