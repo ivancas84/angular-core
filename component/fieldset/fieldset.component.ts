@@ -56,23 +56,30 @@ export abstract class FieldsetComponent implements  OnInit {
 
   abstract formGroup();
 
-  ngOnInit() {
-    this.fieldset = this.formGroup();
-    this.form.addControl(this.fieldsetName, this.fieldset);
+  ngOnInit() {    
+    this.initForm();
     this.initOptions();
     this.initData();
   }
 
-  initOptions(){
+  initForm(): void{
+    this.fieldset = this.formGroup();
+    this.form.addControl(this.fieldsetName, this.fieldset);
+  }
+
+  initOptions(): void{
     /**
      * sobrescribir si el formulario tiene opciones
      * this.options = this.dd.options(this.entityName, this.sync);
      */
   }
 
-  initData(){    
+  initData(): void{    
     this.data$.subscribe(
-      response => this.fieldset.reset(response)
+      response => {
+        if(!isEmptyObject(response)) { this.fieldset.reset(response) }
+      }
+      
     );
   }
 
