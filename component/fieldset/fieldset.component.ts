@@ -16,11 +16,6 @@ export abstract class FieldsetComponent implements  OnInit {
    * Formulario de administracion
    */
 
-  @Input() sync: any; 
-  /**
-   * Sincronizar de componentes
-   */
-
   @Input() data$: any; 
   /**
    * Datos del formulario
@@ -52,8 +47,6 @@ export abstract class FieldsetComponent implements  OnInit {
     protected validators: ValidatorsService
   ) { }
 
-  isSync(field: string){ return this.dd.isSync(field, this.sync); }
-
   abstract formGroup();
 
   ngOnInit() {    
@@ -70,7 +63,7 @@ export abstract class FieldsetComponent implements  OnInit {
   initOptions(): void{
     /**
      * sobrescribir si el formulario tiene opciones
-     * this.options = this.dd.options(this.entityName, this.sync);
+     * asignarlas al atributo options
      */
   }
 

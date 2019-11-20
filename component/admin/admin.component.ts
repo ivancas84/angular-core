@@ -27,11 +27,6 @@ export abstract class AdminComponent {
   /**
    * entidad principal
    */
-
-  readonly sync: { [index: string]: boolean } = null;
-  /**
-   * datos de sincronizacion
-   */
   
   data$ = new ReplaySubject();
   /**
