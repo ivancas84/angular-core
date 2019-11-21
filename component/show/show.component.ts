@@ -15,7 +15,6 @@ export class ShowComponent implements OnInit {
    */
 
   display: Display;
-  readonly sync: { [index: string]: boolean } = {};
 
   mode="reload";
   /**

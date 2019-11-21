@@ -152,7 +152,9 @@ export abstract class AdminComponent {
     if (!this.adminForm.valid) {
       //this.logValidationErrors(this.adminForm);
       this.markAllAsTouched(this.adminForm); //Marcar todos los elementos como touched para visualizar errores
+      this.logValidationErrors(this.adminForm);
       this.message.add("Complete correctamente los campos del formulario");
+      
     } else {
       this.adminForm.disable();
    
@@ -167,12 +169,27 @@ export abstract class AdminComponent {
     }
   }
 
-  serverData(){ 
+  serverData2(){ 
     /**
      * Definir datos que seran enviados para su procesamiento
      */
     var serverData: any[] = [];
     serverData.push({action:"persist", entity:this.entity, row:this.adminForm.value[this.entity]});
+    return serverData;
+  }
+
+  serverData(){
+    var serverData: any[] = [];
+
+    Object.keys(this.adminForm.controls).forEach(key => {
+
+      const control = this.adminForm.get(key);
+
+      if(control instanceof FormGroup ) serverData.push({action:"persist", entity:key, row:this.adminForm.value[key]});
+      if(control instanceof FormArray ) serverData.push({action:"persist", entity:key, rows:this.adminForm.value[key]});      
+    });
+
+    console.log(serverData);
     return serverData;
   }
 
