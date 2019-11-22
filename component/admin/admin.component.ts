@@ -156,11 +156,9 @@ export abstract class AdminComponent {
       this.message.add("Complete correctamente los campos del formulario");
       
     } else {
-      this.adminForm.disable();
-   
       var s = this.dd.persist(this.entity, this.serverData()).subscribe(
         processResult => {
-          this.adminForm.enable();
+          //this.adminForm.enable();
           this.params$.next({id:this.getIdProcessed(processResult)})        
         },
         error => { this.message.add(JSON.stringify(error)); }
@@ -182,11 +180,11 @@ export abstract class AdminComponent {
     var serverData: any[] = [];
 
     Object.keys(this.adminForm.controls).forEach(key => {
-
       const control = this.adminForm.get(key);
+      console.log(control);
 
-      if(control instanceof FormGroup ) serverData.push({action:"persist", entity:key, row:this.adminForm.value[key]});
-      if(control instanceof FormArray ) serverData.push({action:"persist", entity:key, rows:this.adminForm.value[key]});      
+      if(control instanceof FormGroup && control.enabled) serverData.push({action:"persist", entity:key, row:this.adminForm.value[key]});
+      if(control instanceof FormArray && control.enabled) serverData.push({action:"persist", entity:key, rows:this.adminForm.value[key]});      
     });
 
     console.log(serverData);
