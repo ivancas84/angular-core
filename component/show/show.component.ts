@@ -33,7 +33,7 @@ export class ShowComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(
-      params => { 
+      params => {
         this.display = new Display();
         this.display.setParams(params);
 

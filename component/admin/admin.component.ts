@@ -167,15 +167,6 @@ export abstract class AdminComponent {
     }
   }
 
-  serverData2(){ 
-    /**
-     * Definir datos que seran enviados para su procesamiento
-     */
-    var serverData: any[] = [];
-    serverData.push({action:"persist", entity:this.entity, row:this.adminForm.value[this.entity]});
-    return serverData;
-  }
-
   serverData(){
     var serverData: any[] = [];
 
