@@ -38,6 +38,7 @@ export abstract class AdminComponent {
    * parametros
    */
 
+
   deleteDisabled: boolean =  true;
   /**
    * flag para habilitar/deshabilitar boton eliminar
@@ -69,7 +70,7 @@ export abstract class AdminComponent {
     this.subscriptions.add(s); 
 
     var s = this.params$.subscribe (
-      params => {
+      params => {        
         let formValues = this.storage.getItem(this.router.url);
         this.removeStorage();
         if(formValues) this.setDataFromStorage(formValues);
@@ -158,12 +159,22 @@ export abstract class AdminComponent {
     } else {
       var s = this.dd.persist(this.entity, this.serverData()).subscribe(
         processResult => {
-          //this.adminForm.enable();
-          this.params$.next({id:this.getIdProcessed(processResult)})        
+          this.params$.next({id:this.getProcessedId(processResult)});
+          this.reset();
+          //this.message.add(JSON.stringify("Se ha efectuado un registro de " + this.entity));
+
         },
         error => { this.message.add(JSON.stringify(error)); }
       );
       this.subscriptions.add(s);
+    }
+  }
+
+  getProcessedId(processResult: Array<any>) {  
+    for(var i in processResult){
+      if(processResult[i]["entity"] == this.entity){
+        return processResult[i]["ids"][0];        
+      }
     }
   }
 
@@ -172,17 +183,14 @@ export abstract class AdminComponent {
 
     Object.keys(this.adminForm.controls).forEach(key => {
       const control = this.adminForm.get(key);
-      console.log(control);
 
       if(control instanceof FormGroup && control.enabled) serverData.push({action:"persist", entity:key, row:this.adminForm.value[key]});
       if(control instanceof FormArray && control.enabled) serverData.push({action:"persist", entity:key, rows:this.adminForm.value[key]});      
     });
 
-    console.log(serverData);
     return serverData;
   }
 
-  getIdProcessed(processResult: any){ return processResult[0].id; } 
   /**
    * Obtener id de la respuesta
    * Los formularios complejos pueden obtener el id de diferentes formas
@@ -199,6 +207,7 @@ export abstract class AdminComponent {
     }
     else (<FormControl>(control)).markAsTouched({ onlySelf: true });
   }
+
 
   logValidationErrors(formGroup) {
     /**

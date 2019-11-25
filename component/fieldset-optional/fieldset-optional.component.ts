@@ -9,7 +9,8 @@ export abstract class FieldsetOptionalComponent extends FieldsetComponent {
           this.fieldset.enable();
           this.fieldset.reset(response);
         } else {
-          this.fieldset.disable();  
+          this.fieldset.disable(); 
+          this.setDefaultValues(); 
         }        
       }
     );
