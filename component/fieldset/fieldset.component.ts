@@ -21,12 +21,12 @@ export abstract class FieldsetComponent implements  OnInit {
    * Datos del formulario
    */
 
-  entityName: string; 
+  readonly entityName: string; 
   /**
    * entidad principal del componente  
    */
 
-  fieldsetName: string; 
+  readonly fieldsetName: string; 
   /**
    * nombre del fieldset
    */

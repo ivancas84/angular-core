@@ -10,16 +10,16 @@ export class MessageService {
 
   constructor(protected modalService: NgbModal) {}
 
-  open(message) {
-    const modalRef = this.modalService.open(ModalConfirmComponent);
-    modalRef.componentInstance.label = message;
-  }
+  // open(message) {
+  //   const modalRef = this.modalService.open(ModalConfirmComponent);
+  //   modalRef.componentInstance.label = message;
+  // }
 
 
   add(message: string) {
     if (this.messages.length == 3) this.messages.pop();
     this.messages.unshift(message);
-    this.open(message);
+    //this.open(message);
   }
 
   remove(index) {

@@ -2,13 +2,13 @@ import { FormGroup, FormBuilder, AbstractControl, FormControl, FormArray, Valida
 import { ReplaySubject, Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DataDefinitionService } from '@service/data-definition/data-definition.service';
-import { MessageService } from '@service/message/message.service';
 import { ValidatorsService } from '@service/validators/validators.service';
 import { first } from 'rxjs/operators';
 import { Location } from '@angular/common';
 import { emptyUrl } from '@function/empty-url.function';
 import { SessionStorageService } from '@service/storage/session-storage.service';
 import { isEmptyObject } from '@function/is-empty-object.function';
+import { ToastService } from '@service/ng-bootstrap/toast.service';
 
 
 export abstract class AdminComponent {
@@ -30,7 +30,7 @@ export abstract class AdminComponent {
   
   data$ = new ReplaySubject();
   /**
-   * datos del formulario
+   * datos principales
    */
 
   params$ = new ReplaySubject();
@@ -38,8 +38,7 @@ export abstract class AdminComponent {
    * parametros
    */
 
-
-  deleteDisabled: boolean =  true;
+  isDeletable: boolean = false;
   /**
    * flag para habilitar/deshabilitar boton eliminar
    */
@@ -57,7 +56,7 @@ export abstract class AdminComponent {
     protected router: Router, 
     protected location: Location, 
     protected dd: DataDefinitionService, 
-    protected message: MessageService, 
+    protected toast: ToastService, 
     protected validators: ValidatorsService,
     protected storage: SessionStorageService, 
   ) {}
@@ -65,7 +64,7 @@ export abstract class AdminComponent {
   ngOnInit() {
     var s = this.adminForm.valueChanges.subscribe (
       formValues => { this.storage.setItem(this.router.url, formValues); },
-      error => { this.message.add(JSON.stringify(error)); }
+      error => { this.toast.showDanger(JSON.stringify(error)); }
     );
     this.subscriptions.add(s); 
 
@@ -76,13 +75,13 @@ export abstract class AdminComponent {
         if(formValues) this.setDataFromStorage(formValues);
         else this.setDataFromParams(params);
       },
-      error => { this.message.add(JSON.stringify(error)); }
+      error => { this.toast.showDanger(JSON.stringify(error)); }
     )
     this.subscriptions.add(s);
     
     var s = this.route.queryParams.subscribe (
       params => { this.params$.next(params); },
-      error => { this.message.add(JSON.stringify(error)); }
+      error => { this.toast.showDanger(JSON.stringify(error)); }
     );
     this.subscriptions.add(s);
   }
@@ -120,7 +119,7 @@ export abstract class AdminComponent {
 
   back() { this.location.back(); }
 
-  delete() { console.log("No implementado"); }
+  delete() { this.toast.showInfo ("No implementado"); }
 
   clear(): void { //limpia la url y declara los datos vacios
     /**
@@ -140,7 +139,7 @@ export abstract class AdminComponent {
     this.removeStorage();
     var s = this.params$.subscribe(
       params => { this.setDataFromParams(params); },
-      error => { this.message.add(JSON.stringify(error)); }
+      error => { this.toast.showDanger(JSON.stringify(error)); }
     )
     this.subscriptions.add(s);
   }
@@ -154,17 +153,17 @@ export abstract class AdminComponent {
       //this.logValidationErrors(this.adminForm);
       this.markAllAsTouched(this.adminForm); //Marcar todos los elementos como touched para visualizar errores
       this.logValidationErrors(this.adminForm);
-      this.message.add("Complete correctamente los campos del formulario");
+      this.toast.showInfo("Complete correctamente los campos del formulario");
       
     } else {
       var s = this.dd.persist(this.entity, this.serverData()).subscribe(
         processResult => {
           this.params$.next({id:this.getProcessedId(processResult)});
           this.reset();
-          //this.message.add(JSON.stringify("Se ha efectuado un registro de " + this.entity));
+          this.toast.showSuccess("Registro realizado");
 
         },
-        error => { this.message.add(JSON.stringify(error)); }
+        error => { this.toast.showDanger(JSON.stringify(error)); }
       );
       this.subscriptions.add(s);
     }
