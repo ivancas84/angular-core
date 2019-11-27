@@ -54,4 +54,15 @@ export abstract class StorageService {
     }
   }
 
+  removeItemsContains(str): void {
+    let s = this.getStorage(),
+        keys = Object.keys(s);
+
+    for (let i in keys){
+      if (keys.hasOwnProperty(i)){
+        if(keys[i].indexOf(str) != -1) s.removeItem(keys[i]);
+      }
+    }
+  }
+
 }

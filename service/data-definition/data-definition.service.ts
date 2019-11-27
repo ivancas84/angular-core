@@ -25,7 +25,7 @@ export class DataDefinitionService {
   isSync(key, sync): boolean { return (!sync || !(key in sync) || sync[key]) ? true : false; }
 
   all (entity: string, display: Display = null): Observable<any> {
-    let key = "_" + entity + "_all" + JSON.stringify(display.describe());
+    let key = entity + ".all" + JSON.stringify(display.describe());
     if(this.storage.keyExists(key)) return of(this.storage.getItem(key));
 
     let url = API_ROOT + entity + '/all'
@@ -44,7 +44,7 @@ export class DataDefinitionService {
   }
 
   count (entity: string, display: Display = null): Observable<any> {
-    let key = "_" + entity + "_count" + JSON.stringify(display.describe());
+    let key = entity + ".count" + JSON.stringify(display.describe());
     if(this.storage.keyExists(key)) return of(this.storage.getItem(key));
 
     let url = API_ROOT + entity + '/count'
@@ -128,7 +128,7 @@ export class DataDefinitionService {
   }
 
   ids (entity: string, display: Display = null): Observable<any> {
-    let key = "_" + entity + "_ids" + JSON.stringify(display);
+    let key = entity + ".ids" + JSON.stringify(display);
     if(this.storage.keyExists(key)) return of(this.storage.getItem(key));
 
     let url = API_ROOT + entity + '/ids'
@@ -174,7 +174,7 @@ export class DataDefinitionService {
 
   uniqueOrNull(entity: string, params): Observable<any> {
     if(!params) return of(null);
-    let key = "_" + entity + "_unique" + JSON.stringify(params);
+    let key = entity + ".unique" + JSON.stringify(params);
     if(this.storage.keyExists(key)) return of(this.storage.getItem(key));
 
     let url = API_ROOT + entity + '/unique'

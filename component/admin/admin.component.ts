@@ -43,6 +43,17 @@ export abstract class AdminComponent {
    * flag para habilitar/deshabilitar boton eliminar
    */
 
+  isSubmitted: boolean = false;
+  /**
+   * flag para habilitar/deshabilitar boton aceptar
+   */
+
+  params: any;
+  /**
+   * Parametros actuales
+   */
+
+
   protected subscriptions = new Subscription();
   /**
    * las subscripciones son almacenadas para desuscribirse (solucion temporal al bug de Angular)
@@ -70,6 +81,7 @@ export abstract class AdminComponent {
 
     var s = this.params$.subscribe (
       params => {        
+        this.params = params;
         let formValues = this.storage.getItem(this.router.url);
         this.removeStorage();
         if(formValues) this.setDataFromStorage(formValues);
@@ -93,6 +105,7 @@ export abstract class AdminComponent {
 
   setDataFromParams(params: any): void {
     if(isEmptyObject(params)) {
+      console.log(params);
       this.data$.next(null);
       return;
     } 
@@ -130,6 +143,7 @@ export abstract class AdminComponent {
     if(this.router.url != route) this.router.navigateByUrl('/' + route);
     
     else {
+      console.log("clear")
       this.removeStorage();
       this.params$.next(null);
     }
@@ -137,11 +151,13 @@ export abstract class AdminComponent {
 
   reset(): void{
     this.removeStorage();
-    var s = this.params$.subscribe(
+    this.params$.next(this.params);
+
+    /*var s = this.params$.subscribe(
       params => { this.setDataFromParams(params); },
       error => { this.toast.showDanger(JSON.stringify(error)); }
     )
-    this.subscriptions.add(s);
+    this.subscriptions.add(s);*/
   }
   
 
@@ -149,19 +165,27 @@ export abstract class AdminComponent {
     /**
      * envio de formulario
      */
+    this.isSubmitted = true;
     if (!this.adminForm.valid) {
       //this.logValidationErrors(this.adminForm);
       this.markAllAsTouched(this.adminForm); //Marcar todos los elementos como touched para visualizar errores
       this.logValidationErrors(this.adminForm);
-      this.toast.showInfo("Complete correctamente los campos del formulario");
-      
+      this.toast.showInfo("Verificar formulario");
+      this.isSubmitted = false;
+
     } else {
       var s = this.dd.persist(this.entity, this.serverData()).subscribe(
-        processResult => {
-          this.params$.next({id:this.getProcessedId(processResult)});
-          this.reset();
+        logs => {
+          if(logs && logs.length){
+            this.storage.removeItemsContains(".");
+            logs.forEach(
+              element => this.storage.removeItem(element)
+            );
+          }
+          this.removeStorage();
+          this.params$.next({id:this.getProcessedId(logs)});
           this.toast.showSuccess("Registro realizado");
-
+          this.isSubmitted = false;
         },
         error => { this.toast.showDanger(JSON.stringify(error)); }
       );
@@ -169,10 +193,11 @@ export abstract class AdminComponent {
     }
   }
 
-  getProcessedId(processResult: Array<any>) {  
-    for(var i in processResult){
-      if(processResult[i]["entity"] == this.entity){
-        return processResult[i]["ids"][0];        
+  getProcessedId(logs: Array<any>) {  
+    for(var i in logs){
+      if(logs[i].indexOf(this.entity) === 0) {
+        var re = new RegExp(this.entity,"g");
+        return logs[i].replace(re, "");
       }
     }
   }
