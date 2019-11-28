@@ -34,6 +34,9 @@ export class FilterTypeaheadComponent implements OnInit {
     var id = this.filter.get("value").value;
     if(!id) this.load$ = of(true);
     else this.load$ = this.dd.labelGet(this.entity,id);
+    /**
+     * @todo investigar: En el fieldset-typeahead para que funcione correctamente, inicialize los datos en el fieldset padre
+     */
   }
 
   searchTerm(term: string): Observable<any> {

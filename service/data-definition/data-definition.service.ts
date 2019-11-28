@@ -9,6 +9,7 @@ import { Display } from '@class/display';
 import { DataDefinition } from '@class/data-definition';
 import { DataDefinitionLoaderService } from '@service/data-definition-loader.service';
 import { MessageService } from '@service/message/message.service';
+import { ParserService } from '@service/parser/parser.service';
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +20,8 @@ export class DataDefinitionService {
     protected http: HttpClient, 
     protected storage: SessionStorageService, 
     protected loader: DataDefinitionLoaderService,
-    protected message: MessageService
+    protected message: MessageService, 
+    protected parser: ParserService,
   ) { }
 
   isSync(key, sync): boolean { return (!sync || !(key in sync) || sync[key]) ? true : false; }
@@ -158,9 +160,7 @@ export class DataDefinitionService {
      * Etiqueta de identificacion
      * Los datos a utilizar deben estar en el storage
      */
-    let row = this.storage.getItem(entity + id);
-    if(!row) return null;
-    return this.loader.get(entity).label(row, this);
+    return this.loader.get(entity).label(id);
   }
 
   labelGet (entity: string, id: string | number): Observable<string> {

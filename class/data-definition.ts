@@ -1,5 +1,4 @@
 import { SessionStorageService } from 'src/app/core/service/storage/session-storage.service';
-import { DataDefinitionService } from 'src/app/core/service/data-definition/data-definition.service';
 import { ParserService } from 'src/app/core/service/parser/parser.service';
 
 export abstract class DataDefinition {
@@ -9,7 +8,7 @@ export abstract class DataDefinition {
 
   abstract storage(row: { [index: string]: any }): void;
 
-  label (row: { [index: string]: any }, dd: DataDefinitionService): string {
+  label (id: string | number): string {
     /**
      * etiqueta de identificacion
      * sobrescribir si la entidad se identifica con campos diferentes de id
@@ -17,6 +16,9 @@ export abstract class DataDefinition {
      * es necesario pasar como parametro a dd para evitar dependencia ciclica
      * analizar la posibilidad de descartar el uso de dd
      */
+    var row = this.stg.getItem(this.entity + id);
+    if(!row) return null;
+ 
     let ret = "";
     if (row["id"]) ret = ret + " " + row["id"];
     return ret;
