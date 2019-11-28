@@ -51,12 +51,13 @@ export abstract class FieldsetComponent implements  OnInit {
 
   ngOnInit() {    
     this.initForm();
-    this.initOptions();
-    this.initData();
+    //this.initOptions();
+    //this.initData();
   }
 
   initForm(): void{
     this.fieldset = this.formGroup();
+    console.log(this.fieldset);
     this.form.addControl(this.fieldsetName, this.fieldset);
   }
 
