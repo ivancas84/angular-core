@@ -17,6 +17,7 @@ export class NgbIsoDateAdapter extends NgbDateAdapter<string> {
   }
 
   toModel(date: NgbDateStruct): string {
+    console.log(date);
     if (!date) return null;
     return `${this.pad(date.year)}-${this.pad(date.month)}-${this.pad(date.day)}`;
   }

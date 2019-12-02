@@ -242,9 +242,23 @@ export abstract class AdminComponent {
 
       const control = formGroup.get(key);
 
-      if(control instanceof FormGroup ) console.log("FormGroup " + key);
+      if(control instanceof FormGroup ) {
+        console.log("FormGroup " + key);
 
-      if(control instanceof FormArray ) {
+        const controls: ValidationErrors = formGroup.get(key).controls;
+          Object.keys(controls).forEach(keyC => {
+            if(controls[keyC].errors) {
+              Object.keys(controls[keyC].errors).forEach(keyError => {
+                console.log('* ERROR: ' + key + ' ('+keyC+'): ' + keyError + ':' + controls[keyC].errors[keyError]);
+              })
+            }
+            //if (controls.errors.length) 
+            //console.log('* ERROR: ' + keyC);
+
+            //console.log('* ERROR: ' + key + ' - ' + keyError + ':' + controlErrors[keyError]);
+          });
+      }
+      else if(control instanceof FormArray ) {
         console.log("FormArray " + key);
 
         for (let i = 0; i < control.controls.length; i++){
@@ -252,13 +266,8 @@ export abstract class AdminComponent {
           this.logValidationErrors(control.controls[i]);
         }
       }
-
-      const controlErrors: ValidationErrors = formGroup.get(key).errors;
-      if (controlErrors != null) {
-        Object.keys(controlErrors).forEach(keyError => {
-          console.log('* ERROR: ' + key + ' - ' + keyError + ':' + controlErrors[keyError]);
-        });
-      }
+      
+      
     });
   }
 
