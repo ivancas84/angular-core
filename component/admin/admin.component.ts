@@ -105,7 +105,6 @@ export abstract class AdminComponent {
 
   setDataFromParams(params: any): void {
     if(isEmptyObject(params)) {
-      console.log(params);
       this.data$.next(null);
       return;
     } 
@@ -143,7 +142,6 @@ export abstract class AdminComponent {
     if(this.router.url != route) this.router.navigateByUrl('/' + route);
     
     else {
-      console.log("clear")
       this.removeStorage();
       this.params$.next(null);
     }
@@ -251,11 +249,7 @@ export abstract class AdminComponent {
               Object.keys(controls[keyC].errors).forEach(keyError => {
                 console.log('* ERROR: ' + key + ' ('+keyC+'): ' + keyError + ':' + controls[keyC].errors[keyError]);
               })
-            }
-            //if (controls.errors.length) 
-            //console.log('* ERROR: ' + keyC);
-
-            //console.log('* ERROR: ' + key + ' - ' + keyError + ':' + controlErrors[keyError]);
+            }            
           });
       }
       else if(control instanceof FormArray ) {
