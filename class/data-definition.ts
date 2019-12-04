@@ -1,5 +1,6 @@
 import { SessionStorageService } from 'src/app/core/service/storage/session-storage.service';
 import { ParserService } from 'src/app/core/service/parser/parser.service';
+import { DataDefinitionLoaderService } from '@service/data-definition-loader.service';
 
 export abstract class DataDefinition {
   entity: string;
