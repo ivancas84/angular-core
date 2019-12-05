@@ -1,22 +1,39 @@
-import { Input, OnChanges, Output, EventEmitter } from '@angular/core';
+import { Input, OnChanges, Output, EventEmitter, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { Filter } from '@class/filter';
 import { DataDefinitionService } from '@service/data-definition/data-definition.service';
+import { Observable, forkJoin } from 'rxjs';
+import { isEmptyObject } from '@function/is-empty-object.function';
 
-export abstract class SearchComponent implements OnChanges {
+export abstract class SearchComponent implements OnInit {
   @Input() condition: Array<any>;
+  /**
+   * condicion (conjunto de filtros)
+   */
+
   @Output() conditionChange: EventEmitter <any> = new EventEmitter <any>();
+  /**
+   * cambio en condicion (conjunto de filtros)
+   */
 
   searchForm: FormGroup;
-  entity: string;
-  options: {} = null;
-  sync: Array<any> = null;
+  /**
+   * Formulario de busqueda
+   */
 
-  constructor(protected fb: FormBuilder, protected dd: DataDefinitionService, protected router: Router)  {
-    this.createForm();
-  }
+  readonly entityName: string; 
+  /**
+   * entidad principal del componente  
+   */
+  
+  options: Observable<any>; 
+  /**
+   * opciones para el formulario
+   */
+
+  constructor(protected fb: FormBuilder, protected dd: DataDefinitionService, protected router: Router)  {}
 
   createForm(){
     this.searchForm = this.fb.group({
@@ -32,7 +49,7 @@ export abstract class SearchComponent implements OnChanges {
   o(i) { return this.filters.controls[i].get("option").value }
   v(i) { return this.filters.controls[i].get("value").value }
 
-  ngOnChanges() {
+  initForm() {
     let filtersFGs: Array<FormGroup> = [];
     for(let i = 0; i < this.condition.length; i++){
       let filter = {field:this.condition[i][0], option:this.condition[i][1], value:this.condition[i][2]};
@@ -40,6 +57,32 @@ export abstract class SearchComponent implements OnChanges {
     }
     const filtersFormArray = this.fb.array(filtersFGs);
     this.searchForm.setControl('filters', filtersFormArray);
+  }
+
+  initOptions(): void{
+    /**
+     * sobrescribir si el formulario tiene opciones
+     * asignarlas al atributo options
+     */
+  }
+
+  ngOnInit() {
+    this.createForm();
+    this.initOptions();
+    this.initData();
+  }
+
+  initData() {
+    var obs = [];
+ 
+    for(let i = 0; i < this.condition.length; i++){
+      if((this.condition[i][0] == "id") && !isEmptyObject(this.condition[i][2])) {
+        var ob = this.dd.getOrNull("sede",this.condition[i][2]);
+        obs.push(ob);
+      }
+    }
+    if(obs.length){ forkJoin(obs).subscribe( () => this.initForm() ); }
+    else { this.initForm() }
   }
 
   onSubmit(): void {

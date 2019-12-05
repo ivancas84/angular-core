@@ -1,4 +1,4 @@
-<div *ngIf="load$ | async" class="input-group" [formGroup]="filter">
+<div class="input-group" [formGroup]="filter">
 
   <input class="form-control form-control-sm" formControlName="value" [ngbTypeahead]="search" placeholder="Seleccionar" [resultFormatter]="formatter" [inputFormatter]="formatter" >
   <div class="input-group-append">

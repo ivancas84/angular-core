@@ -19,10 +19,6 @@ export class FieldsetTypeaheadComponent {
   
   searching = false;
   searchFailed = false;
-  load$: Observable<any>;
-  /**
-   * Se necesita un Observable para inicializar valores, por ejemplo para el caso de que se comparta la url y no haya datos inicializados
-   */
 
   constructor(
     public dd: DataDefinitionService,
@@ -40,21 +36,21 @@ export class FieldsetTypeaheadComponent {
   }
 
   search = (text$: Observable<string>) =>
-  text$.pipe(
-    debounceTime(300),
-    distinctUntilChanged(),
-    tap(() => this.searching = true),
-    switchMap(term =>
-      this.searchTerm(term).pipe(
-        tap(() => this.searchFailed = false),
-        catchError(() => {
-          this.searchFailed = true;
-          return of([]);
-        })
-      )
-    ),
-    tap(() => this.searching = false)
-  )
+    text$.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      tap(() => this.searching = true),
+      switchMap(term =>
+        this.searchTerm(term).pipe(
+          tap(() => this.searchFailed = false),
+          catchError(() => {
+            this.searchFailed = true;
+            return of([]);
+          })
+        )
+      ),
+      tap(() => this.searching = false)
+    )
 
   formatter = (id: string) => { return this.dd.label(this.entityName, id); }
 

@@ -11,8 +11,8 @@ import { SessionStorageService } from '@service/storage/session-storage.service'
   selector: 'app-filter-typeahead',
   templateUrl: './filter-typeahead.component.html',
 })
-export class FilterTypeaheadComponent implements OnInit {
-  @Input() entity: string;
+export class FilterTypeaheadComponent {
+  @Input() entityName: string;
   @Input() filter: FormGroup;
   /**
    * Un filtro esta formado por name, option y value
@@ -20,31 +20,18 @@ export class FilterTypeaheadComponent implements OnInit {
 
   searching = false;
   searchFailed = false;
-  load$: Observable<any>;
-  /**
-   * Se necesita un Observable para inicializar valores, por ejemplo para el caso de que se comparta la url y no haya datos inicializados
-   */
 
   constructor(
     public dd: DataDefinitionService,
     protected storage: SessionStorageService
   ) { }
 
-  ngOnInit(): void {
-    var id = this.filter.get("value").value;
-    if(!id) this.load$ = of(true);
-    else this.load$ = this.dd.labelGet(this.entity,id);
-    /**
-     * @todo investigar: En el fieldset-typeahead para que funcione correctamente, inicialize los datos en el fieldset padre
-     */
-  }
-
   searchTerm(term: string): Observable<any> {
     if(term === "") return of([]);
 
     var display = new Display();
     display.condition = ["_search","=~",term];
-    return this.dd.all(this.entity, display).pipe(
+    return this.dd.all(this.entityName, display).pipe(
       map(rows => rows.map(row => row["id"]))
     );
   }
@@ -66,10 +53,10 @@ export class FilterTypeaheadComponent implements OnInit {
       tap(() => this.searching = false)
     )
 
-    formatter = (id: string) => { return this.dd.label(this.entity, id); }
+    formatter = (id: string) => { return this.dd.label(this.entityName, id); }
 
     get isSelected() {
       var id = this.filter.get("value").value;
-      return (this.storage.getItem(this.entity+id)) ? id : null;
+      return (this.storage.getItem(this.entityName+id)) ? id : null;
     }
 }
