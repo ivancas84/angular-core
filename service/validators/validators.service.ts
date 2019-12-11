@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { SessionStorageService } from '@service/storage/session-storage.service';
-import { FormControl, ValidatorFn, AsyncValidatorFn, ValidationErrors } from '@angular/forms';
+import { FormControl, ValidatorFn, AsyncValidatorFn, ValidationErrors, AbstractControl } from '@angular/forms';
 import { timer, of, Observable } from 'rxjs';
 import { Display } from '@class/display';
 import { DataDefinitionService } from '@service/data-definition/data-definition.service';
 import { mergeMap, map } from 'rxjs/operators';
+import M = require('minimatch');
 
 
 @Injectable({
@@ -17,6 +18,62 @@ export class ValidatorsService {
    */
 
   constructor(protected dd: DataDefinitionService, protected storage: SessionStorageService) {}
+
+  protected checkYear(year: string){
+    if (year) {
+      if(!/^[0-9]+$/.test(year)) return {nonNumeric:true}
+      if(year.length != 4) return {notYear:true}
+    }
+    return null;
+  }
+
+  year(): ValidatorFn {
+    
+    /**
+     * Validar año (nonNumeric, notYear)
+     */
+    return (control: AbstractControl): ValidationErrors | null => {
+      return this.checkYear(control.value);
+    }
+  }
+
+  maxYear(year: string): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      var validateYear = this.checkYear(control.value);
+      if(validateYear) return validateYear;
+
+      if (control.value) {
+        switch(year){
+          case "CURRENT_YEAR":
+            var currentYear = new Date().getFullYear();
+            if(parseInt(control.value) > currentYear) return {maxYear:true};
+          break;
+          default:
+              if(parseInt(control.value) > parseInt(year)) return {maxYear:true};
+        }
+      }
+      return null;
+    } 
+  }
+
+  minYear(year: string): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      var validateYear = this.checkYear(control.value);
+      if(validateYear) return validateYear;
+
+      if (control.value) {
+        switch(year){
+          case "CURRENT_YEAR":
+            var currentYear = new Date().getFullYear();
+            if(parseInt(control.value) < currentYear) return {maxYear:true};
+          break;
+          default:
+              if(parseInt(control.value) < parseInt(year)) return {maxYear:true};
+        }
+      }
+      return null;
+    } 
+  }
 
   typeaheadSelection(entityName: string): ValidatorFn { 
     /**
