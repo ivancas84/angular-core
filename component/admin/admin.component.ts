@@ -1,5 +1,5 @@
 import { FormGroup, FormBuilder, AbstractControl, FormControl, FormArray, ValidationErrors } from '@angular/forms';
-import { ReplaySubject, Subscription } from 'rxjs';
+import { ReplaySubject, Subscription, Observable } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DataDefinitionService } from '@service/data-definition/data-definition.service';
 import { ValidatorsService } from '@service/validators/validators.service';
@@ -158,6 +158,13 @@ export abstract class AdminComponent {
     this.subscriptions.add(s);*/
   }
   
+  persist(): Observable<any> {
+    /**
+     * persistencia
+     * Se define un metodo independiente para facilitar la redefinicion
+     */
+    return this.dd.persist(this.entity, this.serverData())
+  }
 
   onSubmit(): void {
     /**
@@ -172,7 +179,7 @@ export abstract class AdminComponent {
       this.isSubmitted = false;
 
     } else {
-      var s = this.dd.persist(this.entity, this.serverData()).subscribe(
+      var s = this.persist().subscribe(
         logs => {
           if(logs && logs.length){
             this.storage.removeItemsContains(".");
