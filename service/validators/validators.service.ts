@@ -5,7 +5,6 @@ import { timer, of, Observable } from 'rxjs';
 import { Display } from '@class/display';
 import { DataDefinitionService } from '@service/data-definition/data-definition.service';
 import { mergeMap, map } from 'rxjs/operators';
-import M = require('minimatch');
 
 
 @Injectable({
@@ -57,6 +56,10 @@ export class ValidatorsService {
   }
 
   minYear(year: string): ValidatorFn {
+    /**
+     * anio minimo
+     * minYear:"anio minimo permitido"
+     */
     return (control: AbstractControl): ValidationErrors | null => {
       var validateYear = this.checkYear(control.value);
       if(validateYear) return validateYear;
@@ -65,10 +68,10 @@ export class ValidatorsService {
         switch(year){
           case "CURRENT_YEAR":
             var currentYear = new Date().getFullYear();
-            if(parseInt(control.value) < currentYear) return {maxYear:true};
+            if(parseInt(control.value) < currentYear) return {minYear:currentYear};
           break;
           default:
-              if(parseInt(control.value) < parseInt(year)) return {maxYear:true};
+              if(parseInt(control.value) < parseInt(year)) return {minYear:year};
         }
       }
       return null;
