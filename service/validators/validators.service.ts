@@ -18,7 +18,7 @@ export class ValidatorsService {
 
   constructor(protected dd: DataDefinitionService, protected storage: SessionStorageService) {}
 
-  protected checkYear(year: string){
+  protected checkYear(year: string): ValidationErrors | null {
     if (year) {
       if(!/^[0-9]+$/.test(year)) return {nonNumeric:true}
       if(year.length != 4) return {notYear:true}
@@ -27,7 +27,6 @@ export class ValidatorsService {
   }
 
   year(): ValidatorFn {
-    
     /**
      * Validar año (nonNumeric, notYear)
      */
@@ -114,6 +113,7 @@ export class ValidatorsService {
   uniqueMultiple(entity: string, fields:Array<string>): AsyncValidatorFn {
     /**
      * Validar unicidad a traves de varios campos
+     * Ejemplo uniqueMultiple("comision",[" "])
      */
 
     return (control: FormControl): Observable<ValidationErrors | null> => {
@@ -126,10 +126,9 @@ export class ValidatorsService {
          * Al cargar el componente realiza una validacion inicial
          */
 
-
         for(let f in fields){
           let v = control.parent.get(fields[f]).value;
-          if(!v) return of(null);
+          if(!v.invalid) return of(null);
           values.push(v);
         }
 
