@@ -21,9 +21,7 @@ export abstract class TableComponent implements OnInit {
 
   ngOnInit(): void {
     this.data$.subscribe(
-      () => {
-        this.load$.next(true);      
-      }
+      () => { this.load$.next(true); }
     );  
   }
 
