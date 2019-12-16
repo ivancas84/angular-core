@@ -126,28 +126,38 @@ export class ValidatorsService {
          * Al cargar el componente realiza una validacion inicial
          */
 
-        for(let f in fields){
-          let v = control.parent.get(fields[f]).value;
-          if(!v.invalid) return of(null);
-          values.push(v);
-        }
+          for(let f in fields){          
+            let v = control.parent.get(fields[f]);
+            
+            //if(control == v) console.log("es igual");
 
-        let filters = [];
-        for(let i = 0; i < fields.length; i++){
-          filters.push([fields[i], "=", values[i]]);
-        }
-
-        let display: Display = new Display;
-        display.condition = filters;
-
-        return this.dd.idOrNull(entity, display).pipe(
-          map(
-            id => {
-              return (id && (id != control.parent.get("id").value)) ? { notUnique: id } : null
+            if(control != v && v.errors && v.errors.hasOwnProperty("notUnique")) {
+              //debe actualizarse la validacion para los elementos relacionados
+              delete v.errors.notUnique;
+              v.updateValueAndValidity();
             }
-          )
-        );
-      }))  
+
+            values.push(v.value);
+          }
+
+          let filters = [];
+          for(let i = 0; i < fields.length; i++){
+            filters.push([fields[i], "=", values[i]]);
+          }
+          console.log(filters);
+          let display: Display = new Display;
+          display.condition = filters;
+
+          return this.dd.idOrNull(entity, display).pipe(
+            map(
+              id => {
+                return (id && (id != control.parent.get("id").value)) ? { notUnique: id } : null
+                
+              }
+            )
+          );
+        }
+      ))  
     }
   }
 }
