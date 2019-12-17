@@ -6,7 +6,6 @@ import { Display } from '@class/display';
 import { DataDefinitionService } from '@service/data-definition/data-definition.service';
 import { mergeMap, map } from 'rxjs/operators';
 
-
 @Injectable({
   providedIn: 'root'
 })
@@ -112,8 +111,9 @@ export class ValidatorsService {
 
   uniqueMultiple(entity: string, fields:Array<string>): AsyncValidatorFn {
     /**
-     * Validar unicidad a traves de varios campos
-     * Ejemplo uniqueMultiple("comision",[" "])
+     * Validar unicidad a traves de varios campos.
+     * Ejemplo uniqueMultiple("comision",["division", "sede"]).
+     * Se aplica al FormGroup que contiene los fields.
      */
 
     return (control: FormControl): Observable<ValidationErrors | null> => {
@@ -121,37 +121,18 @@ export class ValidatorsService {
 
       return timer(1000).pipe(
         mergeMap(()=> {
-        /**
-         * Se define un timer iniciar para que se inicialicen los parametros
-         * Al cargar el componente realiza una validacion inicial
-         */
-
-          for(let f in fields){          
-            let v = control.parent.get(fields[f]);
-            
-            //if(control == v) console.log("es igual");
-
-            if(control != v && v.errors && v.errors.hasOwnProperty("notUnique")) {
-              //debe actualizarse la validacion para los elementos relacionados
-              delete v.errors.notUnique;
-              v.updateValueAndValidity();
-            }
-
-            values.push(v.value);
-          }
+          for(let f in fields) values.push(control.get(fields[f]).value);          
 
           let filters = [];
-          for(let i = 0; i < fields.length; i++){
-            filters.push([fields[i], "=", values[i]]);
-          }
-          console.log(filters);
+          for(let i = 0; i < fields.length; i++) filters.push([fields[i], "=", values[i]]);
+         
           let display: Display = new Display;
           display.condition = filters;
 
           return this.dd.idOrNull(entity, display).pipe(
             map(
               id => {
-                return (id && (id != control.parent.get("id").value)) ? { notUnique: id } : null
+                return (id && (id != control.get("id").value)) ? { notUnique: id } : null
                 
               }
             )

@@ -171,6 +171,7 @@ export abstract class AdminComponent {
      * envio de formulario
      */
     this.isSubmitted = true;
+    
     if (!this.adminForm.valid) {
       //this.logValidationErrors(this.adminForm);
       this.markAllAsTouched(this.adminForm); //Marcar todos los elementos como touched para visualizar errores
