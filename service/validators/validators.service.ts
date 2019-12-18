@@ -5,6 +5,7 @@ import { timer, of, Observable } from 'rxjs';
 import { Display } from '@class/display';
 import { DataDefinitionService } from '@service/data-definition/data-definition.service';
 import { mergeMap, map } from 'rxjs/operators';
+import { ToastService } from '@service/ng-bootstrap/toast.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +16,7 @@ export class ValidatorsService {
    * Se opto por crear un servicio para poder importar otros servicios necesarios
    */
 
-  constructor(protected dd: DataDefinitionService, protected storage: SessionStorageService) {}
+  constructor(protected dd: DataDefinitionService, protected storage: SessionStorageService, protected toast: ToastService) {}
 
   protected checkYear(year: string): ValidationErrors | null {
     if (year) {
@@ -132,11 +133,11 @@ export class ValidatorsService {
           return this.dd.idOrNull(entity, display).pipe(
             map(
               id => {
-                return (id && (id != control.get("id").value)) ? { notUnique: id } : null
-                
-              }
+                return (id && (id != control.get("id").value)) ? { notUnique: id } : null;
+              },
             )
           );
+        
         }
       ))  
     }

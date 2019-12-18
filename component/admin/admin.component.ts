@@ -10,7 +10,6 @@ import { SessionStorageService } from '@service/storage/session-storage.service'
 import { isEmptyObject } from '@function/is-empty-object.function';
 import { ToastService } from '@service/ng-bootstrap/toast.service';
 
-
 export abstract class AdminComponent {
 /**
  * Formulario de administracion FormGroup (adminForm) cuyos elementos son tambien FormGroups correspondientes a los fieldsets
