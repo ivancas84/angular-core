@@ -7,12 +7,17 @@ import { DataDefinitionService } from '@service/data-definition/data-definition.
 import { Observable, forkJoin } from 'rxjs';
 import { isEmptyObject } from '@function/is-empty-object.function';
 
-export abstract class SearchComponent implements OnInit, OnChanges {
+export abstract class SearchComponent implements OnInit {
 
-  @Input() condition: Array<any>;
+  @Input() condition$: any;
   /**
    * condicion (conjunto de filtros)
-   */
+   */ 
+
+  @Input() aux$: any;
+  /**
+   * busqueda auxiliar
+   */ 
 
   @Output() conditionChange: EventEmitter <any> = new EventEmitter <any>();
   /**
@@ -55,23 +60,17 @@ export abstract class SearchComponent implements OnInit, OnChanges {
   o(i) { return this.filters.controls[i].get("option").value }
   v(i) { return this.filters.controls[i].get("value").value }
 
-  initForm() {
-    this.setFilters();
-    this.initialized = true;
-  }
-
-  setFilters(){
+  setFilters(condition){
     let filtersFGs: Array<FormGroup> = [];
-    for(let i = 0; i < this.condition.length; i++){
-      let filter = {field:this.condition[i][0], option:this.condition[i][1], value:this.condition[i][2]};
+    for(let i = 0; i < condition.length; i++){
+      let filter = {field:condition[i][0], option:condition[i][1], value:condition[i][2]};
       filtersFGs.push(this.fb.group(filter));
     }
     const filtersFormArray = this.fb.array(filtersFGs);
     this.searchForm.setControl('filters', filtersFormArray);
-
   }
 
-  initOptions(): void{
+  initOptions(): void {
     /**
      * sobrescribir si el formulario tiene opciones
      * asignarlas al atributo options
@@ -79,34 +78,40 @@ export abstract class SearchComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
+    console.log("ngOnInit");
+
     this.createForm();
     this.initOptions();
     this.initData();
   }
 
-  ngOnChanges(): void {
-    if(this.initialized){ this.setFilters(); }
-  }
-
   initData() {
-    var obs = [];
+    this.condition$.subscribe(
+      condition => {
+        console.log(condition);
+        var obs = [];
  
-    for(let i = 0; i < this.condition.length; i++){
-      if((this.condition[i][0] == "id") && !isEmptyObject(this.condition[i][2])) {
-        var ob = this.dd.getOrNull(this.entityName,this.condition[i][2]);
-        obs.push(ob);
+        for(let i = 0; i < condition.length; i++) {
+          if((condition[i][0] == "id") && !isEmptyObject(condition[i][2])) {
+            var ob = this.dd.getOrNull(this.entityName, condition[i][2]);
+            obs.push(ob);
+          }
+        }
+        if(obs.length){ forkJoin(obs).subscribe( () => this.setFilters(condition) ); }
+        else { this.setFilters(condition) }
+
       }
-    }
-    if(obs.length){ forkJoin(obs).subscribe( () => this.initForm() ); }
-    else { this.initForm() }
+    )
   }
 
   onSubmit(): void {
-    this.condition = [];
+    var condition = [];
     for(let i = 0; i < this.filters.controls.length; i++){
-      if(this.v(i) !== undefined) this.condition.push([this.f(i), this.o(i), this.v(i)]);
+      if(this.v(i) !== undefined) condition.push([this.f(i), this.o(i), this.v(i)]);
     }
 
-    this.conditionChange.emit(this.condition);
+    console.log(this.searchForm)
+
+    this.conditionChange.emit(condition);
   }
 }

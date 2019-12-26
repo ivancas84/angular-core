@@ -1,6 +1,6 @@
 import { OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ReplaySubject, BehaviorSubject } from 'rxjs';
+import { ReplaySubject, BehaviorSubject, Subject } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { Display } from '../../class/display';
 import { emptyUrl } from '@function/empty-url.function';
@@ -15,6 +15,19 @@ export class ShowComponent implements OnInit {
    */
 
   display: Display;
+  /**
+   * Visualizacion
+   */
+
+  condition$: Subject<any> = new BehaviorSubject(null);
+  /**
+   * Condicion de busqueda
+   */
+
+  aux$: Subject<any> =  new BehaviorSubject(null);
+  /**
+   * Busqueda auxiliar
+   */
 
   mode="reload";
   /**
@@ -34,6 +47,9 @@ export class ShowComponent implements OnInit {
   initDisplay(params){
     this.display = new Display();
     this.display.setParams(params);
+    console.log(this.display);
+    this.condition$.next(this.display.condition);
+    this.aux$.next(this.display.aux);
   }
 
   initData(){
