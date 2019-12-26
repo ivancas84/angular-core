@@ -38,11 +38,11 @@ export class ShowComponent implements OnInit {
 
   initData(){
     if(this.mode == "reload")
-    this.getCount().pipe(first()).subscribe(
-      count => { 
-        if(this.collectionSize$.value != count) this.collectionSize$.next(count); 
-      }
-    );
+      this.getCount().pipe(first()).subscribe(
+        count => { 
+          if(this.collectionSize$.value != count) this.collectionSize$.next(count); 
+        }
+      );
 
     this.getData().pipe(first()).subscribe(
       rows => { this.data$.next(rows); }

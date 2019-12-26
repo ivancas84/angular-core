@@ -8,9 +8,6 @@ import { Observable, forkJoin } from 'rxjs';
 import { isEmptyObject } from '@function/is-empty-object.function';
 
 export abstract class SearchComponent implements OnInit, OnChanges {
-  ngOnChanges(): void {
-    if(this.initialized){ this.setFilters(); }
-  }
 
   @Input() condition: Array<any>;
   /**
@@ -87,6 +84,10 @@ export abstract class SearchComponent implements OnInit, OnChanges {
     this.initData();
   }
 
+  ngOnChanges(): void {
+    if(this.initialized){ this.setFilters(); }
+  }
+
   initData() {
     var obs = [];
  
@@ -106,6 +107,6 @@ export abstract class SearchComponent implements OnInit, OnChanges {
       if(this.v(i) !== undefined) this.condition.push([this.f(i), this.o(i), this.v(i)]);
     }
 
-    this.conditionChange.emit(this.condition); 
+    this.conditionChange.emit(this.condition);
   }
 }
