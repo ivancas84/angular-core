@@ -6,10 +6,7 @@ export class Display {
   page: number = 1;
   order: Object = {};
   condition: Array<any> = [];
-
-  param: Object = {}; //forma corta para definir conditions
   export?: string = null;
-
   aux?: Object = {} //parametros adicionales
 
   public describe(){
@@ -19,7 +16,7 @@ export class Display {
     if(!isEmptyObject(this.order)) ret["order"] = this.order;
     if(this.condition.length) ret["condition"] = this.condition;
     if(this.export) ret["export"] = this.export;
-    if(!isEmptyObject(this.param)) ret["param"] = this.param;
+    //if(!isEmptyObject(this.param)) ret["param"] = this.param;
     if(!isEmptyObject(this.aux)) ret["aux"] = this.aux;
     return ret;
   }

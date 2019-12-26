@@ -7,7 +7,11 @@ import { DataDefinitionService } from '@service/data-definition/data-definition.
 import { Observable, forkJoin } from 'rxjs';
 import { isEmptyObject } from '@function/is-empty-object.function';
 
-export abstract class SearchComponent implements OnInit {
+export abstract class SearchComponent implements OnInit, OnChanges {
+  ngOnChanges(): void {
+    if(this.initialized){ this.setFilters(); }
+  }
+
   @Input() condition: Array<any>;
   /**
    * condicion (conjunto de filtros)
@@ -33,6 +37,11 @@ export abstract class SearchComponent implements OnInit {
    * opciones para el formulario
    */
 
+  initialized: boolean = false;
+  /**
+   * Flag de inicializacion 
+   */
+
   constructor(protected fb: FormBuilder, protected dd: DataDefinitionService, protected router: Router)  {}
 
   createForm(){
@@ -50,6 +59,11 @@ export abstract class SearchComponent implements OnInit {
   v(i) { return this.filters.controls[i].get("value").value }
 
   initForm() {
+    this.setFilters();
+    this.initialized = true;
+  }
+
+  setFilters(){
     let filtersFGs: Array<FormGroup> = [];
     for(let i = 0; i < this.condition.length; i++){
       let filter = {field:this.condition[i][0], option:this.condition[i][1], value:this.condition[i][2]};
@@ -57,6 +71,7 @@ export abstract class SearchComponent implements OnInit {
     }
     const filtersFormArray = this.fb.array(filtersFGs);
     this.searchForm.setControl('filters', filtersFormArray);
+
   }
 
   initOptions(): void{
@@ -77,7 +92,7 @@ export abstract class SearchComponent implements OnInit {
  
     for(let i = 0; i < this.condition.length; i++){
       if((this.condition[i][0] == "id") && !isEmptyObject(this.condition[i][2])) {
-        var ob = this.dd.getOrNull("sede",this.condition[i][2]);
+        var ob = this.dd.getOrNull(this.entityName,this.condition[i][2]);
         obs.push(ob);
       }
     }

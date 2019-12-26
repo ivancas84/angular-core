@@ -31,24 +31,31 @@ export class ShowComponent implements OnInit {
   getCount(){ return this.dd.count(this.entity, this.display); } //cantidad
   getData(){ return this.dd.all(this.entity, this.display); } //datos
 
+  initDisplay(params){
+    this.display = new Display();
+    this.display.setParams(params);
+  }
+
+  initData(){
+    if(this.mode == "reload")
+    this.getCount().pipe(first()).subscribe(
+      count => { 
+        if(this.collectionSize$.value != count) this.collectionSize$.next(count); 
+      }
+    );
+
+    this.getData().pipe(first()).subscribe(
+      rows => { this.data$.next(rows); }
+    );
+
+    this.mode = "reload";
+  }
+
   ngOnInit(): void {
     this.route.queryParams.subscribe(
       params => {
-        this.display = new Display();
-        this.display.setParams(params);
-
-        if(this.mode == "reload")
-          this.getCount().pipe(first()).subscribe(
-            count => { 
-              if(this.collectionSize$.value != count) this.collectionSize$.next(count); 
-            }
-          );
-      
-        this.getData().pipe(first()).subscribe(
-          rows => { this.data$.next(rows); }
-        );
-
-        this.mode = "reload"
+        this.initDisplay(params);
+        this.initData();
       }
     );
   }
