@@ -7,7 +7,7 @@ export class Display {
   order: Object = {};
   condition: Array<any> = [];
   export?: string = null;
-  aux?: Object = {} //parametros adicionales
+  search?: Object = {} //busqueda adicionales
 
   public describe(){
     let ret = {};
@@ -17,7 +17,7 @@ export class Display {
     if(this.condition.length) ret["condition"] = this.condition;
     if(this.export) ret["export"] = this.export;
     //if(!isEmptyObject(this.param)) ret["param"] = this.param;
-    if(!isEmptyObject(this.aux)) ret["aux"] = this.aux;
+    if(!isEmptyObject(this.search)) ret["search"] = this.search;
     return ret;
   }
 
