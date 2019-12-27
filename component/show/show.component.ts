@@ -5,12 +5,14 @@ import { first } from 'rxjs/operators';
 import { Display } from '../../class/display';
 import { emptyUrl } from '@function/empty-url.function';
 import { DataDefinitionService } from '@service/data-definition/data-definition.service';
+import { FormGroup, FormBuilder } from '@angular/forms';
 
 export class ShowComponent implements OnInit {
-  readonly entity: string;
+  readonly entityName: string;
   data$: ReplaySubject<any> = new ReplaySubject();
   collectionSize$: BehaviorSubject<number> = new BehaviorSubject(0);
   /**
+   * Tamanio de la consulta
    * Se hace coincidir el nombre con el paginador de ng-bootstrap
    */
 
@@ -19,14 +21,14 @@ export class ShowComponent implements OnInit {
    * Visualizacion
    */
 
-  condition$: Subject<any> = new BehaviorSubject(null);
+  condition$: Subject<any> = new ReplaySubject();
   /**
    * Condicion de busqueda
    */
 
-  search$: Subject<any> =  new BehaviorSubject(null);
+  params$: Subject<any> =  new ReplaySubject();
   /**
-   * Busqueda auxiliar
+   * Parametros auxiliares de busqueda
    */
 
   mode="reload";
@@ -38,18 +40,18 @@ export class ShowComponent implements OnInit {
   constructor(
     protected dd: DataDefinitionService, 
     protected route: ActivatedRoute, 
-    protected router: Router
+    protected router: Router,
   ) {}
 
-  getCount(){ return this.dd.count(this.entity, this.display); } //cantidad
-  getData(){ return this.dd.all(this.entity, this.display); } //datos
+  getCount(){ return this.dd.count(this.entityName, this.display); } //cantidad
+  getData(){ return this.dd.all(this.entityName, this.display); } //datos
 
   initDisplay(params){
     this.display = new Display();
-    this.display.setParams(params);
+    this.display.setConditionParams(params);
     //console.log(this.display);
     this.condition$.next(this.display.condition);
-    this.search$.next(this.display.search);
+    this.params$.next(this.display.params);
   }
 
   initData(){
@@ -73,9 +75,10 @@ export class ShowComponent implements OnInit {
         this.initDisplay(params);
         this.initData();
       }
-    );
+    );      
   }
 
+  
   orderChange(event){
     this.mode = "data";
     this.display.setOrder(event);
@@ -88,10 +91,12 @@ export class ShowComponent implements OnInit {
     this.router.navigateByUrl('/' + emptyUrl(this.router.url) + '?' + this.display.encodeURI().join("&"));
   }
 
+
   searchChange(event){
     this.mode = "reload";
-    if(event.condition) this.display.condition = event.condition;
-    if(event.search) this.display.search = event.search;
+    this.display.condition = [];
+    if(event.filters) this.display.setConditionFilters(event.filters);
+    if(event.params) this.display.setParams(event.params);
     this.router.navigateByUrl('/' + emptyUrl(this.router.url) + '?' + this.display.encodeURI().join("&"));
   }
 
@@ -101,6 +106,5 @@ export class ShowComponent implements OnInit {
     //@todo eliminar de la base de datos
     this.router.navigateByUrl('/' + emptyUrl(this.router.url) + '?' + this.display.encodeURI().join("&"));
   }
-
 
 }
