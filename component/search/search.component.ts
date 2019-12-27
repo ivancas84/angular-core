@@ -11,22 +11,19 @@ export abstract class SearchComponent {
 
   @Input() condition$: any;
   /**
-   * Busqueda a traves de condicion (conjunto de filtros)
+   * Busqueda a traves de condicion
+   * implementacion opcional mediante componente SearchCondition
    */ 
 
   @Input() params$: any;
   /**
    * Busqueda a traves de parametros
+   * implementacion opcional mediante componente SearchParams
    */ 
 
   @Output() searchChange: EventEmitter <any> = new EventEmitter <any>();
   /**
-   * evento de solicitud de busqueda
-   */
-
-  searchForm: FormGroup = this.fb.group({});
-  /**
-   * Formulario de busqueda
+   * evento de busqueda
    */
 
   readonly entityName: string; 
@@ -34,6 +31,11 @@ export abstract class SearchComponent {
    * Entidad principal del componente  
    */
   
+  searchForm: FormGroup = this.fb.group({});
+  /**
+   * Formulario de busqueda
+   */
+
   constructor(
     protected fb: FormBuilder, 
   )  {}

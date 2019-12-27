@@ -9,26 +9,28 @@ import { FormGroup, FormBuilder } from '@angular/forms';
 
 export class ShowComponent implements OnInit {
   readonly entityName: string;
+
   data$: ReplaySubject<any> = new ReplaySubject();
+
   collectionSize$: BehaviorSubject<number> = new BehaviorSubject(0);
   /**
-   * Tamanio de la consulta
-   * Se hace coincidir el nombre con el paginador de ng-bootstrap
+   * tamanio de la consulta
+   * se hace coincidir el nombre con el paginador de ng-bootstrap
    */
 
   display: Display;
   /**
-   * Visualizacion
+   * visualizacion
    */
 
   condition$: Subject<any> = new ReplaySubject();
   /**
-   * Condicion de busqueda
+   * condicion de busqueda (uso opcional mediante componente Search)
    */
 
   params$: Subject<any> =  new ReplaySubject();
   /**
-   * Parametros auxiliares de busqueda
+   * parametros de busqueda (uso opcional mediante componente Search)
    */
 
   mode="reload";
@@ -43,13 +45,28 @@ export class ShowComponent implements OnInit {
     protected router: Router,
   ) {}
 
-  getCount(){ return this.dd.count(this.entityName, this.display); } //cantidad
-  getData(){ return this.dd.all(this.entityName, this.display); } //datos
+  ngOnInit(): void {
+    this.route.queryParams.subscribe(
+      params => {
+        this.initDisplay(params);
+        this.initData();
+      }
+    );      
+  }
+  
+  getCount(){ return this.dd.count(this.entityName, this.display); }
+  /**
+   * cantidad
+   */
 
+  getData(){ return this.dd.all(this.entityName, this.display); }
+  /**
+   * datos
+   */
+   
   initDisplay(params){
     this.display = new Display();
     this.display.setConditionParams(params);
-    //console.log(this.display);
     this.condition$.next(this.display.condition);
     this.params$.next(this.display.params);
   }
@@ -69,30 +86,19 @@ export class ShowComponent implements OnInit {
     this.mode = "reload";
   }
 
-  ngOnInit(): void {
-    this.route.queryParams.subscribe(
-      params => {
-        this.initDisplay(params);
-        this.initData();
-      }
-    );      
-  }
-
-  
-  orderChange(event){
+  orderChange(event) {
     this.mode = "data";
     this.display.setOrder(event);
     this.router.navigateByUrl('/' + emptyUrl(this.router.url) + '?' + this.display.encodeURI().join("&"));
   }
 
-  pageChange(event){
+  pageChange(event) {
     this.mode = "data";
     this.display.page = event;
     this.router.navigateByUrl('/' + emptyUrl(this.router.url) + '?' + this.display.encodeURI().join("&"));
   }
 
-
-  searchChange(event){
+  searchChange(event) {
     this.mode = "reload";
     this.display.condition = [];
     if(event.filters) this.display.setConditionFilters(event.filters);
@@ -100,11 +106,11 @@ export class ShowComponent implements OnInit {
     this.router.navigateByUrl('/' + emptyUrl(this.router.url) + '?' + this.display.encodeURI().join("&"));
   }
 
-  deleteChange(event){
-    this.mode = "data";
-    this.collectionSize$.next(this.collectionSize$.value-1); 
+  deleteChange(event) {
     //@todo eliminar de la base de datos
-    this.router.navigateByUrl('/' + emptyUrl(this.router.url) + '?' + this.display.encodeURI().join("&"));
+    //this.mode = "data";
+    //this.collectionSize$.next(this.collectionSize$.value-1); 
+    //this.router.navigateByUrl('/' + emptyUrl(this.router.url) + '?' + this.display.encodeURI().join("&"));
   }
 
 }
