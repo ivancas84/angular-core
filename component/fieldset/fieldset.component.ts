@@ -25,11 +25,6 @@ export abstract class FieldsetComponent implements  OnInit {
   /**
    * entidad principal del componente  
    */
-
-  readonly fieldsetName: string; 
-  /**
-   * nombre del fieldset
-   */
   
   options: Observable<any>; 
   /**
@@ -57,7 +52,7 @@ export abstract class FieldsetComponent implements  OnInit {
 
   initForm(): void{
     this.fieldset = this.formGroup();
-    this.form.addControl(this.fieldsetName, this.fieldset);
+    this.form.addControl(this.entityName, this.fieldset);
   }
 
   initOptions(): void{
@@ -70,7 +65,6 @@ export abstract class FieldsetComponent implements  OnInit {
   initData(): void{    
     this.data$.subscribe(
       response => {
-        console.log(response);
         this.setDefaultValues();
         if(!isEmptyObject(response)) { this.fieldset.reset(response) }
       }
