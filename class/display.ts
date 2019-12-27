@@ -6,8 +6,7 @@ export class Display {
   page: number = 1;
   order: Object = {};
   condition: Array<any> = [];
-  export?: string = null;
-  search?: Object = {} //busqueda adicionales
+  params?: Object = {} //busqueda adicionales
 
   public describe(){
     let ret = {};
@@ -15,19 +14,35 @@ export class Display {
     if(this.page) ret["page"] = this.page;
     if(!isEmptyObject(this.order)) ret["order"] = this.order;
     if(this.condition.length) ret["condition"] = this.condition;
-    if(this.export) ret["export"] = this.export;
     //if(!isEmptyObject(this.param)) ret["param"] = this.param;
-    if(!isEmptyObject(this.search)) ret["search"] = this.search;
+    if(!isEmptyObject(this.params)) ret["params"] = this.params;
     return ret;
   }
 
   public setParams(params: any){
+    for(var i in params){
+      if (params.hasOwnProperty(i)){
+        if(params[i]) this.params[i] = params[i];
+      }
+    }    
+  }
+
+  public setConditionParams(params: any){
+  /**
+   * Transforma los parametros en condiciones
+   */
     for(let i in params) {
       if(params.hasOwnProperty(i)) {
         if(!(i in this)) this.condition.push([i, "=", params[i]]); //asignar filtro
         else this[i] = JSON.parse(decodeURI(params[i])); //asignar parametro
       }
     }
+  }
+
+  public setConditionFilters(filters: Array<any>){    
+    for(let i = 0; i < filters.length; i++){
+      if(filters[i]["value"] !== undefined) this.condition.push([filters[i]["field"], filters[i]["option"], filters[i]["value"]]);
+    }    
   }
 
   public setOrder(params: any){
