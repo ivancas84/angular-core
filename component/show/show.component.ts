@@ -24,7 +24,7 @@ export class ShowComponent implements OnInit {
    * Condicion de busqueda
    */
 
-  aux$: Subject<any> =  new BehaviorSubject(null);
+  search$: Subject<any> =  new BehaviorSubject(null);
   /**
    * Busqueda auxiliar
    */
@@ -47,9 +47,9 @@ export class ShowComponent implements OnInit {
   initDisplay(params){
     this.display = new Display();
     this.display.setParams(params);
-    console.log(this.display);
+    //console.log(this.display);
     this.condition$.next(this.display.condition);
-    this.aux$.next(this.display.aux);
+    this.search$.next(this.display.search);
   }
 
   initData(){
@@ -88,9 +88,10 @@ export class ShowComponent implements OnInit {
     this.router.navigateByUrl('/' + emptyUrl(this.router.url) + '?' + this.display.encodeURI().join("&"));
   }
 
-  conditionChange(event){
+  searchChange(event){
     this.mode = "reload";
-    this.display.condition = event;
+    if(event.condition) this.display.condition = event.condition;
+    if(event.search) this.display.search = event.search;
     this.router.navigateByUrl('/' + emptyUrl(this.router.url) + '?' + this.display.encodeURI().join("&"));
   }
 
