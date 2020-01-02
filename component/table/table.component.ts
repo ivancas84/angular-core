@@ -3,7 +3,7 @@ import { BehaviorSubject } from 'rxjs';
 
 export abstract class TableComponent implements OnInit {
  
-  readonly entity: string; 
+  readonly entityName: string; 
   /**
    * entidad principal
    */
