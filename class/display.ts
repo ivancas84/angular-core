@@ -6,7 +6,7 @@ export class Display {
   page: number = 1;
   order: Object = {};
   condition: Array<any> = [];
-  params?: Object = {} //busqueda adicionales
+  params?: Object = {} //busqueda adicional
 
   public describe(){
     let ret = {};
@@ -20,6 +20,7 @@ export class Display {
   }
 
   public setParams(params: any){
+    this.params = {};
     for(var i in params){
       if (params.hasOwnProperty(i)){
         if(params[i]) this.params[i] = params[i];
