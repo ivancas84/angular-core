@@ -62,7 +62,7 @@ export class DataDefinitionService {
      */
     if(!ids.length) return of([]);
 
-    let url: string = API_ROOT + entity + '/getAll';
+    let url: string = API_ROOT + entity + '/get_all';
     return this.http.post<any>(url, ids, HTTP_OPTIONS);
   }
 
