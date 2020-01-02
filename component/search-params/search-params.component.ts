@@ -6,7 +6,7 @@ import { isEmptyObject } from '@function/is-empty-object.function';
 import { Observable, forkJoin } from 'rxjs';
 import { FieldsetComponent } from '@component/fieldset/fieldset.component';
 
-export abstract class SearchParamsComponent extends FieldsetComponent implements OnInit {
+export abstract class SearchParamsComponent extends FieldsetComponent {
   
   constructor(
     protected fb: FormBuilder, 
