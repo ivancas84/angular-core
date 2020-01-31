@@ -53,6 +53,7 @@ export class ShowComponent implements OnInit {
       }
     );      
   }
+
   
   getCount(){ return this.dd.count(this.entityName, this.display); }
   /**
@@ -80,7 +81,9 @@ export class ShowComponent implements OnInit {
       );
 
     this.getData().pipe(first()).subscribe(
-      rows => { this.data$.next(rows); }
+      rows => { this.data$.next(rows); 
+      
+      console.log(rows)}
     );
 
     this.mode = "reload";

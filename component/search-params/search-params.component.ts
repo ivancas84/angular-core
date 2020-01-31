@@ -18,5 +18,10 @@ export abstract class SearchParamsComponent extends FieldsetComponent {
     this.fieldset = this.formGroup();
     this.form.addControl("params", this.fieldset);
   }
+  
+  /**
+   * setDefaultValues pierde sentido,
+   * los valores por defecto deben ser inicializados en el componente padre (metodo initDisplay).
+   */
  
 }
