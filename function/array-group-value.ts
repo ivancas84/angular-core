@@ -1,5 +1,5 @@
 
-export function arrayGroupValue(arr: Array<any>, key: any) { //eliminar queryParams de una url
+export function arrayGroupValue(arr: Array<any>, key: any) {
     var ret = {};
     arr.forEach(element => {
         var v = element[key];
