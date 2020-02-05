@@ -67,7 +67,7 @@ export class ShowComponent implements OnInit {
    
   initDisplay(params){
     this.display = new Display();
-    this.display.setConditionParams(params);
+    this.display.setByParams(params);
     this.condition$.next(this.display.condition);
     this.params$.next(this.display.params);
   }

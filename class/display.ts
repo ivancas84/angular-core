@@ -28,7 +28,7 @@ export class Display {
     }    
   }
 
-  public setConditionParams(params: any){
+  public setByParams(params: any){
   /**
    * Transforma los parametros en condiciones
    */
