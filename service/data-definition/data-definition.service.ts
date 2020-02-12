@@ -188,7 +188,7 @@ export class DataDefinitionService {
     );
   }
 
-  persist(entity: string, data: any[]){
+  persist(entity: string, data: any){
     /**
      * Datos a ser procesados.
      * Retorna array con los ids persistidos.

@@ -22,7 +22,7 @@ export abstract class AdminComponent {
    * se asignaran dinamicamente los formgroups correspondientes a fieldsets
    */
 
-  readonly entity: string;
+  readonly entityName: string;
   /**
    * entidad principal
    */
@@ -98,7 +98,7 @@ export abstract class AdminComponent {
   }
 
   setDataFromStorage(formValues: any): void {
-    var d = formValues.hasOwnProperty(this.entity)? formValues[this.entity] : null;
+    var d = formValues.hasOwnProperty(this.entityName)? formValues[this.entityName] : null;
     this.data$.next(d);   
   }
 
@@ -108,7 +108,7 @@ export abstract class AdminComponent {
       return;
     } 
 
-    this.dd.uniqueOrNull(this.entity, params).pipe(first()).subscribe(
+    this.dd.uniqueOrNull(this.entityName, params).pipe(first()).subscribe(
       response => {
         if (response) this.data$.next(response);
         else this.data$.next(params);
@@ -162,7 +162,7 @@ export abstract class AdminComponent {
      * persistencia
      * Se define un metodo independiente para facilitar la redefinicion
      */
-    return this.dd.persist(this.entity, this.serverData())
+    return this.dd.persist(this.entityName, this.serverData())
   }
 
   onSubmit(): void {
@@ -200,14 +200,16 @@ export abstract class AdminComponent {
 
   getProcessedId(logs: Array<any>) {  
     for(var i in logs){
-      if(logs[i].indexOf(this.entity) === 0) {
-        var re = new RegExp(this.entity,"g");
+      if(logs[i].indexOf(this.entityName) === 0) {
+        var re = new RegExp(this.entityName,"g");
         return logs[i].replace(re, "");
       }
     }
   }
 
   serverData(){
+    return this.adminForm.get(this.entityName);
+    /*
     var serverData: any[] = [];
 
     Object.keys(this.adminForm.controls).forEach(key => {
@@ -217,7 +219,7 @@ export abstract class AdminComponent {
       if(control instanceof FormArray && control.enabled) serverData.push({action:"persist", entity:key, rows:this.adminForm.value[key]});      
     });
 
-    return serverData;
+    return serverData;*/
   }
 
   /**
