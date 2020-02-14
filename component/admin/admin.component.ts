@@ -192,7 +192,10 @@ export abstract class AdminComponent {
           this.toast.showSuccess("Registro realizado");
           this.isSubmitted = false;
         },
-        error => { this.toast.showDanger(JSON.stringify(error)); }
+        error => { 
+          console.log(error);
+          this.toast.showDanger(JSON.stringify(error.error)); 
+        }
       );
       this.subscriptions.add(s);
     }
