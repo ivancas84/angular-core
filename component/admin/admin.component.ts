@@ -161,6 +161,11 @@ export abstract class AdminComponent {
     /**
      * persistencia
      * Se define un metodo independiente para facilitar la redefinicion
+     * @return {
+     *  "data":"datos de respuesta (habitualmente array de logs)"
+     *  "message": "mensaje de respuesta"
+     *  "status": "OK"|"WARNING"
+     * }
      */
     return this.dd.persist(this.entityName, this.serverData())
   }
@@ -180,15 +185,15 @@ export abstract class AdminComponent {
 
     } else {
       var s = this.persist().subscribe(
-        logs => {
-          if(logs && logs.length){
+        response => {
+          if(response.data && response.data.length){
             this.storage.removeItemsContains(".");
-            logs.forEach(
+            response.data.forEach(
               element => this.storage.removeItem(element)
             );
           }
           this.removeStorage();
-          this.params$.next({id:this.getProcessedId(logs)});
+          this.params$.next({id:this.getProcessedId(response.data)});
           this.toast.showSuccess("Registro realizado");
           this.isSubmitted = false;
         },
