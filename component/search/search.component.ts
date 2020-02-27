@@ -40,7 +40,7 @@ export abstract class SearchComponent {
     protected fb: FormBuilder, 
   )  {}
 
-  onSubmit(): void {  
+  onSubmit(): void { 
     this.searchChange.emit(this.searchForm.value);
   }
 }
