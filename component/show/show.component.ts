@@ -81,9 +81,7 @@ export class ShowComponent implements OnInit {
       );
 
     this.getData().pipe(first()).subscribe(
-      rows => { this.data$.next(rows); 
-      
-      console.log(rows)}
+      rows => { this.data$.next(rows); }
     );
 
     this.mode = "reload";
