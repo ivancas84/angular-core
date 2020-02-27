@@ -21,11 +21,6 @@ export abstract class SearchParamsComponent implements  OnInit {
    * Datos del formulario
    */
 
-  readonly entityName: string; 
-  /**
-   * entidad principal del componente  
-   */
-  
   options: Observable<any>; 
   /**
    * opciones para el formulario
