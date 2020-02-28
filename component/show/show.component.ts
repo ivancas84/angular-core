@@ -10,7 +10,7 @@ import { FormGroup, FormBuilder } from '@angular/forms';
 export class ShowComponent implements OnInit {
   readonly entityName: string;
 
-  data$: ReplaySubject<any> = new ReplaySubject();
+  data$: BehaviorSubject<any> = new BehaviorSubject(null);
 
   collectionSize$: BehaviorSubject<number> = new BehaviorSubject(0);
   /**

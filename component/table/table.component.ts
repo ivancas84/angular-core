@@ -8,7 +8,7 @@ export abstract class TableComponent  {
    * entidad principal
    */
 
-  @Input() data$: any; 
+  @Input() data$: BehaviorSubject<any> ; 
   /**
    * datos principales
    */
