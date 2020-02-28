@@ -1,6 +1,6 @@
 <div class="input-group" [formGroup]="fieldset">
 
-  <input [readonly]="readonly" class="form-control" [formControlName]="fieldName" [ngbTypeahead]="search" placeholder="Seleccionar" [resultFormatter]="formatter" [inputFormatter]="formatter" [resultTemplate]="rt">
+  <input [readonly]="readonly" class="form-control" [formControlName]="fieldName" [ngbTypeahead]="search" placeholder="Seleccionar" [resultFormatter]="formatter" [inputFormatter]="formatter">
   <div class="input-group-append">
     <span *ngIf="searching" class="input-group-text"><span class="oi oi-clock"></span></span>
     <span *ngIf="isSelected" class="input-group-text"><span class="oi oi-check"></span></span>
