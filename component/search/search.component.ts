@@ -36,11 +36,7 @@ export abstract class SearchComponent {
    * Formulario de busqueda
    */
 
-  constructor(
-    protected fb: FormBuilder, 
-  )  {}
+  constructor( protected fb: FormBuilder ) {}
 
-  onSubmit(): void { 
-    this.searchChange.emit(this.searchForm.value);
-  }
+  onSubmit(): void { this.searchChange.emit(this.searchForm.value); }
 }
