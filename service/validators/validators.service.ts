@@ -95,6 +95,7 @@ export class ValidatorsService {
      */
     return (control: FormControl): Observable<ValidationErrors | null> => {
       var display: Display = new Display;
+      if(!control.value) return of(null);
       display.condition = [fieldName, "=", control.value];
 
       return timer(1000).pipe(
