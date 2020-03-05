@@ -215,19 +215,9 @@ export abstract class AdminComponent {
     }
   }
 
-  serverData(){
-    return this.adminForm.get(this.entityName);
-    /*
-    var serverData: any[] = [];
-
-    Object.keys(this.adminForm.controls).forEach(key => {
-      const control = this.adminForm.get(key);
-
-      if(control instanceof FormGroup && control.enabled) serverData.push({action:"persist", entity:key, row:this.adminForm.value[key]});
-      if(control instanceof FormArray && control.enabled) serverData.push({action:"persist", entity:key, rows:this.adminForm.value[key]});      
-    });
-
-    return serverData;*/
+  serverData() {  
+    return this.adminForm.get(this.entityName).value;
+    //return this.adminForm.value
   }
 
   /**
