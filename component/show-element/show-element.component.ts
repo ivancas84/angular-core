@@ -1,7 +1,7 @@
 import { Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
-export abstract class TableComponent  {
+export abstract class ShowElementComponent  {
  
   readonly entityName: string; 
   /**
