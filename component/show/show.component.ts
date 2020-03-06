@@ -5,7 +5,6 @@ import { first } from 'rxjs/operators';
 import { Display } from '../../class/display';
 import { emptyUrl } from '@function/empty-url.function';
 import { DataDefinitionService } from '@service/data-definition/data-definition.service';
-import { FormGroup, FormBuilder } from '@angular/forms';
 
 export class ShowComponent implements OnInit {
   readonly entityName: string;
@@ -23,12 +22,12 @@ export class ShowComponent implements OnInit {
    * visualizacion
    */
 
-  condition$: Subject<any> = new ReplaySubject();
+  condition$: ReplaySubject<any> = new ReplaySubject();
   /**
    * condicion de busqueda (uso opcional mediante componente Search)
    */
 
-  params$: Subject<any> =  new ReplaySubject();
+  params$: ReplaySubject<any> =  new ReplaySubject();
   /**
    * parametros de busqueda (uso opcional mediante componente Search)
    */
@@ -53,7 +52,6 @@ export class ShowComponent implements OnInit {
       }
     );      
   }
-
   
   getCount(){ return this.dd.count(this.entityName, this.display); }
   /**

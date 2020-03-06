@@ -3,9 +3,9 @@ import { FormGroup, AbstractControl, FormBuilder } from '@angular/forms';
 import { DataDefinitionService } from '@service/data-definition/data-definition.service';
 import { ValidatorsService } from '@service/validators/validators.service';
 import { isEmptyObject } from '@function/is-empty-object.function';
-import { Observable } from 'rxjs';
+import { Observable, ReplaySubject } from 'rxjs';
 
-export abstract class SearchParamsComponent implements  OnInit {
+export abstract class SearchParamsComponent implements OnInit {
   /**
    * Componente de administración de fieldset. Características:
    *   El formulario y los datos son definidos en formulario (componente principal)  
@@ -16,7 +16,7 @@ export abstract class SearchParamsComponent implements  OnInit {
    * Formulario de administracion
    */
 
-  @Input() params$: any; 
+  @Input() params$: ReplaySubject<any>;
   /**
    * Datos del formulario
    */
@@ -58,6 +58,11 @@ export abstract class SearchParamsComponent implements  OnInit {
   }
 
   initData(): void{    
+    /**
+     * Inicializar datos
+     * Los valores por defecto se definen en el componente principal que utiliza el formulario de busqueda
+     * Puede resultar necesario inicializar valores que seran posteriormente accedidos desde el storage
+     */
     this.params$.subscribe(
       response => {
         if(!isEmptyObject(response)) { this.fieldset.reset(response) }

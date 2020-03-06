@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 
 import { Filter } from '@class/filter';
 import { DataDefinitionService } from '@service/data-definition/data-definition.service';
-import { Observable, forkJoin } from 'rxjs';
+import { Observable, forkJoin, ReplaySubject } from 'rxjs';
 import { isEmptyObject } from '@function/is-empty-object.function';
 
 export abstract class SearchComponent {
@@ -15,7 +15,7 @@ export abstract class SearchComponent {
    * implementacion opcional mediante componente SearchCondition
    */ 
 
-  @Input() params$: any;
+  @Input() params$: ReplaySubject<any>;
   /**
    * Busqueda a traves de parametros
    * implementacion opcional mediante componente SearchParams
