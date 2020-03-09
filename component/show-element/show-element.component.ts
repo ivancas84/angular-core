@@ -1,9 +1,9 @@
 import { Input, Output, EventEmitter, OnInit } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 
 export abstract class ShowElementComponent  {
 
-  @Input() data$: any ; 
+  @Input() data$: Observable<any>; 
   /**
    * datos principales
    */
