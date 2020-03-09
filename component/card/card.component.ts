@@ -1,6 +1,4 @@
 import { Input } from '@angular/core';
-import { DataDefinitionService } from '@service/data-definition/data-definition.service';
-import { Observable } from 'rxjs';
 
 export abstract class CardComponent {
   /**
@@ -13,17 +11,4 @@ export abstract class CardComponent {
    * Datos del formulario
    */
 
-  readonly entityName: string; 
-  /**
-   * entidad principal del componente  
-   */
-
-  options: Observable<any>; 
-  /**
-   * opciones para el formulario
-   */
-
-  constructor(
-    protected dd: DataDefinitionService, 
-  ) { }
 }

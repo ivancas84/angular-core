@@ -182,6 +182,8 @@ export class DataDefinitionService {
       map(
         row => {
           this.storage.setItem(key, row);
+          let ddi: DataDefinition = this.loader.get(entity);
+          ddi.storage(row);
           return row;
         }
       )

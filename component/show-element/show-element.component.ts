@@ -8,7 +8,7 @@ export abstract class ShowElementComponent  {
    * entidad principal
    */
 
-  @Input() data$: BehaviorSubject<any> ; 
+  @Input() data$: any ; 
   /**
    * datos principales
    */
