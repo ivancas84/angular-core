@@ -9,6 +9,7 @@ export abstract class FieldsetComponent implements  OnInit {
   /**
    * Componente de administración de fieldset. Características:
    *   El formulario y los datos son definidos en formulario (componente principal)  
+   *   Puede inicializar datos adicionales susceptibles de ser utilizados en componentes anidados
    */
 
   @Input() form: FormGroup; 
@@ -50,19 +51,22 @@ export abstract class FieldsetComponent implements  OnInit {
     this.initData();
   }
 
-  initForm(): void{
+  initForm(): void {
     this.fieldset = this.formGroup();
     this.form.addControl(this.entityName, this.fieldset);
   }
 
-  initOptions(): void{
+  initOptions(): void {
     /**
      * sobrescribir si el formulario tiene opciones
      * asignarlas al atributo options
      */
   }
 
-  initData(): void{    
+  initData(): void { 
+    /**
+     * sobrescribir si el fieldset tiene datos adicionales que deben ser inicializados     
+     */   
     this.data$.subscribe(
       response => {
         this.setDefaultValues();
