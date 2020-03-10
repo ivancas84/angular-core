@@ -79,7 +79,7 @@ export abstract class AdminComponent {
     this.subscriptions.add(s); 
 
     var s = this.params$.subscribe (
-      params => {        
+      params => {
         this.params = params;
         let formValues = this.storage.getItem(this.router.url);
         this.removeStorage();
@@ -193,7 +193,10 @@ export abstract class AdminComponent {
             );
           }
           this.removeStorage();
-          this.params$.next({id:this.getProcessedId(response.data)});
+          this.params$.next({id:this.getProcessedId(response.data)}); 
+          /**
+           * por mas que sea el mismo valor, se vuelve a asignar y se recarga el formulario
+           */
           this.toast.showSuccess("Registro realizado");
           this.isSubmitted = false;
         },
