@@ -210,9 +210,18 @@ export class DataDefinitionService {
 
   data (entity: string, jsonParams: string = null): Observable<any> {
     let key = entity + ".data" + jsonParams;
+    if(this.storage.keyExists(key)) return of(this.storage.getItem(key));
+
 
     let url = API_ROOT + entity + '/data'
-    return this.http.post<any>(url, jsonParams, HTTP_OPTIONS);
+    return this.http.post<any>(url, jsonParams, HTTP_OPTIONS).pipe(
+      map(
+        data => {
+          this.storage.setItem(key, data)
+          return data;
+        }
+      )
+    );
   }
 
 }
