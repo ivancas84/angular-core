@@ -11,6 +11,6 @@ export abstract class ShowElementComponent  {
   @Output() orderChange: EventEmitter <any> = new EventEmitter <any>();
   @Output() deleteChange: EventEmitter <any> = new EventEmitter <any>();
 
-  order(){ this.orderChange.emit(arguments); };
+  order(params: Array<any>){ this.orderChange.emit(params); };
 
 }
