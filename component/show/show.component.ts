@@ -88,13 +88,13 @@ export class ShowComponent implements OnInit {
   orderChange(event) {
     this.mode = "data";
     this.display.setOrder(event);
-    this.router.navigateByUrl('/' + emptyUrl(this.router.url) + '?' + this.display.encodeURI().join("&"));
+    this.router.navigateByUrl('/' + emptyUrl(this.router.url) + '?' + this.display.encodeURI());
   }
 
   pageChange(event) {
     this.mode = "data";
     this.display.page = event;
-    this.router.navigateByUrl('/' + emptyUrl(this.router.url) + '?' + this.display.encodeURI().join("&"));
+    this.router.navigateByUrl('/' + emptyUrl(this.router.url) + '?' + this.display.encodeURI());
   }
 
   searchChange(event) {
@@ -102,14 +102,14 @@ export class ShowComponent implements OnInit {
     this.display.condition = [];
     if(event.filters) this.display.setConditionFilters(event.filters);
     if(event.params) this.display.setParams(event.params);
-    this.router.navigateByUrl('/' + emptyUrl(this.router.url) + '?' + this.display.encodeURI().join("&"));
+    this.router.navigateByUrl('/' + emptyUrl(this.router.url) + '?' + this.display.encodeURI());
   }
 
   deleteChange(event) {
     //@todo eliminar de la base de datos
     //this.mode = "data";
     //this.collectionSize$.next(this.collectionSize$.value-1); 
-    //this.router.navigateByUrl('/' + emptyUrl(this.router.url) + '?' + this.display.encodeURI().join("&"));
+    //this.router.navigateByUrl('/' + emptyUrl(this.router.url) + '?' + this.display.encodeURI());
   }
 
 }
