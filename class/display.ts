@@ -71,6 +71,6 @@ export class Display {
         }
       }
     }
-    return d
+    return d.join("&")
   }
 }
