@@ -46,8 +46,8 @@ export class ShowComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(
-      params => {
-        this.initDisplay(params);
+      queryParams => {
+        this.initDisplay(queryParams);
         this.initData();
       }
     );      
@@ -65,9 +65,9 @@ export class ShowComponent implements OnInit {
    
   initDisplay(params){
     this.display = new Display();
-    this.display.setByParams(params);
-    this.condition$.next(this.display.condition);
-    this.params$.next(this.display.params);
+    this.display.setConditionByQueryParams(params);
+    this.condition$.next(this.display.getCondition());
+    this.params$.next(this.display.getParams());
   }
 
   initData(){
@@ -93,13 +93,13 @@ export class ShowComponent implements OnInit {
 
   pageChange(event) {
     this.mode = "data";
-    this.display.page = event;
+    this.display.setPage(event);
     this.router.navigateByUrl('/' + emptyUrl(this.router.url) + '?' + this.display.encodeURI());
   }
 
   searchChange(event) {
     this.mode = "reload";
-    this.display.condition = [];
+    this.display.setCondition([]);
     if(event.filters) this.display.setConditionFilters(event.filters);
     if(event.params) this.display.setParams(event.params);
     this.router.navigateByUrl('/' + emptyUrl(this.router.url) + '?' + this.display.encodeURI());

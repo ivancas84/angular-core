@@ -2,12 +2,35 @@ import { isEmptyObject } from '../function/is-empty-object.function';
 
 export class Display {
 
-  size: number = 100;
-  page: number = 1;
-  order: Object = {};
-  condition: Array<any> = [];
-  params?: Object = {} //busqueda adicional
+  protected size: number = null;
+  /**
+   * size se establece por defecto en el servidor y en el componente de paginacion en 100
+   */
 
+  protected page: number = 1;
+  /**
+   * inicializar page siempre para evitar errores en los componentes de paginacion
+   */
+
+  protected order: Object = {};
+  protected condition: Array<any> = [];
+  protected params?: Object = {} //busqueda adicional
+  /** 
+   * El servidor limita siempre la cantidad de elementos (size) a 100
+   * Si se desea un valor mayor debe definirse explicitamente en el servidor
+   */
+
+  public getSize(){ return this.size }
+  public getPage(){ return this.page }
+  public getOrder(){ return this.order }
+  public getCondition(){ return this.condition }
+  public getParams(){ return this.params }
+  
+  public setSize(size: number) { this.size = size; }
+  public setPage(page: number) { this.page = page; }
+  public addCondition(condition){ this.condition.push(condition); }
+  public setCondition(condition){ this.condition = condition; }
+  
   public describe(){
     let ret = {};
     if(this.size) ret["size"] = this.size;
@@ -28,17 +51,18 @@ export class Display {
     }    
   }
 
-  public setByParams(params: any){
+  public setConditionByQueryParams(params: any){
   /**
-   * Transforma los parametros en condiciones
+   * Transformar "queryParams" en conditions
    */
     for(let i in params) {
       if(params.hasOwnProperty(i)) {
-        if(!(i in this)) this.condition.push([i, "=", params[i]]); //asignar filtro
+        if(!(this.hasOwnProperty(i))) this.condition.push([i, "=", params[i]]); //asignar filtro
         else this[i] = JSON.parse(decodeURI(params[i])); //asignar parametro
       }
     }
   }
+
 
   public setConditionFilters(filters: Array<any>){    
     for(let i = 0; i < filters.length; i++){
@@ -46,19 +70,20 @@ export class Display {
     }    
   }
 
-  public setOrder(params: any){
+  public setOrder(params: object){
     /**
      * argumentos dinamicos: nombres de campos
      */
     var keys = Object.keys(this.order);
+    var keys2 = Object.keys(params)
 
-    if((keys.length) && (params[0] == keys[0])){
+    if((keys.length) && (keys2[0] == keys[0])){
       var type: string = (this.order[keys[0]].toLowerCase() == "asc") ? "desc" : "asc";
       this.order[keys[0]] = type;
     } else {
-      var obj = {}
-      for(var i = 0; i < params.length; i++) obj[params[i]] = "asc";
-      this.order = Object.assign(obj, this.order);
+      //var obj = {}
+      //for(var i = 0; i < keys2.length; i++) obj[keys2[i]] = params[keys2[i]];
+      this.order = Object.assign(params, this.order);
     }
   }
 
