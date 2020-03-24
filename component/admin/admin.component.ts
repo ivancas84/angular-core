@@ -128,7 +128,6 @@ export abstract class AdminComponent implements OnInit {
     this.storage.removeItemsPrefix(route);
   }
 
-
   back() { this.location.back(); }
 
   delete() { this.toast.showInfo ("No implementado"); }
