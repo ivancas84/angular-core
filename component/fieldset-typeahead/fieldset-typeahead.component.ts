@@ -1,6 +1,6 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { Observable, of } from 'rxjs';
+import { Observable, of, BehaviorSubject } from 'rxjs';
 import { DataDefinitionService } from '@service/data-definition/data-definition.service';
 import { SessionStorageService } from '@service/storage/session-storage.service';
 import { map, debounceTime, distinctUntilChanged, tap, switchMap, catchError } from 'rxjs/operators';
@@ -10,7 +10,14 @@ import { Display } from '@class/display';
   selector: 'app-fieldset-typeahead',
   templateUrl: './fieldset-typeahead.component.html',
 })
-export class FieldsetTypeaheadComponent {
+export class FieldsetTypeaheadComponent implements OnInit {
+   
+  @Input() data$: any; 
+  /**
+   * Datos principales (data es una instancia de la entidad identificada como entityName)
+   * El componente principal se suscribe a parametros y modifican los datos principales
+   * Los datos principales son la base para realizar cualquier cambio en el formulario
+   */
   
   @Input() entityName: string;
   @Input() fieldset: FormGroup;
@@ -25,11 +32,31 @@ export class FieldsetTypeaheadComponent {
     protected storage: SessionStorageService
   ) {  }
 
+  ngOnInit(): void {
+    /**
+     * Suscribirse a los datos principales
+     * Inicializar datos del field
+     * Reasignar valor del field para reflejar los cambios
+     * Tener en cuenta que para presentar el valor el field accede al storage
+     * 
+     * La inicializacion de datos del typeahead se realizaba inicialmente en el fieldset 
+     */
+    this.data$.subscribe(
+      response => {
+        if(response[this.fieldName]){
+          this.dd.getOrNull(this.entityName, response[this.fieldName]).subscribe(
+            r => this.field.setValue(response[this.fieldName])
+          );
+        }
+      }
+    )
+  }
+
   searchTerm(term): Observable<any> {
     if(term === "") return of([]);
 
     var display = new Display();
-    display.condition = ["_search","=~",term];
+    display.addCondition(["_search","=~",term]);
     return this.dd.all(this.entityName, display).pipe(
       map(rows => rows.map(row => row["id"] )),
     );

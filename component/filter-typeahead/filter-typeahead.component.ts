@@ -30,7 +30,7 @@ export class FilterTypeaheadComponent {
     if(term === "") return of([]);
 
     var display = new Display();
-    display.condition = ["_search","=~",term];
+    display.setCondition(["_search","=~",term]);
     return this.dd.all(this.entityName, display).pipe(
       map(rows => rows.map(row => row["id"]))
     );

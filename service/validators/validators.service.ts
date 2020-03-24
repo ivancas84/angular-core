@@ -96,7 +96,7 @@ export class ValidatorsService {
     return (control: FormControl): Observable<ValidationErrors | null> => {
       var display: Display = new Display;
       if(!control.value) return of(null);
-      display.condition = [fieldName, "=", control.value];
+      display.setCondition([fieldName, "=", control.value]);
 
       return timer(1000).pipe(
         mergeMap(()=> {
@@ -129,7 +129,7 @@ export class ValidatorsService {
           for(let i = 0; i < fields.length; i++) filters.push([fields[i], "=", values[i]]);
          
           let display: Display = new Display;
-          display.condition = filters;
+          display.setCondition(filters);
 
           return this.dd.idOrNull(entity, display).pipe(
             map(

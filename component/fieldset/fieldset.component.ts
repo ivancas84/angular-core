@@ -3,7 +3,8 @@ import { FormGroup, AbstractControl, FormBuilder } from '@angular/forms';
 import { DataDefinitionService } from '@service/data-definition/data-definition.service';
 import { ValidatorsService } from '@service/validators/validators.service';
 import { isEmptyObject } from '@function/is-empty-object.function';
-import { Observable, forkJoin } from 'rxjs';
+import { Observable, forkJoin, BehaviorSubject } from 'rxjs';
+import { map, tap, delay } from 'rxjs/operators';
 
 export abstract class FieldsetComponent implements  OnInit {
   /**
@@ -36,6 +37,8 @@ export abstract class FieldsetComponent implements  OnInit {
   /**
    * fieldset
    */
+
+  //load$: BehaviorSubject<any> = new BehaviorSubject(false);
 
   constructor(
     protected fb: FormBuilder, 
@@ -70,7 +73,9 @@ export abstract class FieldsetComponent implements  OnInit {
     this.data$.subscribe(
       response => {
         this.setDefaultValues();
+        
         if(!isEmptyObject(response)) { this.fieldset.reset(response) }
+        //this.load$.next(true)
       }
     );
   }
