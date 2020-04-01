@@ -1,7 +1,7 @@
 
 <div  class="clearfix">
     <span class="float-left">
-      <ngb-pagination size="sm" [maxSize]="5" [collectionSize]="(collectionSize$ | async)" [pageSize]= "size" [(page)]="page" (pageChange)="setPage()"></ngb-pagination>
+      <ngb-pagination size="sm" [maxSize]="5" [collectionSize]="collectionSize$ | async" [pageSize]= "size" [(page)]="page" (pageChange)="setPage()"></ngb-pagination>
     </span>
     <span class="float-left">
       <div class="p-1 border bg-light"> {{collectionSize$ | async}} registros</div>
