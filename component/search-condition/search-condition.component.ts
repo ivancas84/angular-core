@@ -12,9 +12,10 @@ export abstract class SearchConditionComponent implements OnInit {
    * entidad principal del componente
    */
    
-  @Input() data$: any;
+  @Input() condition$: any;
   /**
-   * condicion (conjunto de filtros)
+   * Conjunto de elementos similares a los filtros, organizados como array
+   * Cada elemento es un array de la forma [campo, opcion, valor]
    */ 
 
   @Input() form: FormGroup;
@@ -63,26 +64,9 @@ export abstract class SearchConditionComponent implements OnInit {
     this.initData();
   }
 
-  initFilters(condition) {
-    var obs = [];
- 
-    for(let i = 0; i < condition.length; i++) {
-      if((condition[i][0] == "id") && !isEmptyObject(condition[i][2])) {
-        var ob = this.dd.getOrNull(this.entityName, condition[i][2]);
-        obs.push(ob);
-      }
-    }
-
-    return obs;
-  }
-
   initData() {
-    this.data$.subscribe(
-      condition => {
-        var obs = this.initFilters(condition);
-        if(obs.length){ forkJoin(obs).subscribe( () => this.setFilters(condition) ); }
-        else { this.setFilters(condition) }
-      }
+    this.condition$.subscribe(
+      condition => { this.setFilters(condition) }
     )
   }
 

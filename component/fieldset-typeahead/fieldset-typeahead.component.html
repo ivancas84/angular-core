@@ -7,8 +7,9 @@
     <span *ngIf="!isSelected && !searching" class="input-group-text"><span class="oi oi-question-mark"></span></span>
     <span class="input-group-text"><a  class="btn btn-outline-secondary" role="button" [routerLink]="'/'+linkAdd" [queryParams]="{ id : isSelected }" class="oi oi-pencil"></a></span>
   </div>
+  
 </div>
 <!--
-  Los chequeos se realizan directamente en el componente superior
+  Los chequeos deben realizarse en el componente superior
   Cada campo puede definir chequeos particulares que no pueden ser definidos en forma general
 -->

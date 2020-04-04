@@ -6,12 +6,20 @@ import { Observable, of, ReplaySubject } from 'rxjs';
 import { Display } from '@class/display';
 import { debounceTime, distinctUntilChanged, tap, switchMap, map, catchError } from 'rxjs/operators';
 import { SessionStorageService } from '@service/storage/session-storage.service';
+import { isEmptyObject } from '@function/is-empty-object.function';
 
 @Component({
   selector: 'app-filter-typeahead',
   templateUrl: './filter-typeahead.component.html',
 })
 export class FilterTypeaheadComponent {
+  @Input() condition$: any; 
+  /**
+   * Datos principales (data es un array de valores de condicion)
+   * El componente principal se suscribe a parametros y modifican los datos principales
+   * Los datos principales son la base para realizar cualquier cambio en el formulario
+   */
+
   @Input() entityName: string;
   @Input() filter: FormGroup;
   /**
@@ -25,6 +33,27 @@ export class FilterTypeaheadComponent {
     public dd: DataDefinitionService,
     protected storage: SessionStorageService
   ) { }
+
+  ngOnInit(): void {
+    /**
+     * Proceso:
+     * 1 Suscribirse a los datos principales
+     * 2 Inicializar datos del field
+     * 3 Reasignar valor del field para reflejar los cambios
+     * 4 Tener en cuenta que para presentar el valor el field accede al storage
+     */
+    this.condition$.subscribe(
+      condition => {
+        for(let i = 0; i < condition.length; i++) {
+          if((condition[i][0] == this.field.value) && !isEmptyObject(condition[i][2])) {
+            this.dd.getOrNull(this.entityName, condition[i][2]).subscribe(
+              r => this.value.setValue(condition[i][2])
+            );
+          }
+        }
+      }
+    )
+  }
 
   searchTerm(term: string): Observable<any> {
     if(term === "") return of([]);
@@ -59,4 +88,9 @@ export class FilterTypeaheadComponent {
       var id = this.filter.get("value").value;
       return (this.storage.getItem(this.entityName+id)) ? id : null;
     }
+
+    get field() { return this.filter.get("field") }
+    get option() { return this.filter.get("option")}
+    get value() { return this.filter.get("value")}
+
 }
