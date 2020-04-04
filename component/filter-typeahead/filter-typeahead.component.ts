@@ -15,7 +15,7 @@ import { isEmptyObject } from '@function/is-empty-object.function';
 export class FilterTypeaheadComponent {
   @Input() condition$: any; 
   /**
-   * Datos principales (data es un array de valores de condicion)
+   * Datos principales, array de elementos de la forma [field, option, value]
    * El componente principal se suscribe a parametros y modifican los datos principales
    * Los datos principales son la base para realizar cualquier cambio en el formulario
    */
@@ -42,17 +42,18 @@ export class FilterTypeaheadComponent {
      * 3 Reasignar valor del field para reflejar los cambios
      * 4 Tener en cuenta que para presentar el valor el field accede al storage
      */
-    this.condition$.subscribe(
-      condition => {
-        for(let i = 0; i < condition.length; i++) {
-          if((condition[i][0] == this.field.value) && !isEmptyObject(condition[i][2])) {
-            this.dd.getOrNull(this.entityName, condition[i][2]).subscribe(
-              r => this.value.setValue(condition[i][2])
-            );
+    if(this.condition$)
+      this.condition$.subscribe(
+        condition => {
+          for(let i = 0; i < condition.length; i++) {
+            if((condition[i][0] == this.field.value) && !isEmptyObject(condition[i][2])) {
+              this.dd.getOrNull(this.entityName, condition[i][2]).subscribe(
+                r => this.value.setValue(condition[i][2])
+              );
+            }
           }
         }
-      }
-    )
+      )
   }
 
   searchTerm(term: string): Observable<any> {

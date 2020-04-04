@@ -14,7 +14,7 @@ export class FieldsetTypeaheadComponent implements OnInit {
    
   @Input() data$: any; 
   /**
-   * Datos principales (data es una instancia de la entidad identificada como entityName)
+   * Datos principales, instancia de "entityName"
    * El componente principal se suscribe a parametros y modifican los datos principales
    * Los datos principales son la base para realizar cualquier cambio en el formulario
    */
@@ -40,15 +40,17 @@ export class FieldsetTypeaheadComponent implements OnInit {
      * 3 Reasignar valor del field para reflejar los cambios
      * 4 Tener en cuenta que para presentar el valor el field accede al storage
      */
-    this.data$.subscribe(
-      response => {
-        if(response[this.fieldName]){
-          this.dd.getOrNull(this.entityName, response[this.fieldName]).subscribe(
-            r => this.field.setValue(response[this.fieldName])
-          );
+    if(this.data$)
+      this.data$.subscribe(
+        response => {
+          if(response[this.fieldName]){
+            this.dd.getOrNull(this.entityName, response[this.fieldName]).subscribe(
+              r => this.field.setValue(response[this.fieldName])
+            );
+          }
         }
-      }
-    )
+      )
+    
   }
 
   searchTerm(term): Observable<any> {
