@@ -34,12 +34,11 @@ export class FieldsetTypeaheadComponent implements OnInit {
 
   ngOnInit(): void {
     /**
-     * Suscribirse a los datos principales
-     * Inicializar datos del field
-     * Reasignar valor del field para reflejar los cambios
-     * Tener en cuenta que para presentar el valor el field accede al storage
-     * 
-     * La inicializacion de datos del typeahead se realizaba inicialmente en el fieldset 
+     * Proceso:
+     * 1 Suscribirse a los datos principales
+     * 2 Inicializar datos del field
+     * 3 Reasignar valor del field para reflejar los cambios
+     * 4 Tener en cuenta que para presentar el valor el field accede al storage
      */
     this.data$.subscribe(
       response => {

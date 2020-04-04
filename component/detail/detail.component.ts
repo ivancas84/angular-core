@@ -5,8 +5,9 @@ import { DataDefinitionService } from '@service/data-definition/data-definition.
 import { ToastService } from '@service/ng-bootstrap/toast.service';
 import { isEmptyObject } from '@function/is-empty-object.function';
 import { first } from 'rxjs/operators';
+import { OnInit } from '@angular/core';
 
-export abstract class DetailComponent {
+export abstract class DetailComponent implements OnInit {
 /**
  * Detalle de entidad
  */
