@@ -31,11 +31,13 @@ export abstract class AdminComponent implements OnInit {
   data$ = new ReplaySubject();
   /**
    * datos principales
+   * El tipo se define porque el valor inicial puede ser asignado en null luego de determinar que no hay parametros ni valores en el storage
    */
 
   params$ = new ReplaySubject();
   /**
    * parametros
+   * El tipo se define porque el valor inicial puede ser asignado en null luego de determinar que no hay parametros
    */
 
   isDeletable: boolean = false;
@@ -71,14 +73,22 @@ export abstract class AdminComponent implements OnInit {
     protected validators: ValidatorsService,
     protected storage: SessionStorageService, 
   ) {}
-  
+
   ngOnInit() {
+    this.subscribeValueChanges();
+    this.subscribeQueryParams();   
+    this.subscribeParams();
+  }
+
+  subscribeValueChanges() {
     var s = this.adminForm.valueChanges.subscribe (
       formValues => { this.storage.setItem(this.router.url, formValues); },
       error => { this.toast.showDanger(JSON.stringify(error)); }
     );
-    this.subscriptions.add(s); 
+    this.subscriptions.add(s);
+  }
 
+  subscribeParams(){
     var s = this.params$.subscribe (
       params => {
         this.params = params;
@@ -90,7 +100,9 @@ export abstract class AdminComponent implements OnInit {
       error => { this.toast.showDanger(JSON.stringify(error)); }
     )
     this.subscriptions.add(s);
-    
+  }
+
+  subscribeQueryParams() {
     var s = this.route.queryParams.subscribe (
       params => { this.params$.next(params); },
       error => { this.toast.showDanger(JSON.stringify(error)); }
