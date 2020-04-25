@@ -1,14 +1,11 @@
 import { Input } from '@angular/core';
+import { Observable } from 'rxjs';
 
 export abstract class CardComponent {
-  /**
-   * Componente card de entidad. Características:
-   *   los datos son definidos en componente principal (padre) y pasados como parametro
-   */
 
-  @Input() data$: any; 
+  @Input() data$: Observable<any>; 
   /**
-   * Datos del formulario
+   * datos principales
    */
-
+  
 }
