@@ -198,14 +198,14 @@ export abstract class AdminComponent implements OnInit {
     } else {
       var s = this.persist().subscribe(
         response => {
-          if(response.data && response.data.length){
+          if(response && response.length){
             this.storage.removeItemsContains(".");
-            response.data.forEach(
+            response.forEach(
               element => this.storage.removeItem(element)
             );
           }
           this.removeStorage();
-          this.params$.next({id:this.getProcessedId(response.data)}); 
+          this.params$.next({id:this.getProcessedId(response)}); 
           /**
            * por mas que sea el mismo valor, se vuelve a asignar y se recarga el formulario
            */
