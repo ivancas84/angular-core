@@ -10,6 +10,8 @@ import { SessionStorageService } from '@service/storage/session-storage.service'
 import { isEmptyObject } from '@function/is-empty-object.function';
 import { ToastService } from '@service/ng-bootstrap/toast.service';
 import { OnInit } from '@angular/core';
+import { markAllAsTouched } from '@function/mark-all-as-touched';
+import { logValidationErrors } from '@function/log-validation-errors';
 
 export abstract class AdminComponent implements OnInit {
 /**
@@ -55,14 +57,12 @@ export abstract class AdminComponent implements OnInit {
    * Parametros actuales
    */
 
-
   protected subscriptions = new Subscription();
   /**
    * las subscripciones son almacenadas para desuscribirse (solucion temporal al bug de Angular)
    * @todo En versiones posteriores de angular, eliminar el atributo subscriptions y su uso
    */
    
-
   constructor(
     protected fb: FormBuilder, 
     protected route: ActivatedRoute, 
@@ -75,12 +75,12 @@ export abstract class AdminComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.subscribeValueChanges();
+    this.storageValueChanges();
     this.subscribeQueryParams();   
-    this.subscribeParams();
+    this.initData();
   }
 
-  subscribeValueChanges() {
+  storageValueChanges() {
     var s = this.adminForm.valueChanges.subscribe (
       formValues => { this.storage.setItem(this.router.url, formValues); },
       error => { this.toast.showDanger(JSON.stringify(error)); }
@@ -88,7 +88,7 @@ export abstract class AdminComponent implements OnInit {
     this.subscriptions.add(s);
   }
 
-  subscribeParams(){
+  initData(){
     var s = this.params$.subscribe (
       params => {
         this.params = params;
@@ -189,9 +189,8 @@ export abstract class AdminComponent implements OnInit {
     this.isSubmitted = true;
     
     if (!this.adminForm.valid) {
-      //this.logValidationErrors(this.adminForm);
-      this.markAllAsTouched(this.adminForm); //Marcar todos los elementos como touched para visualizar errores
-      this.logValidationErrors(this.adminForm);
+      markAllAsTouched(this.adminForm);
+      logValidationErrors(this.adminForm);
       this.toast.showInfo("Verificar formulario");
       this.isSubmitted = false;
 
@@ -233,58 +232,6 @@ export abstract class AdminComponent implements OnInit {
   serverData() {  
     return this.adminForm.get(this.entityName).value;
     //return this.adminForm.value
-  }
-
-  /**
-   * Obtener id de la respuesta
-   * Los formularios complejos pueden obtener el id de diferentes formas
-   */
-
-  markAllAsTouched(control: AbstractControl) { 
-  /**
-   * Marcar todos los elementos del formulario como touched para visualizar errores
-   */
-    if(control.hasOwnProperty('controls')) {
-        control.markAsTouched({ onlySelf: true }) // mark group
-        let ctrl = <any>control;
-        for (let inner in ctrl.controls) this.markAllAsTouched(ctrl.controls[inner] as AbstractControl);
-    }
-    else (<FormControl>(control)).markAsTouched({ onlySelf: true });
-  }
-
-
-  logValidationErrors(formGroup) {
-    /**
-     * log de errores del formulario
-     * Utilizado opcionalmente para propositos de Debug
-     */
-    Object.keys(formGroup.controls).forEach(key => {
-
-      const control = formGroup.get(key);
-
-      if(control instanceof FormGroup ) {
-        console.log("FormGroup " + key);
-
-        const controls: ValidationErrors = formGroup.get(key).controls;
-          Object.keys(controls).forEach(keyC => {
-            if(controls[keyC].errors) {
-              Object.keys(controls[keyC].errors).forEach(keyError => {
-                console.log('* ERROR: ' + key + ' ('+keyC+'): ' + keyError + ':' + controls[keyC].errors[keyError]);
-              })
-            }            
-          });
-      }
-      else if(control instanceof FormArray ) {
-        console.log("FormArray " + key);
-
-        for (let i = 0; i < control.controls.length; i++){
-          console.log("+ index " + i);
-          this.logValidationErrors(control.controls[i]);
-        }
-      }
-      
-      
-    });
   }
 
   ngOnDestroy () { this.subscriptions.unsubscribe() } //eliminar subscripciones
