@@ -26,6 +26,7 @@ export abstract class FieldsetComponent implements  OnInit {
   readonly entityName: string; 
   /**
    * entidad principal del componente  
+   * Utilizado solo para identificar el fieldset
    */
   
   options: Observable<any>; 

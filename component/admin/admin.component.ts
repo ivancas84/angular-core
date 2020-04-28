@@ -173,11 +173,7 @@ export abstract class AdminComponent implements OnInit {
     /**
      * persistencia
      * Se define un metodo independiente para facilitar la redefinicion
-     * @return {
-     *  "data":"datos de respuesta (habitualmente array de logs)"
-     *  "message": "mensaje de respuesta"
-     *  "status": "OK"|"WARNING"
-     * }
+     * @return "datos de respuesta (habitualmente array de logs)"
      */
     return this.dd.persist(this.entityName, this.serverData())
   }
