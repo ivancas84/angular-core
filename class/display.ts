@@ -37,7 +37,6 @@ export class Display {
     if(this.page) ret["page"] = this.page;
     if(!isEmptyObject(this.order)) ret["order"] = this.order;
     if(this.condition.length) ret["condition"] = this.condition;
-    //if(!isEmptyObject(this.param)) ret["param"] = this.param;
     if(!isEmptyObject(this.params)) ret["params"] = this.params;
     return ret;
   }
