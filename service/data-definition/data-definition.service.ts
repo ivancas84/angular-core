@@ -130,11 +130,11 @@ export class DataDefinitionService {
   }
 
   ids (entity: string, display: Display = null): Observable<any> {
-    let key = entity + ".ids" + JSON.stringify(display);
+    let key = entity + ".ids" + JSON.stringify(display.describe());
     if(this.storage.keyExists(key)) return of(this.storage.getItem(key));
 
     let url = API_ROOT + entity + '/ids'
-    return this.http.post<any>(url, display, HTTP_OPTIONS).pipe(
+    return this.http.post<any>(url, display.describe(), HTTP_OPTIONS).pipe(
       map(
         ids => {
           this.storage.setItem(key, ids);
@@ -154,7 +154,6 @@ export class DataDefinitionService {
     )
   }
 
-
   label (entity: string, id: string | number): string {
     /**
      * Etiqueta de identificacion
@@ -172,7 +171,7 @@ export class DataDefinitionService {
     )
   }
 
-  uniqueOrNull(entity: string, params): Observable<any> {
+  uniqueOrNull(entity: string, params:any): Observable<any> {
     if(!params) return of(null);
     let key = entity + ".unique" + JSON.stringify(params);
     if(this.storage.keyExists(key)) return of(this.storage.getItem(key));
@@ -197,7 +196,7 @@ export class DataDefinitionService {
      */
     let url = API_ROOT + entity + '/persist'
 
-    return this.http.post<any>(url, data, HTTP_OPTIONS).pipe(
+    return this.http.post<any>(url, JSON.stringify(data), HTTP_OPTIONS).pipe(
       map(
         response => {
           console.log(response);
@@ -208,7 +207,8 @@ export class DataDefinitionService {
     )
   }
 
-  data (entity: string, jsonParams: string = null): Observable<any> {
+  data (entity: string, data: any = null): Observable<any> {
+    var jsonParams = JSON.stringify(data);
     let key = entity + ".data" + jsonParams;
     if(this.storage.keyExists(key)) return of(this.storage.getItem(key));
 
