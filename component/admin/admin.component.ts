@@ -1,5 +1,5 @@
 import { FormGroup, FormBuilder, AbstractControl, FormControl, FormArray, ValidationErrors } from '@angular/forms';
-import { ReplaySubject, Subscription, Observable } from 'rxjs';
+import { ReplaySubject, Subscription, Observable, BehaviorSubject } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DataDefinitionService } from '@service/data-definition/data-definition.service';
 import { ValidatorsService } from '@service/validators/validators.service';
@@ -30,16 +30,20 @@ export abstract class AdminComponent implements OnInit {
    * entidad principal
    */
   
-  data$ = new ReplaySubject();
+  data$:ReplaySubject<any> = new ReplaySubject();
   /**
    * datos principales
-   * El tipo se define porque el valor inicial puede ser asignado en null luego de determinar que no hay parametros ni valores en el storage
+   * Se define como ReplaySubject en vez de BehaviorSubject para evitar procesamiento adicional con el valor null
+   * null es un dato valido para data$ significa que no esta definido por lo que los subcomponentes inicializaran como si estuviera vacio
+   * Se podria usar BehaviorSubject y manejar diferentes alternativas para indicar si esta o no definido, por ejemplo null o false
    */
 
-  params$ = new ReplaySubject();
+  params$:BehaviorSubject<any> = new BehaviorSubject(null);
   /**
    * parametros
-   * El tipo se define porque el valor inicial puede ser asignado en null luego de determinar que no hay parametros
+   * Se define como BehaviorSubject en vez de ReplaySubject porque se necesita acceder al current value
+   * se distingue la diferencia entre null (valor inicial) y {} que indica que no existen parametros
+   * Si es null no se debe realizar procesamiento, si es {} si.
    */
 
   isDeletable: boolean = false;
@@ -50,11 +54,6 @@ export abstract class AdminComponent implements OnInit {
   isSubmitted: boolean = false;
   /**
    * flag para habilitar/deshabilitar boton aceptar
-   */
-
-  params: any;
-  /**
-   * Parametros actuales
    */
 
   protected subscriptions = new Subscription();
@@ -91,7 +90,7 @@ export abstract class AdminComponent implements OnInit {
   initData(){
     var s = this.params$.subscribe (
       params => {
-        this.params = params;
+        if(params === null) return;
         let formValues = this.storage.getItem(this.router.url);
         this.removeStorage();
         if(formValues) this.setDataFromStorage(formValues);
@@ -160,7 +159,7 @@ export abstract class AdminComponent implements OnInit {
 
   reset(): void{
     this.removeStorage();
-    this.params$.next(this.params);
+    this.params$.next(this.params$.value);
 
     /*var s = this.params$.subscribe(
       params => { this.setDataFromParams(params); },
