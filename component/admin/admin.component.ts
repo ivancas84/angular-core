@@ -87,26 +87,28 @@ export abstract class AdminComponent implements OnInit {
     this.subscriptions.add(s);
   }
 
-  initData(){
-    var s = this.params$.subscribe (
-      params => {
-        if(params === null) return;
-        let formValues = this.storage.getItem(this.router.url);
-        this.removeStorage();
-        if(formValues) this.setDataFromStorage(formValues);
-        else this.setDataFromParams(params);
-      },
-      error => { this.toast.showDanger(JSON.stringify(error)); }
-    )
-    this.subscriptions.add(s);
-  }
-
   subscribeQueryParams() {
     var s = this.route.queryParams.subscribe (
       params => { this.params$.next(params); },
       error => { this.toast.showDanger(JSON.stringify(error)); }
     );
     this.subscriptions.add(s);
+
+    var s = this.params$.subscribe (
+      params => {
+        if(params === null) return;
+        this.initData();
+      },
+      error => { this.toast.showDanger(JSON.stringify(error)); }
+    )
+    this.subscriptions.add(s);
+  }
+
+  initData(){
+    let formValues = this.storage.getItem(this.router.url);
+    this.removeStorage();
+    if(formValues) this.setDataFromStorage(formValues);
+    else this.setDataFromParams(this.params$.value);
   }
 
   setDataFromStorage(formValues: any): void {
