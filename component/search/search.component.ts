@@ -36,6 +36,11 @@ export abstract class SearchComponent {
    * Formulario de busqueda
    */
 
+  public optCard: boolean = false;
+  /**
+   * Activar o desactivar el card de opciones
+   */
+
   constructor( protected fb: FormBuilder ) {}
 
   onSubmit(): void { this.searchChange.emit(this.searchForm.value); }
