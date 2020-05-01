@@ -9,7 +9,8 @@ import { DataDefinitionService } from '@service/data-definition/data-definition.
 export class ShowComponent implements OnInit {
   readonly entityName: string;
 
-  data$: BehaviorSubject<any> = new BehaviorSubject(null);
+  //data$: BehaviorSubject<any> = new BehaviorSubject(null);
+  data$: ReplaySubject<any> = new ReplaySubject();
 
   collectionSize$: BehaviorSubject<number> = new BehaviorSubject(0);
   /**
@@ -65,6 +66,7 @@ export class ShowComponent implements OnInit {
    
   initDisplay(params){
     this.display = new Display();
+    this.display.setSize(100);
     this.display.setConditionByQueryParams(params);
     this.condition$.next(this.display.getCondition());
     this.params$.next(this.display.getParams());
