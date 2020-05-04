@@ -75,8 +75,8 @@ export abstract class AdminComponent implements OnInit {
 
   ngOnInit() {
     this.storageValueChanges();
-    this.subscribeQueryParams();   
-    this.initData();
+    this.subscribeQueryParams();
+    this.initData();   
   }
 
   storageValueChanges() {
@@ -93,18 +93,20 @@ export abstract class AdminComponent implements OnInit {
       error => { this.toast.showDanger(JSON.stringify(error)); }
     );
     this.subscriptions.add(s);
+  }
 
+  initData(){
     var s = this.params$.subscribe (
       params => {
         if(params === null) return;
-        this.initData();
+        this.setData();
       },
       error => { this.toast.showDanger(JSON.stringify(error)); }
     )
     this.subscriptions.add(s);
   }
 
-  initData(){
+  setData(){
     let formValues = this.storage.getItem(this.router.url);
     this.removeStorage();
     if(formValues) this.setDataFromStorage(formValues);
@@ -155,19 +157,13 @@ export abstract class AdminComponent implements OnInit {
     
     else {
       this.removeStorage();
-      this.params$.next(null);
+      this.params$.next({});
     }
   }
 
   reset(): void{
     this.removeStorage();
     this.params$.next(this.params$.value);
-
-    /*var s = this.params$.subscribe(
-      params => { this.setDataFromParams(params); },
-      error => { this.toast.showDanger(JSON.stringify(error)); }
-    )
-    this.subscriptions.add(s);*/
   }
   
   persist(): Observable<any> {
