@@ -41,7 +41,7 @@ export class Display {
     return ret;
   }
 
-  public setParams(params: any){
+  public setParams(params: object){
     this.params = {};
     for(var i in params){
       if (params.hasOwnProperty(i)){
