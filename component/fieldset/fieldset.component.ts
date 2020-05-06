@@ -9,7 +9,7 @@ import { map, tap, delay } from 'rxjs/operators';
 export abstract class FieldsetComponent implements  OnInit {
   /**
    * Componente de administración de fieldset. Características:
-   *   El formulario y los datos son definidos en formulario (componente principal)  
+   *   El formulario y los datos son definidos en componente principal  
    *   Puede inicializar datos adicionales susceptibles de ser utilizados en componentes anidados
    */
 
@@ -73,8 +73,7 @@ export abstract class FieldsetComponent implements  OnInit {
      */   
     this.data$.subscribe(
       response => {
-        this.setDefaultValues();
-        
+        this.setDefaultValues(); 
         if(!isEmptyObject(response)) { this.fieldset.reset(response) }
       }
     );
