@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { tap, map, first, mergeMap } from 'rxjs/operators';
 
-import { API_ROOT, HTTP_OPTIONS } from 'src/app/app.config';
+import { API_URL, HTTP_OPTIONS } from 'src/app/app.config';
 import { SessionStorageService } from 'src/app/core/service/storage/session-storage.service';
 import { Display } from '@class/display';
 import { DataDefinition } from '@class/data-definition';
@@ -30,7 +30,7 @@ export class DataDefinitionService {
     let key = entity + ".all" + JSON.stringify(display.describe());
     if(this.storage.keyExists(key)) return of(this.storage.getItem(key));
 
-    let url = API_ROOT + entity + '/all'
+    let url = API_URL + entity + '/all'
     return this.http.post<any>(url, display.describe(), HTTP_OPTIONS).pipe(
       tap(
         rows => {
@@ -49,7 +49,7 @@ export class DataDefinitionService {
     let key = entity + ".count" + JSON.stringify(display.describe());
     if(this.storage.keyExists(key)) return of(this.storage.getItem(key));
 
-    let url = API_ROOT + entity + '/count'
+    let url = API_URL + entity + '/count'
 
     return this.http.post<any>(url, display.describe(), HTTP_OPTIONS).pipe(
       tap( res => this.storage.setItem(key, res) )
@@ -62,7 +62,7 @@ export class DataDefinitionService {
      */
     if(!ids.length) return of([]);
 
-    let url: string = API_ROOT + entity + '/get_all';
+    let url: string = API_URL + entity + '/get_all';
     return this.http.post<any>(url, ids, HTTP_OPTIONS);
   }
 
@@ -133,7 +133,7 @@ export class DataDefinitionService {
     let key = entity + ".ids" + JSON.stringify(display.describe());
     if(this.storage.keyExists(key)) return of(this.storage.getItem(key));
 
-    let url = API_ROOT + entity + '/ids'
+    let url = API_URL + entity + '/ids'
     return this.http.post<any>(url, display.describe(), HTTP_OPTIONS).pipe(
       map(
         ids => {
@@ -176,7 +176,7 @@ export class DataDefinitionService {
     let key = entity + ".unique" + JSON.stringify(params);
     if(this.storage.keyExists(key)) return of(this.storage.getItem(key));
 
-    let url = API_ROOT + entity + '/unique'
+    let url = API_URL + entity + '/unique'
     return this.http.post<any>(url, params, HTTP_OPTIONS).pipe(
       map(
         row => {
@@ -194,7 +194,7 @@ export class DataDefinitionService {
      * Datos a ser procesados.
      * Retorna array con los ids persistidos.
      */
-    let url = API_ROOT + entity + '/persist'
+    let url = API_URL + entity + '/persist'
 
     return this.http.post<any>(url, JSON.stringify(data), HTTP_OPTIONS).pipe(
       map(
@@ -213,7 +213,7 @@ export class DataDefinitionService {
     if(this.storage.keyExists(key)) return of(this.storage.getItem(key));
 
 
-    let url = API_ROOT + entity + '/data'
+    let url = API_URL + entity + '/data'
     return this.http.post<any>(url, jsonParams, HTTP_OPTIONS).pipe(
       map(
         data => {
@@ -224,4 +224,13 @@ export class DataDefinitionService {
     );
   }
 
+  public upload(data: FormData, type: string = "file") {
+    /**
+     * @param type: Permite clasificar el procesamiento que debe darse a un archivo. 
+     *   "File" es el procesamiento por defecto.
+     */
+    let url = API_URL + type + '/upload';
+
+    return this.http.post<any>(url, data);
+  }
 }
