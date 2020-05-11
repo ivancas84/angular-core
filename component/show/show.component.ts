@@ -92,7 +92,7 @@ export class ShowComponent implements OnInit {
      * @param order Objeto que define el ordenamiento, tiene la estructura {campo:"asc"|"desc"}
      */
     this.mode = "data";
-    this.display.setOrder(event);
+    this.display.setOrder(order);
     this.router.navigateByUrl('/' + emptyUrl(this.router.url) + '?' + this.display.encodeURI());
   }
 
