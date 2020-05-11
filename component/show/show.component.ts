@@ -87,23 +87,34 @@ export class ShowComponent implements OnInit {
     this.mode = "reload";
   }
 
-  orderChange(event) {
+  orderChange(order) {
+    /**
+     * @param order Objeto que define el ordenamiento, tiene la estructura {campo:"asc"|"desc"}
+     */
     this.mode = "data";
     this.display.setOrder(event);
     this.router.navigateByUrl('/' + emptyUrl(this.router.url) + '?' + this.display.encodeURI());
   }
 
-  pageChange(event) {
+  pageChange(page) {
+    /**
+     * @page numero de pagina que se desea ir
+     */
     this.mode = "data";
-    this.display.setPage(event);
+    this.display.setPage(page);
     this.router.navigateByUrl('/' + emptyUrl(this.router.url) + '?' + this.display.encodeURI());
   }
 
-  searchChange(event) {
+  searchChange(search: any) {
+    /**
+     * @param search Construccion formada por dos atributos opcionales
+     *   "filters" (condiciones dinamicas)
+     *   "params" (condiciones parametros)
+     */
     this.mode = "reload";
     this.display.setCondition([]);
-    if(event.filters) this.display.setConditionFilters(event.filters);
-    if(event.params) this.display.setParams(event.params);
+    if(search.filters) this.display.setConditionFilters(search.filters);
+    if(search.params) this.display.setParams(search.params);
     this.router.navigateByUrl('/' + emptyUrl(this.router.url) + '?' + this.display.encodeURI());
   }
 
