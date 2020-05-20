@@ -1,0 +1,4 @@
+
+<span *ngIf="valueChange$ | async as v; else noFile"><a [href]="UPLOAD_URL+v.content" target="_blank" [download]="v.name">Ver Archivo</a></span>
+
+<ng-template #noFile><p>Sin archivo</p></ng-template>

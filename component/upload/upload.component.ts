@@ -37,7 +37,7 @@ export class UploadComponent {
       this.field.markAsPending();
       this.dd.upload(formData).subscribe(
         (res) => {
-          this.field.setValue(res);
+          this.field.setValue(res.id);
           this.field.markAsDirty();
           // this.field.setErrors({'incorrect': true});
         },

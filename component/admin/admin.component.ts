@@ -9,7 +9,7 @@ import { emptyUrl } from '@function/empty-url.function';
 import { SessionStorageService } from '@service/storage/session-storage.service';
 import { isEmptyObject } from '@function/is-empty-object.function';
 import { ToastService } from '@service/ng-bootstrap/toast.service';
-import { OnInit } from '@angular/core';
+import { OnInit, AfterViewInit } from '@angular/core';
 import { markAllAsTouched } from '@function/mark-all-as-touched';
 import { logValidationErrors } from '@function/log-validation-errors';
 
@@ -72,6 +72,7 @@ export abstract class AdminComponent implements OnInit {
     protected validators: ValidatorsService,
     protected storage: SessionStorageService, 
   ) {}
+  
 
   ngOnInit() {
     this.storageValueChanges();
