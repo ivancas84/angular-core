@@ -50,6 +50,19 @@ export class Display {
     }    
   }
 
+  public addParamIfNot(key: string, value: any){
+    if(this.params.hasOwnProperty(key)) return;
+    this.params[key] = value;
+  }
+
+  public addConditionIfNot(condition: Array<any>){
+    for(var i in this.condition){
+      if(this.condition[i][0] == condition[0] && this.condition[i][1] == condition[1] ) return;
+    }
+
+    this.addCondition(condition);
+  }
+
   public setConditionByQueryParams(params: any){
   /**
    * Transformar "queryParams" en conditions
