@@ -50,6 +50,10 @@ export class Display {
     }    
   }
 
+  public addParam(key: string, value: any){
+    this.params[key] = value;
+  }
+
   public addParamIfNot(key: string, value: any){
     if(this.params.hasOwnProperty(key)) return;
     this.params[key] = value;
