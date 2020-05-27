@@ -33,7 +33,7 @@ export class Display {
   
   public describe(){
     let ret = {};
-    if(this.size) ret["size"] = this.size;
+    if(this.size || (this.size === 0)) ret["size"] = this.size;
     if(this.page) ret["page"] = this.page;
     if(!isEmptyObject(this.order)) ret["order"] = this.order;
     if(this.condition.length) ret["condition"] = this.condition;
