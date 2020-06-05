@@ -67,7 +67,7 @@ export class ShowComponent implements OnInit {
   initDisplay(params){
     this.display = new Display();
     this.display.setSize(100);
-    this.display.setConditionByQueryParams(params);
+    this.display.setParamsByQueryParams(params);
     this.condition$.next(this.display.getCondition());
     this.params$.next(this.display.getParams());
   }
