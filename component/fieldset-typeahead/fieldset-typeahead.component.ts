@@ -42,7 +42,7 @@ export class FieldsetTypeaheadComponent implements OnInit {
      */
     this.data$.subscribe(
       response => {
-        if(response[this.fieldName]){
+        if(response && response[this.fieldName]){
           this.dd.getOrNull(this.entityName, response[this.fieldName]).subscribe(
             r => this.field.setValue(response[this.fieldName])
           );
