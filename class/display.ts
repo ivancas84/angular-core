@@ -73,11 +73,24 @@ export class Display {
    */
     for(let i in params) {
       if(params.hasOwnProperty(i)) {
-        if(!(this.hasOwnProperty(i))) this.condition.push([i, "=", params[i]]); //asignar filtro
+        if(!(this.hasOwnProperty(i))) this.addCondition([i, "=", params[i]]); //asignar filtro
         else this[i] = JSON.parse(decodeURI(params[i])); //asignar parametro
       }
     }
   }
+
+  
+  public setParamsByQueryParams(params: any){
+    /**
+     * Transformar "queryParams" en conditions
+     */
+      for(let i in params) {
+        if(params.hasOwnProperty(i)) {
+          if(!(this.hasOwnProperty(i))) this.addParamIfNot(i, params[i]); //asignar filtro
+          else this[i] = JSON.parse(decodeURI(params[i])); //asignar parametro
+        }
+      }
+    }
 
 
   public setConditionFilters(filters: Array<any>){    
