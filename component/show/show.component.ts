@@ -33,9 +33,8 @@ export class ShowComponent implements OnInit {
    * parametros de busqueda (uso opcional mediante componente Search)
    */
 
-  mode="start";
+  mode="reload";
   /**
-   * start: inicio (se identifica el comienzo para permitir la asignacion de valores por defecto al iniciar)
    * reload: Recarga cantidad y datos
    * data: Recarga solo datos
    */
@@ -74,7 +73,7 @@ export class ShowComponent implements OnInit {
   }
 
   initData(){
-    if(this.mode == "reload" || this.mode == "start")
+    if(this.mode == "reload")
       this.getCount().pipe(first()).subscribe(
         count => { 
           if(this.collectionSize$.value != count) this.collectionSize$.next(count); 
