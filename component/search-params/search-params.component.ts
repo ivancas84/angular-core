@@ -7,18 +7,17 @@ import { Observable, ReplaySubject } from 'rxjs';
 
 export abstract class SearchParamsComponent implements OnInit {
   /**
-   * Componente de administración de fieldset. Características:
-   *   El formulario y los datos son definidos en formulario (componente principal)  
+   * Componente anidado de Busqueda para definir busqueda a traves de parametros 
    */
 
   @Input() form: FormGroup; 
   /**
-   * Formulario de administracion
+   * Formulario
    */
 
   @Input() params$: ReplaySubject<any>;
   /**
-   * Datos del formulario
+   * Datos iniciales
    */
 
   options: Observable<any>; 

@@ -99,7 +99,25 @@ export class Display {
     }    
   }
 
-  public setOrder(params: object){
+  public setOrderByKeys(params: Array<string>){
+    /**
+     * argumentos dinamicos: nombres de campos
+     */
+    var keys = Object.keys(this.order);
+    var keys2 = Object.keys(params)
+
+    if((keys.length) && (keys2[0] == keys[0])){
+      var type: string = (this.order[keys[0]].toLowerCase() == "asc") ? "desc" : "asc";
+      this.order[keys[0]] = type;
+    } else {
+      //var obj = {}
+      //for(var i = 0; i < keys2.length; i++) obj[keys2[i]] = params[keys2[i]];
+      this.order = Object.assign(params, this.order);
+    }
+  }
+
+  
+  public setOrder(params: Object){
     /**
      * argumentos dinamicos: nombres de campos
      */

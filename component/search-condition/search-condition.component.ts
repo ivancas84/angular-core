@@ -7,11 +7,6 @@ import { Observable, forkJoin } from 'rxjs';
 import { isEmptyObject } from '@function/is-empty-object.function';
 
 export abstract class SearchConditionComponent implements OnInit {
-  readonly entityName: string; 
-  /**
-   * entidad principal del componente
-   */
-   
   @Input() condition$: any;
   /**
    * Conjunto de elementos similares a los filtros, organizados como array
@@ -32,6 +27,12 @@ export abstract class SearchConditionComponent implements OnInit {
     protected fb: FormBuilder, 
     protected dd: DataDefinitionService 
   )  {}
+
+  ngOnInit() {
+    this.form.addControl("filters", this.fb.array([]));
+    this.initOptions();
+    this.initData();
+  }
 
   get filters(): FormArray { return this.form.get('filters') as FormArray; }
   addFilter() { return this.filters.push(this.fb.group(new Filter())); }
@@ -58,11 +59,6 @@ export abstract class SearchConditionComponent implements OnInit {
      */
   }
 
-  ngOnInit() {
-    this.form.addControl("filters", this.fb.array([]));
-    this.initOptions();
-    this.initData();
-  }
 
   initData() {
     this.condition$.subscribe(
