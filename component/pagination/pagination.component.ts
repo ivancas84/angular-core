@@ -1,5 +1,8 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
+import { Display } from '@class/display';
+import { Router } from '@angular/router';
+import { emptyUrl } from '@function/empty-url.function';
 
 
 @Component({
@@ -8,11 +11,13 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class PaginationComponent  {
 
-  @Input() page: number;
-  @Input() size: number;
-  @Input() collectionSize$: BehaviorSubject<number>;
-  @Output() pageChange: EventEmitter <any> = new EventEmitter <any>();
+  @Input() display$: BehaviorSubject<Display>;
+  @Input() collectionSize$: ReplaySubject<number>;
 
-  setPage(){ this.pageChange.emit(this.page); };
+  constructor( protected router: Router ) { }
+
+  setPage() {
+    this.router.navigateByUrl('/' + emptyUrl(this.router.url) + '?' + this.display$.value.encodeURI());    
+  }
 
 }

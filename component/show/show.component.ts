@@ -12,31 +12,15 @@ export class ShowComponent implements OnInit {
   //data$: BehaviorSubject<any> = new BehaviorSubject(null);
   data$: ReplaySubject<any> = new ReplaySubject();
 
-  collectionSize$: BehaviorSubject<number> = new BehaviorSubject(0);
+  collectionSize$: ReplaySubject<number> = new ReplaySubject();
   /**
    * tamanio de la consulta
    * se hace coincidir el nombre con el paginador de ng-bootstrap
    */
 
-  display: Display;
+  display$: BehaviorSubject<Display> = new BehaviorSubject(null);
   /**
-   * visualizacion
-   */
-
-  condition$: ReplaySubject<any> = new ReplaySubject();
-  /**
-   * condicion de busqueda (uso opcional mediante componente Search)
-   */
-
-  params$: ReplaySubject<any> =  new ReplaySubject();
-  /**
-   * parametros de busqueda (uso opcional mediante componente Search)
-   */
-
-  mode="reload";
-  /**
-   * reload: Recarga cantidad y datos
-   * data: Recarga solo datos
+   * Se define como BehaviorSubject para facilitar el acceso al valor actual evitando suscribirse continuamente
    */
 
   constructor(
@@ -49,80 +33,31 @@ export class ShowComponent implements OnInit {
     this.route.queryParams.subscribe(
       queryParams => {
         this.initDisplay(queryParams);
+        this.initCount();
         this.initData();
       }
     );      
   }
   
-  getCount(){ return this.dd.count(this.entityName, this.display); }
-  /**
-   * cantidad
-   */
-
-  getData(){ return this.dd.all(this.entityName, this.display); }
-  /**
-   * datos
-   */
    
-  initDisplay(params){
-    this.display = new Display();
-    this.display.setSize(100);
-    this.display.setParamsByQueryParams(params);
-    this.condition$.next(this.display.getCondition());
-    this.params$.next(this.display.getParams());
+  initDisplay(params): void{
+    let display = new Display();
+    display = new Display();
+    display.setSize(100);
+    display.setParamsByQueryParams(params);
+    this.display$.next(display);
+  }
+  
+  initCount(){ 
+    this.dd.count(this.entityName, this.display$.value).pipe(first()).subscribe(
+      count => {  this.collectionSize$.next(count); }
+    ) 
   }
 
-  initData(){
-    if(this.mode == "reload")
-      this.getCount().pipe(first()).subscribe(
-        count => { 
-          if(this.collectionSize$.value != count) this.collectionSize$.next(count); 
-        }
-      );
-
-    this.getData().pipe(first()).subscribe(
+  initData(){ 
+    this.dd.all(this.entityName, this.display$.value).pipe(first()).subscribe(
       rows => { this.data$.next(rows); }
-    );
-
-    this.mode = "reload";
+    ); 
   }
-
-  orderChange(order) {
-    /**
-     * @param order Objeto que define el ordenamiento, tiene la estructura {campo:"asc"|"desc"}
-     */
-    this.mode = "data";
-    this.display.setOrder(order);
-    this.router.navigateByUrl('/' + emptyUrl(this.router.url) + '?' + this.display.encodeURI());
-  }
-
-  pageChange(page) {
-    /**
-     * @page numero de pagina que se desea ir
-     */
-    this.mode = "data";
-    this.display.setPage(page);
-    this.router.navigateByUrl('/' + emptyUrl(this.router.url) + '?' + this.display.encodeURI());
-  }
-
-  searchChange(search: any) {
-    /**
-     * @param search Construccion formada por dos atributos opcionales
-     *   "filters" (condiciones dinamicas)
-     *   "params" (condiciones parametros)
-     */
-    this.mode = "reload";
-    this.display.setCondition([]);
-    if(search.filters) this.display.setConditionFilters(search.filters);
-    if(search.params) this.display.setParams(search.params);
-    this.router.navigateByUrl('/' + emptyUrl(this.router.url) + '?' + this.display.encodeURI());
-  }
-
-  deleteChange(event) {
-    //@todo eliminar de la base de datos
-    //this.mode = "data";
-    //this.collectionSize$.next(this.collectionSize$.value-1); 
-    //this.router.navigateByUrl('/' + emptyUrl(this.router.url) + '?' + this.display.encodeURI());
-  }
-
+  
 }

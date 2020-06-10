@@ -1,4 +1,6 @@
 import { isEmptyObject } from '../function/is-empty-object.function';
+import { Filter } from './filter';
+import { OrderElement } from './order-element';
 
 export class Display {
 
@@ -12,9 +14,9 @@ export class Display {
    * inicializar page siempre para evitar errores en los componentes de paginacion
    */
 
-  protected order: Object = {};
+  protected order: {[key: string]: string } = {};
   protected condition: Array<any> = [];
-  protected params?: Object = {} //busqueda adicional
+  protected params?: {[key: string]: any } = {} //busqueda adicional
   /** 
    * El servidor limita siempre la cantidad de elementos (size) a 100
    * Si se desea un valor mayor debe definirse explicitamente en el servidor
@@ -71,6 +73,7 @@ export class Display {
   /**
    * Transformar "queryParams" en conditions
    */
+    this.condition = [];
     for(let i in params) {
       if(params.hasOwnProperty(i)) {
         if(!(this.hasOwnProperty(i))) this.addCondition([i, "=", params[i]]); //asignar filtro
@@ -78,7 +81,18 @@ export class Display {
       }
     }
   }
+  
+  public setConditionByFilters(filters:Array<Filter>){ 
+    var condition = [];
+    for(let i = 0; i < filters.length; i++){
+      if(filters[i]["value"] !== undefined) condition.push([filters[i]["field"], filters[i]["option"], filters[i]["value"]]);
+    }    
+    return condition;
+  }
 
+  public setOrderByElement(order:Array<OrderElement>){
+
+  }
   
   public setParamsByQueryParams(params: any){
     /**
@@ -93,13 +107,26 @@ export class Display {
     }
 
 
-  public setConditionFilters(filters: Array<any>){    
-    for(let i = 0; i < filters.length; i++){
-      if(filters[i]["value"] !== undefined) this.condition.push([filters[i]["field"], filters[i]["option"], filters[i]["value"]]);
-    }    
+
+  public setOrderByKeys(params: Array<string>){
+    /**
+     * argumentos dinamicos: nombres de campos
+     */
+    var keys = Object.keys(this.order);
+    var keys2 = Object.keys(params)
+
+    if((keys.length) && (keys2[0] == keys[0])){
+      var type: string = (this.order[keys[0]].toLowerCase() == "asc") ? "desc" : "asc";
+      this.order[keys[0]] = type;
+    } else {
+      //var obj = {}
+      //for(var i = 0; i < keys2.length; i++) obj[keys2[i]] = params[keys2[i]];
+      this.order = Object.assign(params, this.order);
+    }
   }
 
-  public setOrder(params: object){
+  
+  public setOrder(params: Object){
     /**
      * argumentos dinamicos: nombres de campos
      */

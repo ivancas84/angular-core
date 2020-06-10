@@ -1,10 +1,10 @@
 
-<div  class="clearfix">
-    <span class="float-left">
-      <ngb-pagination size="sm" [maxSize]="5" [collectionSize]="collectionSize$ | async" [pageSize]= "size" [(page)]="page" (pageChange)="setPage()"></ngb-pagination>
+<div *ngIf="collectionSize$ | async as collectionSize" class="clearfix">
+    <span *ngIf="display$ | async as display" class="float-left">
+      <ngb-pagination size="sm" [maxSize]="5" [collectionSize]="collectionSize" [pageSize]= "display.size" [(page)]="display.page" (pageChange)="setPage()"></ngb-pagination>
     </span>
     <span class="float-left">
-      <div class="p-1 border bg-light"> {{collectionSize$ | async}} registros</div>
+      <div class="p-1 border bg-light"> {{collectionSize}} registros</div>
     </span>
 
 </div>

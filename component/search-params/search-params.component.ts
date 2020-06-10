@@ -4,28 +4,29 @@ import { DataDefinitionService } from '@service/data-definition/data-definition.
 import { ValidatorsService } from '@service/validators/validators.service';
 import { isEmptyObject } from '@function/is-empty-object.function';
 import { Observable, ReplaySubject } from 'rxjs';
+import { Display } from '@class/display';
+import { map } from 'rxjs/operators';
 
 export abstract class SearchParamsComponent implements OnInit {
   /**
-   * Componente de administración de fieldset. Características:
-   *   El formulario y los datos son definidos en formulario (componente principal)  
+   * Componente anidado de Busqueda para definir busqueda a traves de parametros 
    */
 
   @Input() form: FormGroup; 
   /**
-   * Formulario de administracion
+   * Formulario
    */
 
-  @Input() params$: ReplaySubject<any>;
+  @Input() display$: Observable<Display>;
   /**
-   * Datos del formulario
-   */
-
-  options: Observable<any>; 
-  /**
-   * opciones para el formulario
+   * Datos iniciales
    */
   
+  @Input() params$: Observable<{[jey: string]: string}>;
+  /**
+   * Parametros de Datos iniciales
+   */
+
   fieldset: AbstractControl; 
   /**
    * fieldset
@@ -63,11 +64,14 @@ export abstract class SearchParamsComponent implements OnInit {
      * Los valores por defecto se definen en el componente principal que utiliza el formulario de busqueda
      * Puede resultar necesario inicializar valores que seran posteriormente accedidos desde el storage
      */
-    this.params$.subscribe(
-      response => {
-        if(!isEmptyObject(response)) { this.fieldset.reset(response) }
+    
+    this.params$ = this.display$.pipe(map(
+      display => {
+        if(!isEmptyObject(display.getParams())) { this.fieldset.reset(display.getParams()) }
+        return display.getParams()
       }
-    );
+    ));
+    
   }
  
 }
