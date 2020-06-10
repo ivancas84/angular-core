@@ -1,11 +1,8 @@
-import { Input, OnChanges, Output, EventEmitter, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { Input } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { Filter } from '@class/filter';
-import { DataDefinitionService } from '@service/data-definition/data-definition.service';
-import { Observable, forkJoin, ReplaySubject } from 'rxjs';
-import { isEmptyObject } from '@function/is-empty-object.function';
+import { Observable } from 'rxjs';
 import { Display } from '@class/display';
 import { emptyUrl } from '@function/empty-url.function';
 
@@ -30,7 +27,6 @@ export abstract class SearchComponent {
   
   constructor(
     protected fb: FormBuilder,
-    protected dd: DataDefinitionService, 
     protected router: Router,
   ) {}
 

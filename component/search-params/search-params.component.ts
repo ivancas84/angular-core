@@ -1,7 +1,5 @@
 import { Input, OnInit} from '@angular/core';
 import { FormGroup, AbstractControl, FormBuilder } from '@angular/forms';
-import { DataDefinitionService } from '@service/data-definition/data-definition.service';
-import { ValidatorsService } from '@service/validators/validators.service';
 import { isEmptyObject } from '@function/is-empty-object.function';
 import { Observable, ReplaySubject } from 'rxjs';
 import { Display } from '@class/display';
@@ -22,7 +20,7 @@ export abstract class SearchParamsComponent implements OnInit {
    * Datos iniciales
    */
   
-  @Input() params$: Observable<{[jey: string]: string}>;
+  @Input() params$: Observable<{[key: string]: string}>;
   /**
    * Parametros de Datos iniciales
    */
@@ -32,11 +30,7 @@ export abstract class SearchParamsComponent implements OnInit {
    * fieldset
    */
 
-  constructor(
-    protected fb: FormBuilder, 
-    protected dd: DataDefinitionService, 
-    protected validators: ValidatorsService) 
-  { }
+  constructor( protected fb: FormBuilder ) { }
 
   abstract formGroup();
 

@@ -1,26 +1,36 @@
-import { Input, OnChanges, Output, EventEmitter, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { Input, OnInit } from '@angular/core';
+import { FormArray, FormBuilder, FormGroup, AbstractControl } from '@angular/forms';
 
 import { Filter } from '@class/filter';
 import { DataDefinitionService } from '@service/data-definition/data-definition.service';
-import { Observable, forkJoin } from 'rxjs';
-import { isEmptyObject } from '@function/is-empty-object.function';
+import { Observable } from 'rxjs';
+import { Display } from '@class/display';
+import { map } from 'rxjs/operators';
 
 export abstract class SearchConditionComponent implements OnInit {
-  @Input() condition$: any;
+  /**
+   * Componente anidado de Busqueda para definir busqueda a traves de condiciones 
+   */
+
+  @Input() form: FormGroup;
+  /**
+   * Formulario
+   */
+  
+  @Input() display$: Observable<Display>;
   /**
    * Conjunto de elementos similares a los filtros, organizados como array
    * Cada elemento es un array de la forma [campo, opcion, valor]
    */ 
 
-  @Input() form: FormGroup;
+  @Input() condition$: Observable<Array<any>>;
   /**
-   * Formulario de busqueda
+   * Parametros de datos iniciales
    */
-  
-  options: Observable<any>; 
+
+   fieldset: AbstractControl; 
   /**
-   * opciones para el formulario
+   * fieldset
    */
 
   constructor(
@@ -29,9 +39,14 @@ export abstract class SearchConditionComponent implements OnInit {
   )  {}
 
   ngOnInit() {
-    this.form.addControl("filters", this.fb.array([]));
+    this.initForm();
     this.initOptions();
     this.initData();
+  }
+
+  initForm(): void{
+    this.fieldset = this.fb.array([]);
+    this.form.addControl("filters", this.fieldset);
   }
 
   get filters(): FormArray { return this.form.get('filters') as FormArray; }
@@ -59,11 +74,20 @@ export abstract class SearchConditionComponent implements OnInit {
      */
   }
 
-
-  initData() {
-    this.condition$.subscribe(
-      condition => { this.setFilters(condition) }
-    )
+  
+  initData(): void{    
+    /**
+     * Inicializar datos
+     * Los valores por defecto se definen en el componente principal que utiliza el formulario de busqueda
+     * Puede resultar necesario inicializar valores que seran posteriormente accedidos desde el storage
+     */
+    
+    this.condition$ = this.display$.pipe(map(
+      display => {
+        this.setFilters(display.getCondition())
+        return display.getCondition()
+      }
+    ));
   }
 
 }
