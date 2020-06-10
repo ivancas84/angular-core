@@ -98,19 +98,24 @@ export class Display {
     /**
      * Transformar "queryParams" en conditions
      */
-      for(let i in params) {
-        if(params.hasOwnProperty(i)) {
-          if(!(this.hasOwnProperty(i))) this.addParamIfNot(i, params[i]); //asignar filtro
-          else this[i] = JSON.parse(decodeURI(params[i])); //asignar parametro
-        }
+    for(let i in params) {
+      if(params.hasOwnProperty(i)) {
+        if(!(this.hasOwnProperty(i))) this.addParamIfNot(i, params[i]); //asignar filtro
+        else this[i] = JSON.parse(decodeURI(params[i])); //asignar parametro
       }
     }
+  }
 
+  public setOrder(params: {[key: string]: string }){
+    for(var i in params){
+      if (params.hasOwnProperty(i)){ this.order[i] = params[i]; }
+    }    
+  }
 
-
-  public setOrderByKeys(params: Array<string>){
+  public setOrderInvert(params: {[key: string]: string }){
     /**
      * argumentos dinamicos: nombres de campos
+     * si ya existia el nombre del campo le invierte el orden
      */
     var keys = Object.keys(this.order);
     var keys2 = Object.keys(params)
@@ -119,30 +124,11 @@ export class Display {
       var type: string = (this.order[keys[0]].toLowerCase() == "asc") ? "desc" : "asc";
       this.order[keys[0]] = type;
     } else {
-      //var obj = {}
-      //for(var i = 0; i < keys2.length; i++) obj[keys2[i]] = params[keys2[i]];
-      this.order = Object.assign(params, this.order);
+      this.setOrder(params);
     }
   }
 
   
-  public setOrder(params: Object){
-    /**
-     * argumentos dinamicos: nombres de campos
-     */
-    var keys = Object.keys(this.order);
-    var keys2 = Object.keys(params)
-
-    if((keys.length) && (keys2[0] == keys[0])){
-      var type: string = (this.order[keys[0]].toLowerCase() == "asc") ? "desc" : "asc";
-      this.order[keys[0]] = type;
-    } else {
-      //var obj = {}
-      //for(var i = 0; i < keys2.length; i++) obj[keys2[i]] = params[keys2[i]];
-      this.order = Object.assign(params, this.order);
-    }
-  }
-
   public encodeURI(){
     let d = [];
     for(var key in this.describe()){ //Se accede al metodo display.describe() para ignorar los filtros no definidos
