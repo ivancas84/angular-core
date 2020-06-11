@@ -1,5 +1,8 @@
 import { Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
+import { Router } from '@angular/router';
+import { emptyUrl } from '@function/empty-url.function';
+import { Display } from '@class/display';
 
 export abstract class ShowElementComponent  {
 
@@ -7,10 +10,22 @@ export abstract class ShowElementComponent  {
   /**
    * datos principales
    */
+
+  @Input() display$?: Observable<Display>; 
  
-  @Output() orderChange: EventEmitter <any> = new EventEmitter <any>();
   @Output() deleteChange: EventEmitter <any> = new EventEmitter <any>();
 
-  order(params: Array<any>){ this.orderChange.emit(params); };
+  constructor(
+    protected router: Router,
+  ) {}
 
+  order(params: Array<string>): void {
+    //Transformar valores de dislay a traves de los valores del formulario
+    this.display$.subscribe(
+      display => {
+        display.setOrderByKeys(params);
+        this.router.navigateByUrl('/' + emptyUrl(this.router.url) + '?' + display.encodeURI());  
+      }
+    );
+  }
 }
