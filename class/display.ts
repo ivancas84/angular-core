@@ -112,6 +112,17 @@ export class Display {
     }    
   }
 
+  public setOrderByKeys(params: Array<string>){
+    var keys = Object.keys(this.order);
+    if((keys.length) && (params[0] == keys[0])){
+      this.order[keys[0]] = (this.order[keys[0]].toLowerCase() == "asc") ? "desc" : "asc";
+    } else {
+      var obj = {};
+      for(var i in params) obj[params[i]] = "asc"
+      this.setOrder(obj);
+    }    
+  }
+
   public setOrderInvert(params: {[key: string]: string }){
     /**
      * argumentos dinamicos: nombres de campos
