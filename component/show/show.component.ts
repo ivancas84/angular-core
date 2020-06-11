@@ -40,7 +40,7 @@ export class ShowComponent implements OnInit {
   }
   
    
-  initDisplay(params): void{
+  initDisplay(params: { [x: string]: any; }): void {
     let display = new Display();
     display = new Display();
     display.setSize(100);
