@@ -1,6 +1,5 @@
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { DataDefinitionService } from '@service/data-definition/data-definition.service';
-import { ValidatorsService } from '@service/validators/validators.service';
 import { SearchParamsComponent } from '@component/search-params/search-params.component';
 import { Component } from '@angular/core';
 
@@ -10,11 +9,11 @@ import { Component } from '@angular/core';
 })
 export class SearchAllComponent extends SearchParamsComponent {
   
-  constructor(
+  constructor (
     protected fb: FormBuilder, 
-    protected dd: DataDefinitionService, 
-    protected validators: ValidatorsService) 
-  { super(fb, dd, validators); }
+    protected dd: DataDefinitionService
+  ) { super(fb); }
+
 
   formGroup(): FormGroup {
     let fg: FormGroup = this.fb.group({
