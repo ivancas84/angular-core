@@ -41,6 +41,8 @@ export abstract class FieldsetComponent implements  OnInit {
 
   //load$: BehaviorSubject<any> = new BehaviorSubject(false);
 
+  readonly defaultValues: {[key:string]: any} = {};
+
   constructor(
     protected fb: FormBuilder, 
     protected dd: DataDefinitionService, 
@@ -69,23 +71,34 @@ export abstract class FieldsetComponent implements  OnInit {
 
   initData(): void { 
     /**
-     * sobrescribir si el fieldset tiene datos adicionales que deben ser inicializados     
+     * sobrescribir si el fieldset tiene datos adicionales que deben ser inicializados   
      */   
     this.data$.subscribe(
       response => {
-        this.setDefaultValues(); 
-        if(!isEmptyObject(response)) { this.fieldset.reset(response) }
+        this.initValues(response);
+        /**
+         * response puede tener el valor de algunos datos, por las dudas inicializo los valores por defecto
+         */ 
+        /**
+         * una vez reasignados los valores por defecto vuelgo a asignar valores (si existen)
+         * esto va a realizar una doble definicion e valueChanges si se utilizan
+         */ 
       }
     );
   }
 
-  setDefaultValues(){
-    /**
-     * sobrescribir si el fieldset tiene valores por defecto
-     * los valores por defecto deben definirse en una funcion independiente para facilitar su reutilizacion 
-     * por ejemplo en el caso de limpiar el formulario a traves de un botón
-     */
-    this.fieldset.reset();
+  initValues(response: {[key:string]: any} = {}){
+    if(!response) this.fieldset.reset(this.defaultValues);
+    else {
+      for(var key in this.defaultValues){
+        if(this.defaultValues.hasOwnProperty(key)){
+          if(!response.hasOwnProperty(key)) response[key] = this.defaultValues[key];
+        }
+      }
+      this.fieldset.reset(response) 
+    }
   }
+
+    
  
 }
