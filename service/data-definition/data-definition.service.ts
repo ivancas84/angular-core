@@ -167,7 +167,7 @@ export class DataDefinitionService {
      * Etiqueta de identificacion
      */
     return this.get(entity, id).pipe(
-      map( row => { return this.label(entity, id)} )
+      map( () => { return this.label(entity, id)} )
     )
   }
 
