@@ -1,9 +1,9 @@
 import { Component, OnInit, Input} from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { Observable, of } from 'rxjs';
+import { Observable, of, Subscription } from 'rxjs';
 import { DataDefinitionService } from '@service/data-definition/data-definition.service';
 import { SessionStorageService } from '@service/storage/session-storage.service';
-import { map, debounceTime, distinctUntilChanged, tap, switchMap, catchError } from 'rxjs/operators';
+import { map, debounceTime, distinctUntilChanged, tap, switchMap, catchError, mergeMap, first } from 'rxjs/operators';
 import { Display } from '@class/display';
 
 @Component({
@@ -12,36 +12,54 @@ import { Display } from '@class/display';
 })
 export class TypeaheadComponent implements OnInit {
    
+  /**
+   * Utiliza un FormControl independiente para asignar el valor del FormControl enviado como parametro evitando el multiple cambio
+   * Deshabilita el FormControl una vez seleccionado el valor
+   * Permite iniciar y deshabilitar el FormControl para reasignar el valor 
+   * El comportamiento descripto en 2 y 3 facilita la implementacion y evita que el usuario no deje un valor sin asignar
+   */
   @Input() field: FormControl;
   @Input() entityName: string;
   @Input() readonly?: boolean = false;
   
-  searchControl = new FormControl();
-  searching = false;
-  searchFailed = false;
+  searchControl: FormControl = new FormControl();
+  searching: boolean = false;
+  searchFailed: boolean = false;
+  disabled: boolean = true;
+
+  protected subscriptions = new Subscription();
+  /**
+   * las subscripciones son almacenadas para desuscribirse (solucion temporal al bug de Angular)
+   * @todo En versiones posteriores de angular, eliminar el atributo subscriptions y su uso
+   */
 
   constructor(
     public dd: DataDefinitionService,
     protected storage: SessionStorageService
   ) {  }
 
-  ngOnInit(): void {
-    /**
-     * Proceso:
-     * 1 Suscribirse a los datos principales
-     * 2 Inicializar datos del field
-     * 3 Reasignar valor del field para reflejar los cambios
-     * 4 Tener en cuenta que para presentar el valor el field accede al storage
-     */
-    this.field.valueChanges.pipe(map(
-      value => {
-        if(value != this.searchControl.value) {
-          this.dd.getOrNull(this.entityName, value).pipe(map(
-            row => {this.searchControl.setValue(row)}
-          ));
+  initValue(value){
+    this.dd.getOrNull(this.entityName, value).pipe(first()).subscribe(
+      row => {
+        if(row) { 
+          this.searchControl.setValue(row["id"]);
+          this.searchControl.disable();
+        } else {
+          this.searchControl.setValue(null);
+          if(!this.readonly) this.searchControl.enable();
         }
       }
-    ))
+    );
+  }
+
+  ngOnInit(): void {
+    if(this.field.value) this.initValue(this.field.value);
+
+    var s = this.field.valueChanges.subscribe(
+      value => this.initValue(value)
+    );
+
+    this.subscriptions.add(s);
   }
 
   searchTerm(term): Observable<any> {
@@ -50,9 +68,11 @@ export class TypeaheadComponent implements OnInit {
     var display = new Display();
     display.addCondition(["_search","=~",term]);
     return this.dd.all(this.entityName, display).pipe(
-      map(rows => rows.map(row => this.dd.label(this.entityName, row["id"]) )),
+      map(rows => rows.map(row => row["id"] )),
     );
   }
+
+  formatter = (id: string) => { return this.dd.label(this.entityName, id); }
 
   search = (text$: Observable<string>) =>
     text$.pipe(
@@ -72,8 +92,11 @@ export class TypeaheadComponent implements OnInit {
     )
 
   selectItem(event){
-    console.log(event);
+    if (this.field.value != event.item) this.field.setValue(event.item);
   }
 
   get linkAdd() { return this.entityName.replace("_", "-")+"-admin" }
+
+  ngOnDestroy () { this.subscriptions.unsubscribe() }
+
 }
