@@ -143,4 +143,39 @@ export class ValidatorsService {
       ))  
     }
   }
+
+  uniqueMultipleForm(params: {[entity:string]: string}): AsyncValidatorFn {
+    /**
+     * Validar unicidad a traves de varios campos.
+     * Ejemplo uniqueMultiple("comision",["division", "sede"]).
+     * Se aplica al FormGroup que contiene los fields.
+     */
+
+    return (control: FormControl): Observable<ValidationErrors | null> => {
+      let values: Array<any> = [];
+      
+      return null;
+      /*
+      return timer(1000).pipe(
+        mergeMap(()=> {
+          for(let f in fields) values.push(control.get(fields[f]).value);          
+
+          let filters = [];
+          for(let i = 0; i < fields.length; i++) filters.push([fields[i], "=", values[i]]);
+         
+          let display: Display = new Display;
+          display.setCondition(filters);
+
+          return this.dd.idOrNull(entity, display).pipe(
+            map(
+              id => {
+                return (id && (id != control.get("id").value)) ? { notUnique: id } : null;
+              },
+            )
+          );
+        
+        }
+      ))*/  
+    }
+  }
 }
