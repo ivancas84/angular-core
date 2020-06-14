@@ -228,5 +228,5 @@ export abstract class AdminComponent implements OnInit {
     //return this.adminForm.value
   }
 
-  ngOnDestroy () { this.subscriptions.unsubscribe() } //eliminar subscripciones
+  ngOnDestroy () { this.subscriptions.unsubscribe() }
 }
