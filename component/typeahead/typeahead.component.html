@@ -1,0 +1,14 @@
+<div class="input-group">
+  <input class="form-control" [readonly]="readonly" [formControl]="searchControl" [ngbTypeahead]="search" placeholder="Seleccionar">
+  <div class="input-group-append">
+    <span *ngIf="searching" class="input-group-text"><span class="oi oi-clock"></span></span>
+    <span *ngIf="field.value && !searching" class="input-group-text"><span class="oi oi-check"></span></span>
+    <span *ngIf="!field.value && !searching" class="input-group-text"><span class="oi oi-question-mark"></span></span>
+    <span class="input-group-text"><a  class="btn btn-outline-secondary" role="button" [routerLink]="'/'+linkAdd" [queryParams]="{ id : isSelected }" class="oi oi-pencil"></a></span>
+  </div>
+  
+</div>
+<!--
+  Los chequeos deben realizarse en el componente superior
+  Cada campo puede definir chequeos particulares que no pueden ser definidos en forma general
+-->
