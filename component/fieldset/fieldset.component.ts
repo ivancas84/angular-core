@@ -88,8 +88,9 @@ export abstract class FieldsetComponent implements  OnInit {
   }
 
   initValues(response: {[key:string]: any} = {}){
-    if(!response) this.fieldset.reset(this.defaultValues);
-    else {
+    if(!response) {
+      this.fieldset.reset(this.defaultValues);
+    } else {
       for(var key in this.defaultValues){
         if(this.defaultValues.hasOwnProperty(key)){
           if(!response.hasOwnProperty(key)) response[key] = this.defaultValues[key];
