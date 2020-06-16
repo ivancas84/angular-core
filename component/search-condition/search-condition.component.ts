@@ -19,9 +19,9 @@ export abstract class SearchConditionComponent implements OnInit {
   
   @Input() display$: Observable<Display>;
   /**
-   * Conjunto de elementos similares a los filtros, organizados como array
-   * Cada elemento es un array de la forma [campo, opcion, valor]
-   */ 
+   * Datos iniciales
+   */
+   
 
   @Input() condition$: Observable<Array<any>>;
   /**
@@ -53,9 +53,9 @@ export abstract class SearchConditionComponent implements OnInit {
   addFilter() { return this.filters.push(this.fb.group(new Filter())); }
   removeFilter(index) { return this.filters.removeAt(index); }
 
-  f(i) { return this.filters.controls[i].get("field").value }
-  o(i) { return this.filters.controls[i].get("option").value }
-  v(i) { return this.filters.controls[i].get("value").value }
+  f(i) { return this.filters.controls[i].get("field") }
+  o(i) { return this.filters.controls[i].get("option") }
+  v(i) { return this.filters.controls[i].get("value")  }
 
   setFilters(condition){
     let filtersFGs: Array<FormGroup> = [];
