@@ -18,16 +18,16 @@ export abstract class FormPickComponent implements OnInit {
    * @todo En versiones posteriores de angular, eliminar el atributo subscriptions y su uso
    */
 
-  constructor(private fb: FormBuilder, private dd: DataDefinitionService) { }
+  constructor(protected fb: FormBuilder, protected dd: DataDefinitionService) { }
   
   ngOnInit() {    
-    this.initForm();
+    this.formGroup();
     this.initOptions();
     this.valueChangesField();
     this.valueChangesForm();
   }
 
-  abstract initForm();
+  abstract formGroup(): void;
   /**
    * this.form = this.fb.group({ ... controls ... });
    */
@@ -68,15 +68,15 @@ export abstract class FormPickComponent implements OnInit {
         var display = new Display
         for (var key in value) {
           if(!value.hasOwnProperty(key) || !value[key]) return;
-          display.addParam(key, value);
-          this.field.markAsPending();
-          this.dd.all(this.entityName, display).subscribe(
-            (res) => {
-              this.field.setValue(res.id);
-              this.field.markAsDirty();
-            }
-          );
+          display.addParam(key, value[key]);
         }
+        this.field.markAsPending();
+        this.dd.all(this.entityName, display).subscribe(
+          (res) => {
+            this.field.setValue(res.id);
+            this.field.markAsDirty();
+          }
+        );
       },
       (err) => {  
         console.log(err);
