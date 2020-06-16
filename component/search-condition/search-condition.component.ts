@@ -55,7 +55,7 @@ export abstract class SearchConditionComponent implements OnInit {
 
   f(i) { return this.filters.controls[i].get("field") }
   o(i) { return this.filters.controls[i].get("option") }
-  v(i) { return this.filters.controls[i].get("value") }
+  v(i) { return this.filters.controls[i].get("value")  }
 
   setFilters(condition){
     let filtersFGs: Array<FormGroup> = [];
