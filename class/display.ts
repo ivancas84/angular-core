@@ -83,11 +83,11 @@ export class Display {
   }
   
   public setConditionByFilters(filters:Array<Filter>){ 
-    var condition = [];
+    this.condition = [];
     for(let i = 0; i < filters.length; i++){
-      if(filters[i]["value"] !== undefined) condition.push([filters[i]["field"], filters[i]["option"], filters[i]["value"]]);
+      console.log(filters[i])
+      if(filters[i]["value"] !== undefined) this.addCondition([filters[i]["field"], filters[i]["option"], filters[i]["value"]]);
     }    
-    return condition;
   }
 
   public setOrderByElement(order:Array<OrderElement>){
