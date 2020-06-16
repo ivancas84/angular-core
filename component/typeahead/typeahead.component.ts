@@ -15,7 +15,6 @@ export class TypeaheadComponent implements OnInit {
    * Utiliza un FormControl independiente para asignar el valor del FormControl enviado como parametro evitando el multiple cambio
    * Deshabilita el FormControl una vez seleccionado el valor
    * Permite iniciar y deshabilitar el FormControl para reasignar el valor 
-   * El comportamiento descripto en 2 y 3 facilita la implementacion y evita que el usuario no deje un valor sin asignar
    */
   
   @Input() field: FormControl;
