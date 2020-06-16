@@ -1,43 +1,73 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { DataDefinitionService } from '@service/data-definition/data-definition.service';
-import { FormGroup, FormBuilder } from '@angular/forms';
+import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
 import { Display } from '@class/display';
+import { first } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 
 
 export abstract class FormPickComponent implements OnInit {
   
+  @Input() field: FormControl;
+  @Input() readonly?: boolean = false;
   readonly entityName: string;
-  
-  @Input() fieldName: string;
-
-  @Input() fieldset: FormGroup;
-  /**
-   * Fieldset al que pertenece fieldName
-   * Al cargar y procesar el archivo se asignara posteriormente el id resultante a fieldset.fieldName.value
-   */
-
   form: FormGroup;
+  protected subscriptions = new Subscription();
+  /**
+   * las subscripciones son almacenadas para desuscribirse (solucion temporal al bug de Angular)
+   * @todo En versiones posteriores de angular, eliminar el atributo subscriptions y su uso
+   */
 
   constructor(private fb: FormBuilder, private dd: DataDefinitionService) { }
   
   ngOnInit() {    
     this.initForm();
-    this.valueChanges();
-    //this.initOptions();
-    //this.initData();
+    this.initOptions();
+    this.valueChangesField();
+    this.valueChangesForm();
   }
 
   abstract initForm();
   /**
    * this.form = this.fb.group({ ... controls ... });
    */
+
+  initOptions(): void {
+    /**
+     * sobrescribir si el formulario tiene opciones
+     */
+  }
+
+  initValue(value){
+    this.dd.getOrNull(this.entityName, value).pipe(first()).subscribe(
+      row => {
+        if(row) { 
+          this.form.reset(row);
+          this.form.disable();
+        } else {
+          this.form.reset();
+          if(!this.readonly) this.form.enable();
+        }
+      }
+    );
+  }
   
-  valueChanges(): void {
-    this.form.valueChanges.subscribe(
+  valueChangesField(): void {
+    if(this.field.value) this.initValue(this.field.value);
+
+    var s = this.field.valueChanges.subscribe(
+      value => this.initValue(value)
+    );
+
+    this.subscriptions.add(s);
+  }
+
+  valueChangesForm(): void {
+    var s = this.form.valueChanges.subscribe(
       value => {
         var display = new Display
         for (var key in value) {
-          if(!value[key]) return;
+          if(!value.hasOwnProperty(key) || !value[key]) return;
           display.addParam(key, value);
           this.field.markAsPending();
           this.dd.all(this.entityName, display).subscribe(
@@ -51,9 +81,11 @@ export abstract class FormPickComponent implements OnInit {
       (err) => {  
         console.log(err);
       }
-    )
-  }
+    );
 
-  get field() { return this.fieldset.get(this.fieldName)}
+    this.subscriptions.add(s);
+  }
+  
+  ngOnDestroy () { this.subscriptions.unsubscribe() }
 
 }
