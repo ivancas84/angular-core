@@ -2,9 +2,6 @@ import { Input, OnInit} from '@angular/core';
 import { FormGroup, AbstractControl, FormBuilder } from '@angular/forms';
 import { DataDefinitionService } from '@service/data-definition/data-definition.service';
 import { ValidatorsService } from '@service/validators/validators.service';
-import { isEmptyObject } from '@function/is-empty-object.function';
-import { Observable, forkJoin, BehaviorSubject } from 'rxjs';
-import { map, tap, delay } from 'rxjs/operators';
 
 export abstract class FieldsetComponent implements  OnInit {
   /**
@@ -29,17 +26,10 @@ export abstract class FieldsetComponent implements  OnInit {
    * Utilizado solo para identificar el fieldset
    */
   
-  options: Observable<any>; 
-  /**
-   * opciones para el formulario
-   */
-  
   fieldset: AbstractControl; 
   /**
    * fieldset
    */
-
-  //load$: BehaviorSubject<any> = new BehaviorSubject(false);
 
   readonly defaultValues: {[key:string]: any} = {};
 
@@ -70,18 +60,16 @@ export abstract class FieldsetComponent implements  OnInit {
 
   initData(): void { 
     /**
-     * sobrescribir si el fieldset tiene datos adicionales que deben ser inicializados   
+     * sobrescribir si el fieldset tiene datos adicionales que deben ser inicializados 
+     * se probo suscribirse desde el html, funciona pero tira error ExpressionChanged... 
+     * no da tiempo a que se inicialice y enseguida se cambia el valor 
      */   
     this.data$.subscribe(
       response => {
         this.initValues(response);
         /**
          * response puede tener el valor de algunos datos, por las dudas inicializo los valores por defecto
-         */ 
-        /**
-         * una vez reasignados los valores por defecto vuelgo a asignar valores (si existen)
-         * esto va a realizar una doble definicion e valueChanges si se utilizan
-         */ 
+         */
       }
     );
   }
