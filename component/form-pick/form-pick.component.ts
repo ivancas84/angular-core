@@ -41,7 +41,6 @@ export abstract class FormPickComponent implements OnInit {
   initValue(value){
     this.dd.getOrNull(this.entityName, value).pipe(first()).subscribe(
       row => {
-        console.log(row);
         if(row) { 
           this.form.reset(row);
           this.form.disable();
@@ -72,7 +71,6 @@ export abstract class FormPickComponent implements OnInit {
     this.field.markAsPending();
     this.dd.idOrNull(this.entityName, display).pipe(first()).subscribe(
       (res) => {
-        console.log(res)
         this.field.setValue(res);
         this.field.markAsDirty();
       },
