@@ -12,6 +12,7 @@ export abstract class FormPickComponent implements OnInit {
   @Input() readonly?: boolean = false;
   readonly entityName: string;
   form: FormGroup;
+
   protected subscriptions = new Subscription();
   /**
    * las subscripciones son almacenadas para desuscribirse (solucion temporal al bug de Angular)
@@ -24,7 +25,6 @@ export abstract class FormPickComponent implements OnInit {
     this.formGroup();
     this.initOptions();
     this.valueChangesField();
-    this.valueChangesForm();
   }
 
   abstract formGroup(): void;
@@ -41,6 +41,7 @@ export abstract class FormPickComponent implements OnInit {
   initValue(value){
     this.dd.getOrNull(this.entityName, value).pipe(first()).subscribe(
       row => {
+        console.log(row);
         if(row) { 
           this.form.reset(row);
           this.form.disable();
@@ -62,28 +63,24 @@ export abstract class FormPickComponent implements OnInit {
     this.subscriptions.add(s);
   }
 
-  valueChangesForm(): void {
-    var s = this.form.valueChanges.subscribe(
-      value => {
-        var display = new Display
-        for (var key in value) {
-          if(!value.hasOwnProperty(key) || !value[key]) return;
-          display.addParam(key, value[key]);
-        }
-        this.field.markAsPending();
-        this.dd.all(this.entityName, display).subscribe(
-          (res) => {
-            this.field.setValue(res.id);
-            this.field.markAsDirty();
-          }
-        );
+  onSubmit(): void {
+    var display = new Display
+    for (var key in this.form.value) {
+      if(!this.form.value.hasOwnProperty(key) || !this.form.value[key]) return;
+      display.addParam(key, this.form.value[key]);
+    }
+    this.field.markAsPending();
+    this.dd.idOrNull(this.entityName, display).pipe(first()).subscribe(
+      (res) => {
+        console.log(res)
+        this.field.setValue(res);
+        this.field.markAsDirty();
       },
       (err) => {  
         console.log(err);
       }
-    );
 
-    this.subscriptions.add(s);
+    );
   }
   
   ngOnDestroy () { this.subscriptions.unsubscribe() }

@@ -22,7 +22,6 @@ export class TypeaheadComponent implements OnInit {
   @Input() readonly?: boolean = false;
   
   searchControl: FormControl = new FormControl();
-  searching: boolean = false;
   searchFailed: boolean = false;
   disabled: boolean = true;
 
@@ -77,7 +76,7 @@ export class TypeaheadComponent implements OnInit {
     text$.pipe(
       debounceTime(300),
       distinctUntilChanged(),
-      tap(() => this.searching = true),
+      tap(() => this.field.markAsPending()),
       switchMap(term =>
         this.searchTerm(term).pipe(
           tap(() => this.searchFailed = false),
@@ -87,7 +86,7 @@ export class TypeaheadComponent implements OnInit {
           })
         )
       ),
-      tap(() => this.searching = false)
+      tap(() => this.field.markAsDirty())
     )
 
   selectItem(event){
