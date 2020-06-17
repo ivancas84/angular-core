@@ -65,7 +65,6 @@ export abstract class FieldsetComponent implements  OnInit {
   initOptions(): void {
     /**
      * sobrescribir si el formulario tiene opciones
-     * asignarlas al atributo options
      */
   }
 
@@ -99,7 +98,5 @@ export abstract class FieldsetComponent implements  OnInit {
       this.fieldset.reset(response) 
     }
   }
-
-    
  
 }
