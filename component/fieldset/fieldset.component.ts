@@ -31,7 +31,7 @@ export abstract class FieldsetComponent implements  OnInit {
    * Utilizado solo para identificar el fieldset
    */
   
-  fieldset: AbstractControl; 
+  fieldset: FormGroup; 
   /**
    * fieldset
    */
@@ -71,8 +71,9 @@ export abstract class FieldsetComponent implements  OnInit {
      */   
     this.load$ = this.data$.pipe(map(
       response => {
+        console.log(response);
         this.initValues(response);
-        return response;
+        return true;
         /**
          * response puede tener el valor de algunos datos, por las dudas inicializo los valores por defecto
          */
