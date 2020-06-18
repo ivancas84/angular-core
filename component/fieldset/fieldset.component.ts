@@ -2,6 +2,8 @@ import { Input, OnInit} from '@angular/core';
 import { FormGroup, AbstractControl, FormBuilder } from '@angular/forms';
 import { DataDefinitionService } from '@service/data-definition/data-definition.service';
 import { ValidatorsService } from '@service/validators/validators.service';
+import { map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 export abstract class FieldsetComponent implements  OnInit {
   /**
@@ -15,10 +17,13 @@ export abstract class FieldsetComponent implements  OnInit {
    * Formulario de administracion
    */
 
-  @Input() data$: any; 
+  @Input() data$: Observable<any>; 
   /**
    * Datos del formulario
    */
+
+  load$: Observable<any>; 
+   
 
   readonly entityName: string; 
   /**
@@ -64,14 +69,16 @@ export abstract class FieldsetComponent implements  OnInit {
      * se probo suscribirse desde el html, funciona pero tira error ExpressionChanged... 
      * no da tiempo a que se inicialice y enseguida se cambia el valor 
      */   
-    this.data$.subscribe(
+    this.load$ = this.data$.pipe(map(
       response => {
+        console.log("voy");
         this.initValues(response);
+        return response;
         /**
          * response puede tener el valor de algunos datos, por las dudas inicializo los valores por defecto
          */
       }
-    );
+    ));
   }
 
   initValues(response: {[key:string]: any} = {}){
