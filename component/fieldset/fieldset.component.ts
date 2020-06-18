@@ -2,6 +2,9 @@ import { Input, OnInit} from '@angular/core';
 import { FormGroup, AbstractControl, FormBuilder } from '@angular/forms';
 import { DataDefinitionService } from '@service/data-definition/data-definition.service';
 import { ValidatorsService } from '@service/validators/validators.service';
+import { map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { fastClone } from '@function/fast-clone';
 
 export abstract class FieldsetComponent implements  OnInit {
   /**
@@ -15,10 +18,13 @@ export abstract class FieldsetComponent implements  OnInit {
    * Formulario de administracion
    */
 
-  @Input() data$: any; 
+  @Input() data$: Observable<any>; 
   /**
    * Datos del formulario
    */
+
+  load$: Observable<any>; 
+   
 
   readonly entityName: string; 
   /**
@@ -26,7 +32,7 @@ export abstract class FieldsetComponent implements  OnInit {
    * Utilizado solo para identificar el fieldset
    */
   
-  fieldset: AbstractControl; 
+  fieldset: FormGroup; 
   /**
    * fieldset
    */
@@ -64,26 +70,28 @@ export abstract class FieldsetComponent implements  OnInit {
      * se probo suscribirse desde el html, funciona pero tira error ExpressionChanged... 
      * no da tiempo a que se inicialice y enseguida se cambia el valor 
      */   
-    this.data$.subscribe(
+    this.load$ = this.data$.pipe(map(
       response => {
         this.initValues(response);
+        return true;
         /**
          * response puede tener el valor de algunos datos, por las dudas inicializo los valores por defecto
          */
       }
-    );
+    ));
   }
 
   initValues(response: {[key:string]: any} = {}){
     if(!response) {
       this.fieldset.reset(this.defaultValues);
     } else {
+      var res = fastClone(response);
       for(var key in this.defaultValues){
         if(this.defaultValues.hasOwnProperty(key)){
-          if(!response.hasOwnProperty(key)) response[key] = this.defaultValues[key];
+          if(!res.hasOwnProperty(key)) res[key] = this.defaultValues[key];
         }
       }
-      this.fieldset.reset(response) 
+      this.fieldset.reset(res) 
     }
   }
  

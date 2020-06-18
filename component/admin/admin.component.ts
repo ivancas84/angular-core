@@ -3,7 +3,7 @@ import { ReplaySubject, Subscription, Observable, BehaviorSubject } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DataDefinitionService } from '@service/data-definition/data-definition.service';
 import { ValidatorsService } from '@service/validators/validators.service';
-import { first } from 'rxjs/operators';
+import { first, map } from 'rxjs/operators';
 import { Location } from '@angular/common';
 import { emptyUrl } from '@function/empty-url.function';
 import { SessionStorageService } from '@service/storage/session-storage.service';
@@ -38,14 +38,6 @@ export abstract class AdminComponent implements OnInit {
    * Se podria usar BehaviorSubject y manejar diferentes alternativas para indicar si esta o no definido, por ejemplo null o false
    */
 
-  params$:BehaviorSubject<any> = new BehaviorSubject(null);
-  /**
-   * parametros
-   * Se define como BehaviorSubject en vez de ReplaySubject porque se necesita acceder al current value
-   * se distingue la diferencia entre null (valor inicial) y {} que indica que no existen parametros
-   * Si es null no se debe realizar procesamiento, si es {} si.
-   */
-
   isDeletable: boolean = false;
   /**
    * flag para habilitar/deshabilitar boton eliminar
@@ -54,6 +46,11 @@ export abstract class AdminComponent implements OnInit {
   isSubmitted: boolean = false;
   /**
    * flag para habilitar/deshabilitar boton aceptar
+   */
+
+  params$: Observable<any>;
+  /**
+   * Se asigna con un observable resultante de this.route.queryParams para poder suscribirse en el template e inicializar correctamente el formulario
    */
 
   protected subscriptions = new Subscription();
@@ -76,7 +73,6 @@ export abstract class AdminComponent implements OnInit {
 
   ngOnInit() {
     this.storageValueChanges();
-    this.subscribeQueryParams();
     this.initData();   
   }
 
@@ -88,30 +84,23 @@ export abstract class AdminComponent implements OnInit {
     this.subscriptions.add(s);
   }
 
-  subscribeQueryParams() {
-    var s = this.route.queryParams.subscribe (
-      params => { this.params$.next(params); },
-      error => { this.toast.showDanger(JSON.stringify(error)); }
-    );
-    this.subscriptions.add(s);
-  }
 
   initData(){
-    var s = this.params$.subscribe (
+     this.params$ = this.route.queryParams.pipe(map(
       params => {
-        if(params === null) return;
-        this.setData();
+        this.setData(params);
+        return true;
       },
       error => { this.toast.showDanger(JSON.stringify(error)); }
-    )
-    this.subscriptions.add(s);
+    ))
+    
   }
 
-  setData(){
+  setData(params){
     let formValues = this.storage.getItem(this.router.url);
     this.removeStorage();
     if(formValues) this.setDataFromStorage(formValues);
-    else this.setDataFromParams(this.params$.value);
+    else this.setDataFromParams(params);
   }
 
   setDataFromStorage(formValues: any): void {
@@ -154,17 +143,14 @@ export abstract class AdminComponent implements OnInit {
      * si la ruta es la misma, se limpia el storage y se asignan parametros en null
      */
     let route = emptyUrl(this.router.url);
-    if(this.router.url != route) this.router.navigateByUrl('/' + route);
+    if(route != this.router.url) this.router.navigateByUrl('/' + route);
+    else this.setData(this.route.snapshot.queryParams)
     
-    else {
-      this.removeStorage();
-      this.params$.next({});
-    }
   }
 
   reset(): void{
     this.removeStorage();
-    this.params$.next(this.params$.value);
+    this.setData(this.route.snapshot.queryParams)
   }
   
   persist(): Observable<any> {
@@ -198,7 +184,9 @@ export abstract class AdminComponent implements OnInit {
             );
           }
           this.removeStorage();
-          this.params$.next({id:this.getProcessedId(response)}); 
+          let route = emptyUrl(this.router.url) + "?id="+this.getProcessedId(response);
+          if(route != this.router.url)  this.router.navigateByUrl('/' + route);
+          else this.setData(this.route.snapshot.queryParams)
           /**
            * por mas que sea el mismo valor, se vuelve a asignar y se recarga el formulario
            */

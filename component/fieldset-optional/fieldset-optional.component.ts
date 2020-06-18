@@ -1,15 +1,16 @@
 import { FieldsetComponent } from '@component/fieldset/fieldset.component';
 import { Input } from '@angular/core';
 import { FormGroup } from '@angular/forms';
+import { map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 export abstract class FieldsetOptionalComponent extends FieldsetComponent {
 
-  @Input() data$: any; 
+  @Input() data$: Observable<any>; 
   /**
    * Deberia heredarlo pero da error al ejecutar "ng s"
    * Se ve que solo resuelve hasta una superclase
    * @todo Conviene reemplazar el uso de FieldsetComponent y reimplementar todo en FieldsetOptional
-   * Datos del formulario
    */
 
   @Input() form: FormGroup; 
@@ -17,20 +18,21 @@ export abstract class FieldsetOptionalComponent extends FieldsetComponent {
    * Deberia heredarlo pero da error al ejecutar "ng s"
    * Se ve que solo resuelve hasta una superclase
    * @todo Conviene reemplazar el uso de FieldsetComponent y reimplementar todo en FieldsetOptional
-   * Formulario de administracion
    */
   
-  initData(): void{    
-    this.data$.subscribe(
+  initData(): void { 
+    /**
+     * sobrescribir si el fieldset tiene datos adicionales que deben ser inicializados 
+     * se probo suscribirse desde el html, funciona pero tira error ExpressionChanged... 
+     * no da tiempo a que se inicialice y enseguida se cambia el valor 
+     */   
+    this.load$ = this.data$.pipe(map(
       response => {
-        if(response) {
-          this.fieldset.enable();
-          this.fieldset.reset(response);
-        } else {
-          this.initValues();
-          this.fieldset.disable(); 
-        }        
+        this.initValues(response);
+        (response) ? this.fieldset.enable() : this.fieldset.disable();
+        return true;
       }
-    );
+    ));
   }
+
 }
