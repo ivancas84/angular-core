@@ -71,7 +71,6 @@ export abstract class FieldsetComponent implements  OnInit {
      */   
     this.load$ = this.data$.pipe(map(
       response => {
-        console.log("voy");
         this.initValues(response);
         return response;
         /**
