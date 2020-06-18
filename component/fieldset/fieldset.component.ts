@@ -4,6 +4,7 @@ import { DataDefinitionService } from '@service/data-definition/data-definition.
 import { ValidatorsService } from '@service/validators/validators.service';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
+import { fastClone } from '@function/fast-clone';
 
 export abstract class FieldsetComponent implements  OnInit {
   /**
@@ -71,7 +72,6 @@ export abstract class FieldsetComponent implements  OnInit {
      */   
     this.load$ = this.data$.pipe(map(
       response => {
-        console.log(response);
         this.initValues(response);
         return true;
         /**
@@ -85,12 +85,13 @@ export abstract class FieldsetComponent implements  OnInit {
     if(!response) {
       this.fieldset.reset(this.defaultValues);
     } else {
+      var res = fastClone(response);
       for(var key in this.defaultValues){
         if(this.defaultValues.hasOwnProperty(key)){
-          if(!response.hasOwnProperty(key)) response[key] = this.defaultValues[key];
+          if(!res.hasOwnProperty(key)) res[key] = this.defaultValues[key];
         }
       }
-      this.fieldset.reset(response) 
+      this.fieldset.reset(res) 
     }
   }
  
