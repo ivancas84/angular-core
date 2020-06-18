@@ -98,7 +98,6 @@ export abstract class AdminComponent implements OnInit {
 
   setData(params){
     let formValues = this.storage.getItem(this.router.url);
-    this.removeStorage();
     if(formValues) this.setDataFromStorage(formValues);
     else this.setDataFromParams(params);
   }
