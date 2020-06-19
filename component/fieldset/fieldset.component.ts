@@ -103,7 +103,6 @@ export abstract class FieldsetComponent implements  OnInit {
           if(!res.hasOwnProperty(key)) res[key] = this.defaultValues[key];
         }
       }
-      console.log(res);
       this.fieldset.reset(res) 
     }
   }

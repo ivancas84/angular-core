@@ -67,7 +67,6 @@ export abstract class AdminComponent implements OnInit, AfterViewInit {
   ) {}
   
   ngAfterViewInit(): void {
-    console.log("after")
     this.removeStorage();
     /**
      * Si no se incluye, nunca se limpia el formulario 
