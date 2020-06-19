@@ -1,7 +1,6 @@
 import { FieldsetComponent } from '@component/fieldset/fieldset.component';
 import { Input } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 
 export abstract class FieldsetOptionalComponent extends FieldsetComponent {
@@ -20,21 +19,28 @@ export abstract class FieldsetOptionalComponent extends FieldsetComponent {
    * @todo Conviene reemplazar el uso de FieldsetComponent y reimplementar todo en FieldsetOptional
    */
   
-  initData(): void { 
+  initData(formValues): void {
     /**
-     * sobrescribir si el fieldset tiene datos adicionales que deben ser inicializados 
-     * se probo suscribirse desde el html, funciona pero tira error ExpressionChanged... 
-     * no da tiempo a que se inicialice y enseguida se cambia el valor 
-     */   
-    var s = this.data$.subscribe(
-      response => {
-        this.initValues(response);
-        (response) ? this.fieldset.enable() : this.fieldset.disable();
-        return true;
-      }
-    );
+     * No suscribirse desde el template!
+     * Puede disparar errores ExpressionChanged... no deseados (por ejemplo en la validacion inicial)
+     * Al suscribirse desde el template se cambia el Lifehook cycle 
+     */  
+      var s = this.data$.subscribe(
+        response => {
+          if(formValues) {
+            var d = formValues.hasOwnProperty(this.entityName)? formValues[this.entityName] : null;
+            this.fieldset.reset(d);
+            (d) ? this.fieldset.enable() : this.fieldset.disable();
 
-    this.subscriptions.add(s);
+          } else {
+            this.initValues(response);
+            (response) ? this.fieldset.enable() : this.fieldset.disable();
+            /**
+             * response puede tener el valor de algunos datos, por las dudas inicializo los valores por defecto
+             */
+          }
+        }
+      );
+      this.subscriptions.add(s);
   }
-
 }
