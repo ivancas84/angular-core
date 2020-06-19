@@ -19,7 +19,7 @@ export abstract class FieldsetOptionalComponent extends FieldsetComponent {
    * @todo Conviene reemplazar el uso de FieldsetComponent y reimplementar todo en FieldsetOptional
    */
   
-  initData(formValues): void {
+  initData(): void {
     /**
      * No suscribirse desde el template!
      * Puede disparar errores ExpressionChanged... no deseados (por ejemplo en la validacion inicial)
@@ -27,9 +27,10 @@ export abstract class FieldsetOptionalComponent extends FieldsetComponent {
      */  
       var s = this.data$.subscribe(
         response => {
-          if(formValues) {
-            var d = formValues.hasOwnProperty(this.entityName)? formValues[this.entityName] : null;
+          if(this.formValues) {
+            var d = this.formValues.hasOwnProperty(this.entityName)? this.formValues[this.entityName] : null;
             this.fieldset.reset(d);
+            this.formValues = null;
             (d) ? this.fieldset.enable() : this.fieldset.disable();
 
           } else {
