@@ -48,14 +48,15 @@ export abstract class FieldsetComponent implements  OnInit {
 
   abstract formGroup();
 
+  formValues =this.storage.getItem(this.router.url);
+
   ngOnInit() {    
-    let formValues = this.storage.getItem(this.router.url);
     /**
      * Al inicializar el formulario se blanquean los valores del storage, por eso deben consultarse previamente
      */
     this.initForm();
     this.initOptions();
-    this.initData(formValues);
+    this.initData();
   }
 
   initForm(): void {
@@ -69,7 +70,7 @@ export abstract class FieldsetComponent implements  OnInit {
      */
   }
 
-  initData(formValues): void {
+  initData(): void {
     /**
      * No suscribirse desde el template!
      * Puede disparar errores ExpressionChanged... no deseados (por ejemplo en la validacion inicial)
@@ -77,9 +78,10 @@ export abstract class FieldsetComponent implements  OnInit {
      */  
       var s = this.data$.subscribe(
         response => {
-          if(formValues) {
-            var d = formValues.hasOwnProperty(this.entityName)? formValues[this.entityName] : null;
+          if(this.formValues) {
+            var d = this.formValues.hasOwnProperty(this.entityName)? this.formValues[this.entityName] : null;
             this.fieldset.reset(d);
+            this.formValues = null;
           } else {
             this.initValues(response);
             /**
