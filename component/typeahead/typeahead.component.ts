@@ -64,7 +64,7 @@ export class TypeaheadComponent implements OnInit {
     if(term === "") return of([]);
 
     var display = new Display();
-    display.addCondition(["_search","=~",term]);
+    display.addCondition(["_label","=~",term]);
     return this.dd.all(this.entityName, display).pipe(
       map(rows => rows.map(row => row["id"] )),
     );
