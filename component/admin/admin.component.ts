@@ -3,7 +3,7 @@ import { ReplaySubject, Subscription, Observable, BehaviorSubject } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DataDefinitionService } from '@service/data-definition/data-definition.service';
 import { ValidatorsService } from '@service/validators/validators.service';
-import { first, map } from 'rxjs/operators';
+import { first } from 'rxjs/operators';
 import { Location } from '@angular/common';
 import { emptyUrl } from '@function/empty-url.function';
 import { SessionStorageService } from '@service/storage/session-storage.service';
@@ -61,7 +61,6 @@ export abstract class AdminComponent implements OnInit, AfterViewInit {
     protected location: Location, 
     protected dd: DataDefinitionService, 
     protected toast: ToastService, 
-    protected validators: ValidatorsService,
     protected storage: SessionStorageService, 
   ) {}
   
