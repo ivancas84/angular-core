@@ -48,6 +48,8 @@ export abstract class AdminComponent implements OnInit, AfterViewInit {
    * flag para habilitar/deshabilitar boton aceptar
    */
 
+   params: any = false;;
+
   protected subscriptions = new Subscription();
   /**
    * las subscripciones son almacenadas para desuscribirse (solucion temporal al bug de Angular)
@@ -65,6 +67,7 @@ export abstract class AdminComponent implements OnInit, AfterViewInit {
   ) {}
   
   ngAfterViewInit(): void {
+    console.log("after")
     this.removeStorage();
     /**
      * Si no se incluye, nunca se limpia el formulario 
@@ -86,6 +89,7 @@ export abstract class AdminComponent implements OnInit, AfterViewInit {
     this.subscriptions.add(s);
   }
 
+  
   initData(){
     /**
      * No realizar la suscripcion en el template! 
@@ -93,7 +97,8 @@ export abstract class AdminComponent implements OnInit, AfterViewInit {
      * Al suscribirse desde el template se cambia el Lifecycle
      */
     var s = this.route.queryParams.subscribe(
-      params => { this.setData(params); },
+      params => {
+        this.setData(params); },
       error => { this.toast.showDanger(JSON.stringify(error)); }
     )
     this.subscriptions.add(s);
@@ -141,7 +146,7 @@ export abstract class AdminComponent implements OnInit, AfterViewInit {
   }
 
   reset(): void{
-    this.removeStorage();
+    //this.removeStorage();
     this.setData(this.route.snapshot.queryParams)
   }
   
@@ -175,7 +180,8 @@ export abstract class AdminComponent implements OnInit, AfterViewInit {
               element => this.storage.removeItem(element)
             );
           }
-          this.removeStorage();
+          
+          //this.removeStorage();
           let route = emptyUrl(this.router.url) + "?id="+this.getProcessedId(response);
           if(route != this.router.url)  this.router.navigateByUrl('/' + route);
           else this.setData(this.route.snapshot.queryParams)

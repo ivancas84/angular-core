@@ -44,6 +44,7 @@ export abstract class StorageService {
   }
 
   removeItemsPrefix(prefix): void {
+    console.log("voy a remover " + prefix)
     let s = this.getStorage(),
         keys = Object.keys(s);
 
