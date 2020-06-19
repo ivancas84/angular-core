@@ -26,13 +26,15 @@ export abstract class FieldsetOptionalComponent extends FieldsetComponent {
      * se probo suscribirse desde el html, funciona pero tira error ExpressionChanged... 
      * no da tiempo a que se inicialice y enseguida se cambia el valor 
      */   
-    this.load$ = this.data$.pipe(map(
+    var s = this.data$.subscribe(
       response => {
         this.initValues(response);
         (response) ? this.fieldset.enable() : this.fieldset.disable();
         return true;
       }
-    ));
+    );
+
+    this.subscriptions.add(s);
   }
 
 }
