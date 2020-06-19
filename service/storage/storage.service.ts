@@ -16,7 +16,6 @@ export abstract class StorageService {
     } catch (e) {
       this.getStorage().clear();
       this.getStorage().setItem(key, JSON.stringify(item));
-      console.log("storage completo, se realiza un clear para limpiar");
     }
   }
 
