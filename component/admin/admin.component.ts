@@ -13,7 +13,7 @@ import { OnInit, AfterViewInit } from '@angular/core';
 import { markAllAsTouched } from '@function/mark-all-as-touched';
 import { logValidationErrors } from '@function/log-validation-errors';
 
-export abstract class AdminComponent implements OnInit {
+export abstract class AdminComponent implements OnInit, AfterViewInit {
 /**
  * Formulario de administracion FormGroup (adminForm) cuyos elementos son tambien FormGroups correspondientes a los fieldsets
  * Se recomienda no modificar el id de la tabla principal en las actualizaciones
@@ -48,11 +48,6 @@ export abstract class AdminComponent implements OnInit {
    * flag para habilitar/deshabilitar boton aceptar
    */
 
-  params$: Observable<any>;
-  /**
-   * Se asigna con un observable resultante de this.route.queryParams para poder suscribirse en el template e inicializar correctamente el formulario
-   */
-
   protected subscriptions = new Subscription();
   /**
    * las subscripciones son almacenadas para desuscribirse (solucion temporal al bug de Angular)
@@ -70,6 +65,14 @@ export abstract class AdminComponent implements OnInit {
     protected storage: SessionStorageService, 
   ) {}
   
+  ngAfterViewInit(): void {
+    this.removeStorage();
+    /**
+     * Necesario para evitar que se quede registrado el formulario ante un cambio de url
+     * y para facilitar la reinicializacion ante la doble actualizacion
+     */
+  }
+  
 
   ngOnInit() {
     this.storageValueChanges();
@@ -84,15 +87,20 @@ export abstract class AdminComponent implements OnInit {
     this.subscriptions.add(s);
   }
 
-
   initData(){
-     this.params$ = this.route.queryParams.pipe(map(
+    /**
+     * No realizar la suscripcion en el template! 
+     * Puede generar ExpressionChanged error inesperados
+     * Al suscribirse desde el template se cambia el Lifecycle
+     */
+    var s = this.route.queryParams.subscribe(
       params => {
         this.setData(params);
         return true;
       },
       error => { this.toast.showDanger(JSON.stringify(error)); }
-    ))
+    )
+    this.subscriptions.add(s);
     
   }
 

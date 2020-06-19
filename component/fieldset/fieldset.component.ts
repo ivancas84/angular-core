@@ -3,7 +3,7 @@ import { FormGroup, AbstractControl, FormBuilder } from '@angular/forms';
 import { DataDefinitionService } from '@service/data-definition/data-definition.service';
 import { ValidatorsService } from '@service/validators/validators.service';
 import { map } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { fastClone } from '@function/fast-clone';
 
 export abstract class FieldsetComponent implements  OnInit {
@@ -23,9 +23,6 @@ export abstract class FieldsetComponent implements  OnInit {
    * Datos del formulario
    */
 
-  load$: Observable<any>; 
-   
-
   readonly entityName: string; 
   /**
    * entidad principal del componente  
@@ -37,7 +34,13 @@ export abstract class FieldsetComponent implements  OnInit {
    * fieldset
    */
 
-  readonly defaultValues: {[key:string]: any} = {};
+  protected subscriptions = new Subscription();
+  /**
+   * las subscripciones son almacenadas para desuscribirse (solucion temporal al bug de Angular)
+   * @todo En versiones posteriores de angular, eliminar el atributo subscriptions y su uso
+   */
+
+   readonly defaultValues: {[key:string]: any} = {};
 
   constructor(
     protected fb: FormBuilder, 
@@ -66,19 +69,19 @@ export abstract class FieldsetComponent implements  OnInit {
 
   initData(): void { 
     /**
-     * sobrescribir si el fieldset tiene datos adicionales que deben ser inicializados 
-     * se probo suscribirse desde el html, funciona pero tira error ExpressionChanged... 
-     * no da tiempo a que se inicialice y enseguida se cambia el valor 
+     * No suscribirse desde el template!
+     * Puede disparar errores ExpressionChanged... no deseados (por ejemplo en la validacion inicial)
+     * Al suscribirse desde el template se cambia el Lifehook cycle 
      */   
-    this.load$ = this.data$.pipe(map(
+    var s = this.data$.subscribe(
       response => {
         this.initValues(response);
-        return true;
         /**
          * response puede tener el valor de algunos datos, por las dudas inicializo los valores por defecto
          */
       }
-    ));
+    );
+    this.subscriptions.add(s);
   }
 
   initValues(response: {[key:string]: any} = {}){
