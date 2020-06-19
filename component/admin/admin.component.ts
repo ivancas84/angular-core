@@ -3,7 +3,7 @@ import { ReplaySubject, Subscription, Observable, BehaviorSubject } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DataDefinitionService } from '@service/data-definition/data-definition.service';
 import { ValidatorsService } from '@service/validators/validators.service';
-import { first, map } from 'rxjs/operators';
+import { first } from 'rxjs/operators';
 import { Location } from '@angular/common';
 import { emptyUrl } from '@function/empty-url.function';
 import { SessionStorageService } from '@service/storage/session-storage.service';
@@ -61,15 +61,14 @@ export abstract class AdminComponent implements OnInit, AfterViewInit {
     protected location: Location, 
     protected dd: DataDefinitionService, 
     protected toast: ToastService, 
-    protected validators: ValidatorsService,
     protected storage: SessionStorageService, 
   ) {}
   
   ngAfterViewInit(): void {
     this.removeStorage();
     /**
-     * Necesario para evitar que se quede registrado el formulario ante un cambio de url
-     * y para facilitar la reinicializacion ante la doble actualizacion
+     * Si no se incluye, nunca se limpia el formulario 
+     * Puede resultar confuso cuando se asignan otros parametros a la url
      */
   }
   
@@ -94,28 +93,14 @@ export abstract class AdminComponent implements OnInit, AfterViewInit {
      * Al suscribirse desde el template se cambia el Lifecycle
      */
     var s = this.route.queryParams.subscribe(
-      params => {
-        this.setData(params);
-        return true;
-      },
+      params => { this.setData(params); },
       error => { this.toast.showDanger(JSON.stringify(error)); }
     )
     this.subscriptions.add(s);
     
   }
 
-  setData(params){
-    let formValues = this.storage.getItem(this.router.url);
-    if(formValues) this.setDataFromStorage(formValues);
-    else this.setDataFromParams(params);
-  }
-
-  setDataFromStorage(formValues: any): void {
-    var d = formValues.hasOwnProperty(this.entityName)? formValues[this.entityName] : null;
-    this.data$.next(d);   
-  }
-
-  setDataFromParams(params: any): void {
+  setData(params: any): void {
     if(isEmptyObject(params)) {
       this.data$.next(null);
       return;

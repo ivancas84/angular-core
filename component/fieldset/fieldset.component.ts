@@ -1,10 +1,9 @@
 import { Input, OnInit} from '@angular/core';
-import { FormGroup, AbstractControl, FormBuilder } from '@angular/forms';
-import { DataDefinitionService } from '@service/data-definition/data-definition.service';
-import { ValidatorsService } from '@service/validators/validators.service';
-import { map } from 'rxjs/operators';
+import { FormGroup } from '@angular/forms';
 import { Observable, Subscription } from 'rxjs';
 import { fastClone } from '@function/fast-clone';
+import { Router } from '@angular/router';
+import { SessionStorageService } from '@service/storage/session-storage.service';
 
 export abstract class FieldsetComponent implements  OnInit {
   /**
@@ -43,17 +42,20 @@ export abstract class FieldsetComponent implements  OnInit {
    readonly defaultValues: {[key:string]: any} = {};
 
   constructor(
-    protected fb: FormBuilder, 
-    protected dd: DataDefinitionService, 
-    protected validators: ValidatorsService
+    protected router: Router, 
+    protected storage: SessionStorageService, 
   ) { }
 
   abstract formGroup();
 
   ngOnInit() {    
+    let formValues = this.storage.getItem(this.router.url);
+    /**
+     * Al inicializar el formulario se blanquean los valores del storage, por eso deben consultarse previamente
+     */
     this.initForm();
     this.initOptions();
-    this.initData();
+    this.initData(formValues);
   }
 
   initForm(): void {
@@ -67,21 +69,26 @@ export abstract class FieldsetComponent implements  OnInit {
      */
   }
 
-  initData(): void { 
+  initData(formValues): void {
     /**
      * No suscribirse desde el template!
      * Puede disparar errores ExpressionChanged... no deseados (por ejemplo en la validacion inicial)
      * Al suscribirse desde el template se cambia el Lifehook cycle 
-     */   
-    var s = this.data$.subscribe(
-      response => {
-        this.initValues(response);
-        /**
-         * response puede tener el valor de algunos datos, por las dudas inicializo los valores por defecto
-         */
-      }
-    );
-    this.subscriptions.add(s);
+     */  
+      var s = this.data$.subscribe(
+        response => {
+          if(formValues) {
+            var d = formValues.hasOwnProperty(this.entityName)? formValues[this.entityName] : null;
+            this.fieldset.reset(d);
+          } else {
+            this.initValues(response);
+            /**
+             * response puede tener el valor de algunos datos, por las dudas inicializo los valores por defecto
+             */
+          }
+        }
+      );
+      this.subscriptions.add(s);
   }
 
   initValues(response: {[key:string]: any} = {}){
@@ -97,5 +104,7 @@ export abstract class FieldsetComponent implements  OnInit {
       this.fieldset.reset(res) 
     }
   }
+
+
  
 }
