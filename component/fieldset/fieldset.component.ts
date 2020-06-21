@@ -80,7 +80,7 @@ export abstract class FieldsetComponent implements  OnInit {
         response => {
           if(this.formValues) {
             var d = this.formValues.hasOwnProperty(this.entityName)? this.formValues[this.entityName] : null;
-            this.fieldset.reset(d);
+            (d) ? this.fieldset.reset(d) : this.fieldset.reset();
             this.formValues = null;
           } else {
             this.initValues(response);
