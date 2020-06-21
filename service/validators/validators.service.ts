@@ -77,16 +77,6 @@ export class ValidatorsService {
     } 
   }
 
-  typeaheadSelection(entityName: string): ValidatorFn { 
-    /**
-     * Validar seleccion en typeahead
-     */
-    return (control: FormControl): ValidationErrors | null => {
-      const unselected = (control.value && this.storage.getItem(entityName+control.value) == null);
-      return unselected ? { unselected: true } : null;
-    }
-  }
-
   unique(fieldName: string, entityName: string): AsyncValidatorFn {
     /**
      * Verificar campo unico
