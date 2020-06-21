@@ -29,10 +29,14 @@ export abstract class FieldsetOptionalComponent extends FieldsetComponent {
         response => {
           if(this.formValues) {
             var d = this.formValues.hasOwnProperty(this.entityName)? this.formValues[this.entityName] : null;
-            this.fieldset.reset(d);
+            if(!d) {
+              this.fieldset.reset();
+              this.fieldset.disable();
+            } else { 
+              this.fieldset.reset(d);
+              this.fieldset.enable();
+            }
             this.formValues = null;
-            (d) ? this.fieldset.enable() : this.fieldset.disable();
-
           } else {
             this.initValues(response);
             (response) ? this.fieldset.enable() : this.fieldset.disable();
