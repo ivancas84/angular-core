@@ -4,6 +4,7 @@ import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
 import { first } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { UPLOAD_URL } from 'src/app/app.config';
+import { SessionStorageService } from '@service/storage/session-storage.service';
 
 
 @Component({
@@ -34,7 +35,7 @@ export class UploadComponent implements OnInit {
 
   protected subscriptions = new Subscription();
 
-  constructor(protected dd: DataDefinitionService) { }
+  constructor(protected dd: DataDefinitionService, protected storage: SessionStorageService) { }
 
  ngOnInit(): void {
     //if(this.field.value) this.initValue(this.field.value);
@@ -50,7 +51,6 @@ export class UploadComponent implements OnInit {
     this.dd.getOrNull("file", value).pipe(first()).subscribe(
       row => {
         if(row) {
-          console.log(row); 
           this.file = row;
           this.file["link"] = UPLOAD_URL+this.file.content; 
           this.fileControl.setValue("");
@@ -71,6 +71,7 @@ export class UploadComponent implements OnInit {
       this.field.markAsPending();
       this.dd.upload(formData).subscribe(
         (res) => {
+          this.storage.setItem("file" + res.id, res);
           this.field.setValue(res.id);
           this.field.markAsDirty();
           // this.field.setErrors({'incorrect': true});
