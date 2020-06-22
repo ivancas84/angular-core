@@ -3,6 +3,7 @@ import { DataDefinitionService } from '@service/data-definition/data-definition.
 import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
 import { first } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
+import { UPLOAD_URL } from 'src/app/app.config';
 
 
 @Component({
@@ -19,7 +20,7 @@ export class UploadComponent implements OnInit {
    * Al cargar y procesar el archivo se asignara posteriormente el id resultante a fieldset.fieldName
    */
 
-   @Input() readonly?: boolean = false;
+  @Input() readonly?: boolean = false;
 
   @Input() type?: string = "file";
   /**
@@ -29,6 +30,8 @@ export class UploadComponent implements OnInit {
 
   fileControl: FormControl = new FormControl();
   
+  file: any = null;
+
   protected subscriptions = new Subscription();
 
   constructor(protected dd: DataDefinitionService) { }
@@ -46,9 +49,14 @@ export class UploadComponent implements OnInit {
   initValue(value){
     this.dd.getOrNull("file", value).pipe(first()).subscribe(
       row => {
-        if(row) { 
+        if(row) {
+          console.log(row); 
+          this.file = row;
+          this.file["link"] = UPLOAD_URL+this.file.content; 
+          this.fileControl.setValue("");
           this.fileControl.disable();
         } else {
+          this.file = null;
           if(!this.readonly) this.fileControl.enable();
         }
       }

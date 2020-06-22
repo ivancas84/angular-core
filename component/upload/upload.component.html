@@ -1,2 +1,14 @@
-<input *ngIf="!field.value" class="form-control" type="file" [readonly]="readonly" [formControl]="fileControl" (change)="onFileSelect($event)" />
-<input *ngIf="field.value" class="form-control-plaintext" readonly value="{{field.value | label:'file'}}">
+<div *ngIf="!field.value" class="input-group">
+  <input class="form-control" type="file" [readonly]="readonly" [formControl]="fileControl" (change)="onFileSelect($event)" />
+  <span *ngIf="field.pending" class="input-group-text"><span class="oi oi-clock"></span></span>
+</div>
+<div *ngIf="field.value" class="input-group">
+  <input class="form-control-plaintext" readonly value="{{field.value}}">
+  <div class="input-group-append">
+    <span class="input-group-text" (click)="field.setValue(null)"><span class="oi oi-reload"></span></span>
+    <span *ngIf="file" class="input-group-text">
+      <a class="oi oi-cloud-download" [href]="file.link" target="_blank" [download]="file.name"></a>
+    </span>
+  </div>
+  
+</div>
