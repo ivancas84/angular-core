@@ -26,16 +26,22 @@ export class TypeaheadComponent implements OnInit {
   disabled: boolean = true;
 
   protected subscriptions = new Subscription();
-  /**
-   * las subscripciones son almacenadas para desuscribirse (solucion temporal al bug de Angular)
-   * @todo En versiones posteriores de angular, eliminar el atributo subscriptions y su uso
-   */
 
   constructor(
     public dd: DataDefinitionService,
     protected storage: SessionStorageService
   ) {  }
 
+  ngOnInit(): void {
+    if(this.field.value) this.initValue(this.field.value);
+
+    var s = this.field.valueChanges.subscribe(
+      value => this.initValue(value)
+    );
+
+    this.subscriptions.add(s);
+  }
+  
   initValue(value){
     this.dd.getOrNull(this.entityName, value).pipe(first()).subscribe(
       row => {
@@ -48,16 +54,6 @@ export class TypeaheadComponent implements OnInit {
         }
       }
     );
-  }
-
-  ngOnInit(): void {
-    if(this.field.value) this.initValue(this.field.value);
-
-    var s = this.field.valueChanges.subscribe(
-      value => this.initValue(value)
-    );
-
-    this.subscriptions.add(s);
   }
 
   searchTerm(term): Observable<any> {
