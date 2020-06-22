@@ -176,19 +176,11 @@ export abstract class AdminComponent implements OnInit, AfterViewInit {
           if(response && response.length){
             this.storage.removeItemsContains(".");
             response.forEach(
-              element => this.storage.removeItem(element)
+              (element: string) => this.storage.removeItem(element)
             );
           }
           
-          //this.removeStorage();
-          let route = emptyUrl(this.router.url) + "?id="+this.getProcessedId(response);
-          if(route != this.router.url)  this.router.navigateByUrl('/' + route);
-          else this.setData(this.route.snapshot.queryParams)
-          /**
-           * por mas que sea el mismo valor, se vuelve a asignar y se recarga el formulario
-           */
-          this.toast.showSuccess("Registro realizado");
-          this.isSubmitted = false;
+          this.reload(response);
         },
         error => { 
           console.log(error);
@@ -197,6 +189,14 @@ export abstract class AdminComponent implements OnInit, AfterViewInit {
       );
       this.subscriptions.add(s);
     }
+  }
+
+  reload(response){
+    let route = emptyUrl(this.router.url) + "?id="+this.getProcessedId(response);
+    if(route != this.router.url)  this.router.navigateByUrl('/' + route);
+    else this.setData(this.route.snapshot.queryParams)
+    this.toast.showSuccess("Registro realizado");
+    this.isSubmitted = false;
   }
 
   getProcessedId(logs: Array<any>) {  
