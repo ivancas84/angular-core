@@ -1,13 +1,15 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { DataDefinitionService } from '@service/data-definition/data-definition.service';
 import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
+import { first } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 
 
 @Component({
   selector: 'app-upload',
   templateUrl: './upload.component.html',
 })
-export class UploadComponent {
+export class UploadComponent implements OnInit {
 
   @Input() field: FormControl;
   
@@ -17,13 +19,41 @@ export class UploadComponent {
    * Al cargar y procesar el archivo se asignara posteriormente el id resultante a fieldset.fieldName
    */
 
-  @Input() type: string = "file";
+   @Input() readonly?: boolean = false;
+
+  @Input() type?: string = "file";
   /**
    * Tipo de procesamiento
    * Permite seleccionar una alternativa entre diferentes controladores de procesamiento
    */
 
+  fileControl: FormControl = new FormControl();
+  
+  protected subscriptions = new Subscription();
+
   constructor(protected dd: DataDefinitionService) { }
+
+ ngOnInit(): void {
+    //if(this.field.value) this.initValue(this.field.value);
+
+    var s = this.field.valueChanges.subscribe(
+      value => this.initValue(value)
+    );
+
+    this.subscriptions.add(s);
+  }
+
+  initValue(value){
+    this.dd.getOrNull("file", value).pipe(first()).subscribe(
+      row => {
+        if(row) { 
+          this.fileControl.disable();
+        } else {
+          if(!this.readonly) this.fileControl.enable();
+        }
+      }
+    );
+  }
 
   onFileSelect(event) {
     if (event.target.files.length > 0) {

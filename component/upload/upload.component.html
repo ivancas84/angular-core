@@ -1,1 +1,2 @@
-<input class="form-control" type="file" name="file" (change)="onFileSelect($event)" />
+<input *ngIf="!field.value" class="form-control" type="file" [readonly]="readonly" [formControl]="fileControl" (change)="onFileSelect($event)" />
+<input *ngIf="field.value" class="form-control-plaintext" readonly value="{{field.value | label:'file'}}">
