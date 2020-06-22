@@ -67,9 +67,7 @@ export class UploadComponent implements OnInit {
     if (event.target.files.length > 0) {
       const file = event.target.files[0];
       const formData = new FormData();
-      console.log(file);
       formData.append(this.type, file);
-      console.log(formData);
       this.field.markAsPending();
       this.dd.upload(formData).subscribe(
         (res) => {
