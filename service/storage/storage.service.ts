@@ -26,7 +26,7 @@ export abstract class StorageService {
       return JSON.parse(data);
   }
 
-  removeItem(key): void { this.getStorage().removeItem(key); }
+  removeItem(key: string): void { this.getStorage().removeItem(key); }
 
   clear(): void { this.getStorage().clear(); }
 
