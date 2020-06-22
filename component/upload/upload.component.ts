@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { DataDefinitionService } from '@service/data-definition/data-definition.service';
-import { FormGroup, FormBuilder } from '@angular/forms';
+import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
 
 
 @Component({
@@ -9,9 +9,9 @@ import { FormGroup, FormBuilder } from '@angular/forms';
 })
 export class UploadComponent {
 
-  @Input() fieldName: string;
+  @Input() field: FormControl;
+  
 
-  @Input() fieldset: FormGroup;
   /**
    * Fieldset al que pertenece fieldName
    * Al cargar y procesar el archivo se asignara posteriormente el id resultante a fieldset.fieldName
@@ -23,9 +23,7 @@ export class UploadComponent {
    * Permite seleccionar una alternativa entre diferentes controladores de procesamiento
    */
 
-  constructor(private formBuilder: FormBuilder, private dd: DataDefinitionService) { }
-
-  get field() { return this.fieldset.get(this.fieldName)}
+  constructor(protected dd: DataDefinitionService) { }
 
   onFileSelect(event) {
     if (event.target.files.length > 0) {
