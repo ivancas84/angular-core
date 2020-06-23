@@ -1,4 +1,4 @@
-import { Component, Input, AfterContentInit, OnInit, AfterViewInit } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { DataDefinitionService } from '@service/data-definition/data-definition.service';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { Observable, of, ReplaySubject } from 'rxjs';
@@ -10,40 +10,23 @@ import { UPLOAD_URL } from 'src/app/app.config';
   selector: 'app-download',
   templateUrl: './download.component.html',
 })
-export class DownloadComponent implements OnInit {
+export class DownloadComponent implements OnChanges {
 
-  readonly UPLOAD_URL = UPLOAD_URL;
+  @Input() id: string;
 
-  @Input() fieldName: string;
-
-  @Input() fieldset: FormGroup;
-  /**
-   * Fieldset al que pertenece fieldName
-   * Al cargar y procesar el archivo se asignara posteriormente el id resultante a fieldset.fieldName
-   */
-
-  valueChange$: ReplaySubject<any> = new ReplaySubject();
+  file: any = null;
 
   constructor(private dd: DataDefinitionService) { }
- 
-
-  get field() { return this.fieldset.get(this.fieldName)}
-
   
-  ngOnInit(){
-    if(this.field.value){
-      this.dd.get("file", this.field.value).subscribe(
-        r => this.valueChange$.next(r)
+  ngOnChanges(changes: SimpleChanges){
+    if( changes['id'] && changes['id'].previousValue != changes['id'].currentValue ) {
+      this.dd.getOrNull("file", this.id).subscribe(
+        row => {
+          this.file = row;
+          if(this.file) this.file["link"] = UPLOAD_URL+this.file.content; 
+        }
       )
     }
-    this.field.valueChanges.subscribe(
-        value => {
-          this.dd.get("file", value).subscribe(
-            r => this.valueChange$.next(r)
-          )
-        }
-    )
   }
-
 
 }
