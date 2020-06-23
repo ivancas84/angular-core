@@ -48,8 +48,6 @@ export abstract class AdminComponent implements OnInit, AfterViewInit {
    * flag para habilitar/deshabilitar boton aceptar
    */
 
-   params: any = false;;
-
   protected subscriptions = new Subscription();
   /**
    * las subscripciones son almacenadas para desuscribirse (solucion temporal al bug de Angular)
