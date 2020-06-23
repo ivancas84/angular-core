@@ -14,7 +14,7 @@ export abstract class FieldsetComponent implements  OnInit {
 
   @Input() form: FormGroup; 
   /**
-   * Formulario de administracion
+   * Formulario padre
    */
 
   @Input() data$: Observable<any>; 
@@ -106,7 +106,5 @@ export abstract class FieldsetComponent implements  OnInit {
       this.fieldset.reset(res) 
     }
   }
-
-
  
 }
