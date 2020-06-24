@@ -2,6 +2,7 @@ import { FieldsetComponent } from '@component/fieldset/fieldset.component';
 import { Input } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Observable } from 'rxjs';
+import { first } from 'rxjs/operators';
 
 export abstract class FieldsetOptionalComponent extends FieldsetComponent {
 
@@ -28,15 +29,7 @@ export abstract class FieldsetOptionalComponent extends FieldsetComponent {
       var s = this.data$.subscribe(
         response => {
           if(this.formValues) {
-            var d = this.formValues.hasOwnProperty(this.entityName)? this.formValues[this.entityName] : null;
-            if(!d) {
-              this.fieldset.reset();
-              this.fieldset.disable();
-            } else { 
-              this.fieldset.reset(d);
-              this.fieldset.enable();
-            }
-            this.formValues = null;
+            this.initValuesStorage();
           } else {
             this.initValues(response);
             (response) ? this.fieldset.enable() : this.fieldset.disable();
@@ -48,4 +41,33 @@ export abstract class FieldsetOptionalComponent extends FieldsetComponent {
       );
       this.subscriptions.add(s);
   }
+
+  initValuesStorage() { 
+    var d = this.formValues.hasOwnProperty(this.entityName)? this.formValues[this.entityName] : null;
+    console.log(this.entityName);
+    
+    console.log(d);
+    if(!d) {
+      this.fieldset.reset();
+      this.fieldset.disable();
+    } else { 
+      this.fieldset.reset(d);
+      this.fieldset.enable();
+    }
+    this.formValues = null;
+  }
+
+  /*
+  initValuesKey(key, response){
+    if(response && response.hasOwnProperty(key) && response[key]) {
+      this.dd.get(this.entityName, response[name]).pipe(first()).subscribe(
+        res => {
+          this.initValues(res);
+          this.fieldset.enable()
+        }
+      )
+    } else {
+      this.fieldset.disable();
+    }
+  }*/
 }
