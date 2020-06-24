@@ -15,44 +15,40 @@ import { logValidationErrors } from '@function/log-validation-errors';
 
 export abstract class AdminComponent implements OnInit, AfterViewInit {
 /**
- * Formulario de administracion FormGroup (adminForm) cuyos elementos son tambien FormGroups correspondientes a los fieldsets
- * Se recomienda no modificar el id de la tabla principal en las actualizaciones
+ * Formulario de administracion (FormGroup) formado por fieldsets (FormGroups)
  */
 
   adminForm: FormGroup = this.fb.group({});
   /**
-   * formulario
-   * se asignaran dinamicamente los formgroups correspondientes a fieldsets
+   * Formulario principal
+   * Se asignaran dinamicamente los formgroups correspondientes a fieldsets
    */
 
   readonly entityName: string;
   /**
-   * entidad principal
+   * Entidad principal
    */
   
   data$:ReplaySubject<any> = new ReplaySubject();
   /**
-   * datos principales
-   * Se define como ReplaySubject en vez de BehaviorSubject para evitar procesamiento adicional con el valor null
+   * Datos principales
+   * Se define como ReplaySubject porque puede recibir valores nuevos que deben ser asignados con metodo .next
+   * No se utiliza BehaviorSubject para evitar procesamiento adicional con el valor null
    * null es un dato valido para data$ significa que no esta definido por lo que los subcomponentes inicializaran como si estuviera vacio
    * Se podria usar BehaviorSubject y manejar diferentes alternativas para indicar si esta o no definido, por ejemplo null o false
    */
 
   isDeletable: boolean = false;
   /**
-   * flag para habilitar/deshabilitar boton eliminar
+   * Flag para habilitar/deshabilitar boton eliminar
    */
 
   isSubmitted: boolean = false;
   /**
-   * flag para habilitar/deshabilitar boton aceptar
+   * Flag para habilitar/deshabilitar boton aceptar
    */
 
   protected subscriptions = new Subscription();
-  /**
-   * las subscripciones son almacenadas para desuscribirse (solucion temporal al bug de Angular)
-   * @todo En versiones posteriores de angular, eliminar el atributo subscriptions y su uso
-   */
    
   constructor(
     protected fb: FormBuilder, 
@@ -86,12 +82,10 @@ export abstract class AdminComponent implements OnInit, AfterViewInit {
     this.subscriptions.add(s);
   }
 
-  
   initData(){
     /**
-     * No realizar la suscripcion en el template! 
-     * Puede generar ExpressionChanged error inesperados
-     * Al suscribirse desde el template se cambia el Lifecycle
+     * No realizar la suscripcion en el template (cambia el Lifecycle)! 
+     * Puede generar errores "ExpressionChanged"
      */
     var s = this.route.queryParams.subscribe(
       params => {
@@ -116,8 +110,9 @@ export abstract class AdminComponent implements OnInit, AfterViewInit {
     ); 
   }
 
-  removeStorage(){ //eliminar datos del storage 
+  removeStorage(){ 
     /**
+     * Eliminar datos del storage
      * Se elimina la ruta actual y las variantes de la ruta actual
      * Las variantes corresponden a aquellas url que tienen la misma ruta pero diferentes parametros
      */
@@ -131,8 +126,9 @@ export abstract class AdminComponent implements OnInit, AfterViewInit {
 
   delete() { this.toast.showInfo ("No implementado"); }
 
-  clear(): void { //limpia la url y declara los datos vacios
+  clear(): void {
     /**
+     * Limpiar url y reinicializa datos
      * si la ruta es diferente, se reasignaran los parametros de la url y se repetira el proceso de inicializacion
      * si la ruta es la misma, se limpia el storage y se asignan parametros en null
      */
@@ -143,13 +139,12 @@ export abstract class AdminComponent implements OnInit, AfterViewInit {
   }
 
   reset(): void{
-    //this.removeStorage();
     this.setData(this.route.snapshot.queryParams)
   }
   
   persist(): Observable<any> {
     /**
-     * persistencia
+     * Persistencia
      * Se define un metodo independiente para facilitar la redefinicion
      * @return "datos de respuesta (habitualmente array de logs)"
      */
@@ -158,7 +153,7 @@ export abstract class AdminComponent implements OnInit, AfterViewInit {
 
   onSubmit(): void {
     /**
-     * envio de formulario
+     * Enviar formulario
      */
     this.isSubmitted = true;
     
@@ -190,6 +185,9 @@ export abstract class AdminComponent implements OnInit, AfterViewInit {
   }
 
   reload(response){
+    /**
+     * Recargar una vez persistido
+     */
     let route = emptyUrl(this.router.url) + "?id="+this.getProcessedId(response);
     if(route != this.router.url)  this.router.navigateByUrl('/' + route);
     else this.setData(this.route.snapshot.queryParams)
@@ -198,6 +196,9 @@ export abstract class AdminComponent implements OnInit, AfterViewInit {
   }
 
   getProcessedId(logs: Array<any>) {  
+    /**
+     * Obtener el id de procesamientoo principal
+     */
     for(var i in logs){
       if(logs[i].indexOf(this.entityName) === 0) {
         var re = new RegExp(this.entityName,"g");
