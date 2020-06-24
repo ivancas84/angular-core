@@ -44,9 +44,6 @@ export abstract class FieldsetOptionalComponent extends FieldsetComponent {
 
   initValuesStorage() { 
     var d = this.formValues.hasOwnProperty(this.entityName)? this.formValues[this.entityName] : null;
-    console.log(this.entityName);
-    
-    console.log(d);
     if(!d) {
       this.fieldset.reset();
       this.fieldset.disable();
