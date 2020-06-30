@@ -53,7 +53,5 @@ export abstract class DetailComponent implements OnInit, OnDestroy {
 
   back() { this.location.back(); }
 
-  delete() { this.toast.showInfo ("No implementado"); }
-
   ngOnDestroy () { this.subscriptions.unsubscribe() }
 }
