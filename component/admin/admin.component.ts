@@ -12,6 +12,8 @@ import { ToastService } from '@service/ng-bootstrap/toast.service';
 import { OnInit, AfterViewInit } from '@angular/core';
 import { markAllAsTouched } from '@function/mark-all-as-touched';
 import { logValidationErrors } from '@function/log-validation-errors';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ModalAlertComponent } from '@component/modal-alert/modal-alert.component';
 
 export abstract class AdminComponent implements OnInit, AfterViewInit {
 /**
@@ -58,6 +60,7 @@ export abstract class AdminComponent implements OnInit, AfterViewInit {
     protected dd: DataDefinitionService, 
     protected toast: ToastService, 
     protected storage: SessionStorageService, 
+    protected modalService: NgbModal
   ) {}
   
   ngAfterViewInit(): void {
@@ -88,8 +91,7 @@ export abstract class AdminComponent implements OnInit, AfterViewInit {
      * Puede generar errores "ExpressionChanged"
      */
     var s = this.route.queryParams.subscribe(
-      params => {
-        this.setData(params); },
+      params => { this.setData(params); },
       error => { this.toast.showDanger(JSON.stringify(error)); }
     )
     this.subscriptions.add(s);
@@ -106,6 +108,11 @@ export abstract class AdminComponent implements OnInit, AfterViewInit {
       response => {
         if (response) this.data$.next(response);
         else this.data$.next(params);
+      },
+      error => { 
+        const modalRef = this.modalService.open(ModalAlertComponent); 
+        modalRef.componentInstance.title = 'Error';
+        modalRef.componentInstance.message = error.error;
       }
     ); 
   }
@@ -164,20 +171,15 @@ export abstract class AdminComponent implements OnInit, AfterViewInit {
       this.isSubmitted = false;
 
     } else {
-      var s = this.persist().subscribe(
+      var s = this.persist().pipe(first()).subscribe(
         response => {
-          if(response && response.length){
-            this.storage.removeItemsContains(".");
-            response.forEach(
-              (element: string) => this.storage.removeItem(element)
-            );
-          }
-          
+          this.storage.removeItemsPersisted(response);
           this.reload(response);
         },
         error => { 
-          console.log(error);
-          this.toast.showDanger(JSON.stringify(error.error)); 
+          const modalRef = this.modalService.open(ModalAlertComponent); 
+          modalRef.componentInstance.title = 'Error';
+          modalRef.componentInstance.message = error.error;
         }
       );
       this.subscriptions.add(s);
