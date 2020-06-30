@@ -5,29 +5,21 @@ import { DataDefinitionService } from '@service/data-definition/data-definition.
 import { ToastService } from '@service/ng-bootstrap/toast.service';
 import { isEmptyObject } from '@function/is-empty-object.function';
 import { first } from 'rxjs/operators';
-import { OnInit } from '@angular/core';
+import { OnInit, OnDestroy } from '@angular/core';
 
-export abstract class DetailComponent implements OnInit {
-/**
- * Detalle de entidad
- */
+export abstract class DetailComponent implements OnInit, OnDestroy {
 
   readonly entityName: string;
   /**
-   * entidad principal
+   * Nombre de la entidad principal
    */
-  
-  data$ = new ReplaySubject();
+
+  data$: ReplaySubject<any> = new ReplaySubject();
   /**
-   * datos principales
+   * Datos principales
    */
 
   protected subscriptions = new Subscription();
-  /**
-   * las subscripciones son almacenadas para desuscribirse (solucion temporal al bug de Angular)
-   * @todo En versiones posteriores de angular, eliminar el atributo subscriptions y su uso
-   */
-   
 
   constructor(
     protected route: ActivatedRoute,
@@ -39,13 +31,13 @@ export abstract class DetailComponent implements OnInit {
   
   ngOnInit() {
     var s = this.route.queryParams.subscribe (
-      params => { this.setDataFromParams(params); },
+      params => { this.initData(params); },
       error => { this.toast.showDanger(JSON.stringify(error)); }
     );
     this.subscriptions.add(s);
   }
 
-  setDataFromParams(params: any): void {
+  initData(params: any): void {
     if(isEmptyObject(params)) {
       this.data$.next(null);
       return;
@@ -63,5 +55,5 @@ export abstract class DetailComponent implements OnInit {
 
   delete() { this.toast.showInfo ("No implementado"); }
 
-  ngOnDestroy () { this.subscriptions.unsubscribe() } //eliminar subscripciones
+  ngOnDestroy () { this.subscriptions.unsubscribe() }
 }

@@ -1,16 +1,21 @@
-import { OnInit } from '@angular/core';
+import { OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ReplaySubject, BehaviorSubject, Subject } from 'rxjs';
+import { ReplaySubject, BehaviorSubject, Subject, Subscription } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { Display } from '../../class/display';
-import { emptyUrl } from '@function/empty-url.function';
 import { DataDefinitionService } from '@service/data-definition/data-definition.service';
 
-export class ShowComponent implements OnInit {
-  readonly entityName: string;
+export class ShowComponent implements OnInit, OnDestroy {
 
-  //data$: BehaviorSubject<any> = new BehaviorSubject(null);
+  readonly entityName: string;
+  /**
+   * Nombre de la entidad principal
+   */
+
   data$: ReplaySubject<any> = new ReplaySubject();
+  /**
+   * Datos principales
+   */
 
   collectionSize$: ReplaySubject<number> = new ReplaySubject();
   /**
@@ -23,6 +28,8 @@ export class ShowComponent implements OnInit {
    * Se define como BehaviorSubject para facilitar el acceso al valor actual evitando suscribirse continuamente
    */
 
+  protected subscriptions = new Subscription();
+
   constructor(
     protected dd: DataDefinitionService, 
     protected route: ActivatedRoute, 
@@ -30,15 +37,15 @@ export class ShowComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe(
+    var s = this.route.queryParams.subscribe(
       queryParams => {
         this.initDisplay(queryParams);
         this.initCount();
         this.initData();
       }
-    );      
+    );     
+    this.subscriptions.add(s); 
   }
-  
    
   initDisplay(params: { [x: string]: any; }): void {
     let display = new Display();
@@ -59,5 +66,7 @@ export class ShowComponent implements OnInit {
       rows => { this.data$.next(rows); }
     ); 
   }
-  
+
+  ngOnDestroy () { this.subscriptions.unsubscribe() }
+
 }
