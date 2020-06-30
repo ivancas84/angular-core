@@ -1,5 +1,5 @@
 import { Input, OnChanges, Output, EventEmitter, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, AbstractControl } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, AbstractControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { Filter } from '@class/filter';
@@ -51,19 +51,21 @@ export abstract class SearchOrderComponent {
   initFieldset(order){
     let orderElementsFGs: Array<FormGroup> = [];
     for(let i in order){
-      let oe: OrderElement = {key:i, value:order[i]};
+      let oe = {
+        key:[i, {validators: [Validators.required]}],
+        value:[order[i], {validators: [Validators.required]}],
+      };
       orderElementsFGs.push(this.fb.group(oe));
     }
     const orderElementsFormArray = this.fb.array(orderElementsFGs);
     this.form.setControl('order', orderElementsFormArray);
   }
 
-  
   get orderElements(): FormArray { return this.form.get('order') as FormArray; }
   addOrderElement() { return this.orderElements.push(this.fb.group(new OrderElement())); }
-  removeOrderElement(index) { return this.orderElements.removeAt(index); }
+  removeOrderElement(index: number) { return this.orderElements.removeAt(index); }
 
-  k(i) { return this.orderElements.controls[i].get("key").value }
-  v(i) { return this.orderElements.controls[i].get("value").value }
+  k(i: number) { return this.orderElements.controls[i].get("key") }
+  v(i: number) { return this.orderElements.controls[i].get("value") }
 
 }
