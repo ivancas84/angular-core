@@ -43,7 +43,6 @@ export abstract class StorageService {
   }
 
   removeItemsPrefix(prefix): void {
-    console.log("voy a remover " + prefix)
     let s = this.getStorage(),
         keys = Object.keys(s);
 
@@ -62,6 +61,15 @@ export abstract class StorageService {
       if (keys.hasOwnProperty(i)){
         if(keys[i].indexOf(str) != -1) s.removeItem(keys[i]);
       }
+    }
+  }
+
+  removeItemsPersisted(response): void {
+    if(response && response.length){
+      this.removeItemsContains(".");
+      response.forEach(
+        (element: string) => this.removeItem(element)
+      );
     }
   }
 
