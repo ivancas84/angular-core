@@ -28,25 +28,14 @@ export abstract class SearchConditionComponent implements OnInit {
    * Parametros de datos iniciales
    */
 
-   fieldset: AbstractControl; 
-  /**
-   * fieldset
-   */
-
   constructor(
     protected fb: FormBuilder, 
     protected dd: DataDefinitionService 
   )  {}
 
   ngOnInit() {
-    this.initForm();
     this.initOptions();
     this.initData();
-  }
-
-  initForm(): void{
-    this.fieldset = this.fb.array([]);
-    this.form.addControl("filters", this.fieldset);
   }
 
   get filters(): FormArray { return this.form.get('filters') as FormArray; }

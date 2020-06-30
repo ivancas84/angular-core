@@ -7,7 +7,7 @@ import { map } from 'rxjs/operators';
 
 export abstract class SearchParamsComponent implements OnInit {
   /**
-   * Componente anidado de Busqueda para definir busqueda a traves de parametros 
+   * Componente anidado para definir busqueda a traves de parametros 
    */
 
   @Input() form: FormGroup; 

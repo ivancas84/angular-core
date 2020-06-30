@@ -7,13 +7,14 @@ import { DataDefinitionService } from '@service/data-definition/data-definition.
 import { Observable, forkJoin, ReplaySubject } from 'rxjs';
 import { isEmptyObject } from '@function/is-empty-object.function';
 import { OrderElement } from '@class/orderElement';
+import { Display } from '@class/display';
+import { map } from 'rxjs/operators';
 
 export abstract class SearchOrderComponent {
   /**
-   * Componente anidado.
-   * Formulario para definir ordenamiento.
+   * Componente anidado para definir ordenamiento
    * Define un FormArray con elementos de ordenamiento.
-   * Similar a SearcConditionComponent.
+   * Similar a SearchConditionComponent.
    * Utiliza el elemento OrderElement.
    */
 
@@ -22,32 +23,32 @@ export abstract class SearchOrderComponent {
    * Formulario
    */
 
-  @Input() order$: ReplaySubject<any>;
+  @Input() display$: Observable<Display>;
+  /**
+   * Datos iniciales
+   */
+  
+  @Input() order$: Observable<any>;
   /**
    * Datos iniciales de ordenamiento: Mapa ordenado de {key:value}
    */
   
-  fieldset: AbstractControl; 
-  /**
-   * fieldset
-   */
-
   constructor(protected fb: FormBuilder) { }
 
-  abstract formGroup();
-
   ngOnInit() {    
-    this.form.addControl("order", this.fb.array([]));
     this.initData();
   }
 
   initData() {
-    this.order$.subscribe(
-      order => { this.setOrder(order) }
-    )
+    this.order$ = this.display$.pipe(map(
+      display => {
+        this.initFieldset(display.getOrder())
+        return display.getOrder()
+      }
+    ));
   }
 
-  setOrder(order){
+  initFieldset(order){
     let orderElementsFGs: Array<FormGroup> = [];
     for(let i in order){
       let oe: OrderElement = {key:i, value:order[i]};
