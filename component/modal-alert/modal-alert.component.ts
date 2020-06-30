@@ -12,4 +12,9 @@ export class ModalAlertComponent {
 
   constructor(public activeModal: NgbActiveModal) { }
 
+  showMessage(){
+    if(typeof this.message == "string") return this.message
+    else return JSON.stringify(this.message);
+  }
+
 }

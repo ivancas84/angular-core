@@ -166,6 +166,9 @@ export abstract class AdminComponent implements OnInit, AfterViewInit {
     if (!this.adminForm.valid) {
       markAllAsTouched(this.adminForm);
       logValidationErrors(this.adminForm);
+      const modalRef = this.modalService.open(ModalAlertComponent); 
+      modalRef.componentInstance.title = 'Error';
+      modalRef.componentInstance.message = "El formulario posee errores.";
       this.toast.showInfo("Verificar formulario");
       this.isSubmitted = false;
 
@@ -176,6 +179,7 @@ export abstract class AdminComponent implements OnInit, AfterViewInit {
           this.reload(response);
         },
         error => { 
+          console.log(error);
           const modalRef = this.modalService.open(ModalAlertComponent); 
           modalRef.componentInstance.title = 'Error';
           modalRef.componentInstance.message = error.error;
