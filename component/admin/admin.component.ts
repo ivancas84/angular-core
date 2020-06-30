@@ -1,5 +1,5 @@
-import { FormGroup, FormBuilder, AbstractControl, FormControl, FormArray, ValidationErrors } from '@angular/forms';
-import { ReplaySubject, Subscription, Observable, BehaviorSubject } from 'rxjs';
+import { FormGroup, FormBuilder } from '@angular/forms';
+import { ReplaySubject, Subscription, Observable } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DataDefinitionService } from '@service/data-definition/data-definition.service';
 import { first } from 'rxjs/operators';
@@ -190,7 +190,7 @@ export abstract class AdminComponent implements OnInit, AfterViewInit {
      * Recargar una vez persistido
      */
     let route = emptyUrl(this.router.url) + "?id="+this.getProcessedId(response);
-    if(route != this.router.url)  this.router.navigateByUrl('/' + route);
+    if(route != this.router.url) this.router.navigateByUrl('/' + route);
     else this.setData(this.route.snapshot.queryParams)
     this.toast.showSuccess("Registro realizado");
     this.isSubmitted = false;

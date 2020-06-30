@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { Display } from '@class/display';
 import { emptyUrl } from '@function/empty-url.function';
+import { first } from 'rxjs/operators';
 
 export abstract class SearchComponent {
 
@@ -12,6 +13,7 @@ export abstract class SearchComponent {
   /**
    * Busqueda a traves de condicion
    * implementacion opcional mediante componente SearchCondition
+   * No conviene utilizar ReplaySubject (como el padre?)
    */ 
 
   searchForm: FormGroup = this.fb.group({});
@@ -31,9 +33,10 @@ export abstract class SearchComponent {
   ) {}
 
   onSubmit(): void {
-
-    //Transformar valores de dislay a traves de los valores del formulario
-    this.display$.subscribe(
+    /**
+     * Transformar valores del atributo display$ a traves de los valores del formulario
+     */
+    this.display$.pipe(first()).subscribe(
       display => {
         if(this.searchForm.get("filters")) display.setConditionByFilters(this.searchForm.get("filters").value);    
         if(this.searchForm.get("params")) display.setParams(this.searchForm.get("params").value);    
