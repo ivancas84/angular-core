@@ -6,7 +6,8 @@ import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
   templateUrl: './modal-confirm.component.html'
 })
 export class ModalConfirmComponent {
-  @Input() label: string;
+  @Input() title: string;
+  @Input() message: string;
 
   constructor(public activeModal: NgbActiveModal) { }
 
