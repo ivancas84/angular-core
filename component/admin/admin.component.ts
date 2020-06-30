@@ -2,7 +2,6 @@ import { FormGroup, FormBuilder, AbstractControl, FormControl, FormArray, Valida
 import { ReplaySubject, Subscription, Observable, BehaviorSubject } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DataDefinitionService } from '@service/data-definition/data-definition.service';
-import { ValidatorsService } from '@service/validators/validators.service';
 import { first } from 'rxjs/operators';
 import { Location } from '@angular/common';
 import { emptyUrl } from '@function/empty-url.function';
