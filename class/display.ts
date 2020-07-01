@@ -1,6 +1,5 @@
 import { isEmptyObject } from '../function/is-empty-object.function';
 import { Filter } from './filter';
-import { OrderElement } from './order-element';
 
 export class Display {
 
@@ -52,6 +51,10 @@ export class Display {
     }    
   }
 
+  public addOrder(key: string, value: any){
+    this.order[key] = value;
+  }
+
   public addParam(key: string, value: any){
     this.params[key] = value;
   }
@@ -90,8 +93,13 @@ export class Display {
     }    
   }
 
-  public setOrderByElement(order:Array<OrderElement>){
-
+  public setOrderByElement(order:Array<{[key:string]:string}>){
+    this.order = {};
+    for(let i in order) {
+      if(order.hasOwnProperty(i)) {
+        this.addOrder(order[i]["key"],order[i]["value"]);
+     }
+    }
   }
   
   public setParamsByQueryParams(params: any){

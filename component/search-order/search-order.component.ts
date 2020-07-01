@@ -1,20 +1,14 @@
-import { Input, OnChanges, Output, EventEmitter, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, AbstractControl } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Input } from '@angular/core';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 
-import { Filter } from '@class/filter';
-import { DataDefinitionService } from '@service/data-definition/data-definition.service';
-import { Observable, forkJoin, ReplaySubject } from 'rxjs';
-import { isEmptyObject } from '@function/is-empty-object.function';
-import { OrderElement } from '@class/orderElement';
+import { Observable } from 'rxjs';
+import { Display } from '@class/display';
+import { map } from 'rxjs/operators';
 
 export abstract class SearchOrderComponent {
   /**
-   * Componente anidado.
-   * Formulario para definir ordenamiento.
+   * Componente anidado para definir ordenamiento
    * Define un FormArray con elementos de ordenamiento.
-   * Similar a SearcConditionComponent.
-   * Utiliza el elemento OrderElement.
    */
 
   @Input() form: FormGroup; 
@@ -22,47 +16,51 @@ export abstract class SearchOrderComponent {
    * Formulario
    */
 
-  @Input() order$: ReplaySubject<any>;
+  @Input() display$: Observable<Display>;
   /**
-   * Datos iniciales de ordenamiento: Mapa ordenado de {key:value}
+   * Datos iniciales
    */
   
-  fieldset: AbstractControl; 
-  /**
-   * fieldset
-   */
+  load$: Observable<any>;
 
   constructor(protected fb: FormBuilder) { }
 
-  abstract formGroup();
-
   ngOnInit() {    
-    this.form.addControl("order", this.fb.array([]));
     this.initData();
   }
 
   initData() {
-    this.order$.subscribe(
-      order => { this.setOrder(order) }
-    )
+    this.load$ = this.display$.pipe(map(
+      display => {
+        this.initFieldset(display.getOrder())
+        return display.getOrder()
+      }
+    ));
   }
 
-  setOrder(order){
-    let orderElementsFGs: Array<FormGroup> = [];
-    for(let i in order){
-      let oe: OrderElement = {key:i, value:order[i]};
-      orderElementsFGs.push(this.fb.group(oe));
-    }
-    const orderElementsFormArray = this.fb.array(orderElementsFGs);
-    this.form.setControl('order', orderElementsFormArray);
+  initFieldset(order: { [x: string]: string; }){
+    let elementsFGs: Array<FormGroup> = [];
+    for(let i in order) elementsFGs.push(this.formGroup(i, order[i]));
+    this.form.setControl('order', this.fb.array(elementsFGs));
   }
 
+  formGroup(k: string = "", v: string = "asc"): FormGroup {
+    return this.fb.group({
+      key:[k, {validators: [Validators.required]}],
+      value:[v, {validators: [Validators.required]}],
+    });
+  }
+
+  get elements(): FormArray { return this.form.get('order') as FormArray; }
   
-  get orderElements(): FormArray { return this.form.get('order') as FormArray; }
-  addOrderElement() { return this.orderElements.push(this.fb.group(new OrderElement())); }
-  removeOrderElement(index) { return this.orderElements.removeAt(index); }
+  pushElement() { return this.elements.push(this.formGroup()) }
+  
+  unshiftElement() { return this.elements.controls.unshift(this.formGroup()) }
+  
+  removeElement(index: number) { return this.elements.removeAt(index); }
 
-  k(i) { return this.orderElements.controls[i].get("key").value }
-  v(i) { return this.orderElements.controls[i].get("value").value }
+  k(i: number) { return this.elements.controls[i].get("key") }
+
+  v(i: number) { return this.elements.controls[i].get("value") }
 
 }

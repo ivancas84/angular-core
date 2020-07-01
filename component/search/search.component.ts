@@ -40,7 +40,11 @@ export abstract class SearchComponent {
       display => {
         if(this.searchForm.get("filters")) display.setConditionByFilters(this.searchForm.get("filters").value);    
         if(this.searchForm.get("params")) display.setParams(this.searchForm.get("params").value);    
-        if(this.searchForm.get("order")) display.setOrderByElement(this.searchForm.get("order").value);    
+        if(this.searchForm.get("order")) {
+          console.log(this.searchForm.get("order").value)
+          display.setOrderByElement(this.searchForm.get("order").value);
+          console.log(display);
+        }    
 
         this.router.navigateByUrl('/' + emptyUrl(this.router.url) + '?' + display.encodeURI());  
       }

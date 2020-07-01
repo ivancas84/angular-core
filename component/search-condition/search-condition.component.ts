@@ -1,7 +1,6 @@
 import { Input, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, AbstractControl } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, AbstractControl, Validators } from '@angular/forms';
 
-import { Filter } from '@class/filter';
 import { DataDefinitionService } from '@service/data-definition/data-definition.service';
 import { Observable } from 'rxjs';
 import { Display } from '@class/display';
@@ -22,49 +21,41 @@ export abstract class SearchConditionComponent implements OnInit {
    * Datos iniciales
    */
    
-
-  @Input() condition$: Observable<Array<any>>;
-  /**
-   * Parametros de datos iniciales
-   */
-
-   fieldset: AbstractControl; 
-  /**
-   * fieldset
-   */
-
+  load$: Observable<Array<any>>;
+  
   constructor(
     protected fb: FormBuilder, 
     protected dd: DataDefinitionService 
   )  {}
 
   ngOnInit() {
-    this.initForm();
     this.initOptions();
     this.initData();
   }
 
-  initForm(): void{
-    this.fieldset = this.fb.array([]);
-    this.form.addControl("filters", this.fieldset);
+  get elements(): FormArray { return this.form.get('condition') as FormArray; }
+  addFilter() { return this.elements.push(this.formGroup()); }
+  removeFilter(index) { return this.elements.removeAt(index); }
+
+  f(i) { return this.elements.controls[i].get("field") }
+  o(i) { return this.elements.controls[i].get("option") }
+  v(i) { return this.elements.controls[i].get("value")  }
+
+  initFieldset(condition){
+    let elementsFGs: Array<FormGroup> = [];
+    for(let i = 0; i < condition.length; i++){
+      let elFG = this.formGroup(condition[i][0], condition[i][1], condition[i][2]);
+      elementsFGs.push(elFG);
+    }
+    this.form.setControl('condition', this.fb.array(elementsFGs));
   }
 
-  get filters(): FormArray { return this.form.get('filters') as FormArray; }
-  addFilter() { return this.filters.push(this.fb.group(new Filter())); }
-  removeFilter(index) { return this.filters.removeAt(index); }
-
-  f(i) { return this.filters.controls[i].get("field") }
-  o(i) { return this.filters.controls[i].get("option") }
-  v(i) { return this.filters.controls[i].get("value")  }
-
-  setFilters(condition){
-    let filtersFGs: Array<FormGroup> = [];
-    for(let i = 0; i < condition.length; i++){
-      let filter = {field:condition[i][0], option:condition[i][1], value:condition[i][2]};
-      filtersFGs.push(this.fb.group(filter));
-    }
-    const filtersFormArray = this.fb.array(filtersFGs);
-    this.form.setControl('filters', filtersFormArray);
+  formGroup(f: string = "", o: string ="=~", v: any = null): FormGroup {
+    return this.fb.group({
+      field: [f, {validators: [Validators.required]}],
+      option: o,
+      value: v,
+    });
   }
 
   initOptions(): void {
@@ -73,7 +64,6 @@ export abstract class SearchConditionComponent implements OnInit {
      * asignarlas al atributo options
      */
   }
-
   
   initData(): void{    
     /**
@@ -82,9 +72,9 @@ export abstract class SearchConditionComponent implements OnInit {
      * Puede resultar necesario inicializar valores que seran posteriormente accedidos desde el storage
      */
     
-    this.condition$ = this.display$.pipe(map(
+    this.load$ = this.display$.pipe(map(
       display => {
-        this.setFilters(display.getCondition())
+        this.initFieldset(display.getCondition())
         return display.getCondition()
       }
     ));
