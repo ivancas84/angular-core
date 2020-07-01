@@ -20,7 +20,7 @@ export abstract class SearchParamsComponent implements OnInit {
    * Datos iniciales
    */
   
-  @Input() params$: Observable<{[key: string]: string}>;
+  load$: Observable<{[key: string]: string}>;
   /**
    * Parametros de Datos iniciales
    */
@@ -59,7 +59,7 @@ export abstract class SearchParamsComponent implements OnInit {
      * Puede resultar necesario inicializar valores que seran posteriormente accedidos desde el storage
      */
     
-    this.params$ = this.display$.pipe(map(
+    this.load$ = this.display$.pipe(map(
       display => {
         if(!isEmptyObject(display.getParams())) { this.fieldset.reset(display.getParams()) }
         return display.getParams()

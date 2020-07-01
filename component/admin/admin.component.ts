@@ -158,9 +158,6 @@ export abstract class AdminComponent implements OnInit, AfterViewInit {
   }
 
   onSubmit(): void {
-    /**
-     * Enviar formulario
-     */
     this.isSubmitted = true;
     
     if (!this.adminForm.valid) {
