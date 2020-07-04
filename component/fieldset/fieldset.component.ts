@@ -39,7 +39,7 @@ export abstract class FieldsetComponent implements  OnInit {
    * @todo En versiones posteriores de angular, eliminar el atributo subscriptions y su uso
    */
 
-   readonly defaultValues: {[key:string]: any} = {};
+  readonly defaultValues: {[key:string]: any} = {};
 
   constructor(
     protected router: Router, 
