@@ -1,4 +1,4 @@
-import { Component, OnInit, Input} from '@angular/core';
+import { Component, OnInit, Input, SimpleChanges, OnChanges} from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Observable, of, Subscription } from 'rxjs';
 import { DataDefinitionService } from '@service/data-definition/data-definition.service';
@@ -33,10 +33,22 @@ export class TypeaheadComponent implements OnInit {
   ) {  }
 
   ngOnInit(): void {
-    if(this.field.value) this.initValue(this.field.value);
+    /** 
+     * Se utiliza ngOnInit en vez de ngOnChanges porque permite reducir una linea de codigo
+     * El ngOnChanges incluiria el mismo codigo bajo el if(changes['field'] && changes['field'].isFirstChange() ) {
+     * Tener presente el Lifehook cycle
+     */
 
-    var s = this.field.valueChanges.subscribe(
-      value => this.initValue(value)
+    if(this.field.value) this.initValue(this.field.value);
+    /** 
+     * Se parte de un valor definido del field, asignado en el ngOnInit del padre 
+     * El valueChanges accede a partir del segundo valor, por eso es necesario este if 
+     **/
+
+     var s = this.field.valueChanges.subscribe(
+      value => {
+        this.initValue(value)
+      }
     );
 
     this.subscriptions.add(s);
