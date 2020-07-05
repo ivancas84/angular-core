@@ -158,6 +158,7 @@ export class DataDefinitionService {
     /**
      * Etiqueta de identificacion
      * Los datos a utilizar deben estar en el storage
+     * Si no se esta seguro si los datos se encuentran en el storage, se puede utilizar labelGet
      */
     return this.loader.get(entity).label(id);
   }
@@ -165,6 +166,8 @@ export class DataDefinitionService {
   labelGet (entity: string, id: string | number): Observable<string> {
     /**
      * Etiqueta de identificacion
+     * Este metodo tiene por objeto obtener todos los datos necesario de la entidad para definir el label y almacenarlos en el storage.
+     * Debe sobrescribirse este metodo si la entidad necesita consultas adicionales para definir el label
      */
     return this.get(entity, id).pipe(
       map( () => { return this.label(entity, id)} )
