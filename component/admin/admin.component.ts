@@ -191,7 +191,7 @@ export abstract class AdminComponent implements OnInit, AfterViewInit {
      * Recargar una vez persistido
      */
     let route = emptyUrl(this.router.url) + "?id="+this.getProcessedId(response);
-    if(route != this.router.url) this.router.navigateByUrl('/' + route);
+    if(route != this.router.url) this.router.navigateByUrl('/' + route, {replaceUrl: true});
     else this.setData(this.route.snapshot.queryParams)
     this.toast.showSuccess("Registro realizado");
     this.isSubmitted = false;
