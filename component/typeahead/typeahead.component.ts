@@ -20,6 +20,10 @@ export class TypeaheadComponent implements OnInit {
   @Input() field: FormControl;
   @Input() entityName: string;
   @Input() readonly?: boolean = false;
+  @Input() size?: string; 
+  /**
+   * xs, sm, md, lg
+   */
   
   searchControl: FormControl = new FormControl();
   searchFailed: boolean = false;
@@ -31,6 +35,14 @@ export class TypeaheadComponent implements OnInit {
     public dd: DataDefinitionService,
     protected storage: SessionStorageService
   ) {  }
+
+  class(){
+    switch(this.size){
+      case "lg": return "form-control form-control-lg";
+      case "sm": return "form-control form-control-sm";      
+      default: return "form-control"
+    }
+  }
 
   ngOnInit(): void {
     /** 

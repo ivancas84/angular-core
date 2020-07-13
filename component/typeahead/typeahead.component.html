@@ -1,5 +1,5 @@
 <div  class="input-group">
-  <input class="form-control" [readonly]="readonly" [formControl]="searchControl" [ngbTypeahead]="search" [resultFormatter]="formatter" [inputFormatter]="formatter" placeholder="Seleccionar" (selectItem)="selectItem($event)">
+  <input placeholder="Buscar {{entityName}}" [ngClass]="{'form-control':true,'form-control-lg':(size=='lg'),'form-control-sm':(size=='sm')}" [readonly]="readonly" [formControl]="searchControl" [ngbTypeahead]="search" [resultFormatter]="formatter" [inputFormatter]="formatter" placeholder="Seleccionar" (selectItem)="selectItem($event)">
   <div class="input-group-append">
 
     <span *ngIf="field.pending" class="input-group-text"><span class="oi oi-clock"></span></span>
